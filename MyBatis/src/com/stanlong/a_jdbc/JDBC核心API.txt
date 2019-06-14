@@ -1,0 +1,20 @@
+Driver 接口：  
+    表示java驱动程序接口，所有的数据库厂商要来实现此接口
+    |-connect(url, properties):连接数据库的方法
+        url：连接数据库的url
+        
+DriverManager类：驱动管理器类，用于管理所有的驱动注册程序
+    |-registerDriver(driver):注册驱动类对象
+    |-Connection
+    
+Connection 接口：表示Java程序和数据库的连接对象
+
+Statement接口：用于执行静态的sql语句
+
+PreperedStatement:接口， 用于执行预编译的sql语句
+
+ResultSet接口：用于封装查询出来的数据
+
+PreperedStatement 支持缓冲区， Statement 不支持缓冲区。 所以在执行sql量大的情况下 PreperedStatement 比  Statement 效率高
+支持SQL缓冲区的数据库有 oralce, sqlserver, 不支持sql缓冲区的有mysql
+结论：mysql数据库不支持 PrepareedStatement 优化

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类化管理，理解sql隔离 
+注意：使用mapper代理方法开发，namespace有特殊重要的作用
+-->
+<mapper namespace="com.stanlong.e_mapper_proxy.OrdersDao">
+
+	<!-- 订单关联查询用户的ResultMap -->
+	<resultMap type="Orders" id="OrdersCustomerMapper">
+		<!-- 配置映射的订单信息 -->
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="number" property="number"/>
+		<result column="createtime" property="createtime"/>
+		<result column="note" property="note"/>
+		
+		<!-- 配置映射关联的用户信息
+			association:用于映射关联查询单个对象的信息
+			property：将关联查询的服务店 信息映射到Orders中的哪个属性
+		-->
+		<association property="user" javaType="com.stanlong.pojo.User">
+			<id column="user_id" property="id"/>
+			<result column="username" property="username"/>
+			<result column="sex" property="sex"/>
+			<result column="address" property="address"/>
+		</association>
+	</resultMap>
+	
+	<!--
+		extends:使用继承，就可以不用在配置订单信息和用户信息的映射
+	 -->
+	<resultMap type="orders" id="findOrderAndOrderDetailResultMap" extends="OrdersCustomerMapper">
+		<!-- 配置映射的订单信息 -->
+		<!-- 配置映射关联的用户信息-->
+		<!-- collection:对关联查询到的多条记录映射到集合对象中
+			property：将查询到的多条记录映射到orderdetails属性（订单与订单明细是一对多的关系）
+			ofType:要映射到集合属性中pojo的类型
+		 -->
+		<collection property="orderdetails" ofType="Orderdetail">
+			<!-- id:订单明细唯一标识 -->
+			<id column="orderdetail_id" property="id"/>
+			<result column="items_id" property="itemsId"/>
+			<result column="items_num" property="itemsNum"/>
+			<result column="orders_id" property="ordersId"/>
+		</collection>
+	</resultMap>
+
+	<!-- 查询订单关联用户信息 -->
+	<select id="findOrdersUser" resultType="OrdersCustomer">
+		SELECT 
+			t1.*
+			,t2.username
+			,t2.sex
+			,t2.address
+		FROM orders t1, user t2
+		WHERE t1.user_id = t2.id
+	</select>
+	
+	<!-- resultMap -->
+	<select id="findOrdersUserResultMap" resultMap="OrdersCustomerMapper">
+		SELECT 
+			t1.*
+			,t2.username
+			,t2.sex
+			,t2.address
+		FROM orders t1, user t2
+		WHERE t1.user_id = t2.id
+	</select>
+	
+	<!-- 订单-订单明细（一对多查询）-->
+	<select id="findOrderAndOrderDetailResultMap" resultMap="findOrderAndOrderDetailResultMap">
+		SELECT
+			t1.*
+			,t2.username
+			,t2.sex
+			,t2.address
+			,t3.id			AS orderdetail_id
+			,t3.items_id
+			,t3.items_num
+			,t3.orders_id
+		FROM orders t1, user t2, orderdetail t3
+		WHERE t1.user_id = t2.id AND t1.id = t3.orders_id
+	</select>
+	
+</mapper>
