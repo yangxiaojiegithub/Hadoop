@@ -66,17 +66,17 @@
 	</dependencies>
 	
 	<!-- 配置当前工程构建过程中的特殊设置 -->
-	<build>
-		<!-- 配置构建过程中需要使用的插件 -->
+	<!-- <build>
+		配置构建过程中需要使用的插件
 		<plugins>
 			<plugin>
-				<!-- cargo 是一家专门从事启动Servlet容器的组织 -->
-				<!-- <groupId>org.codehaus.cargo</groupId>
+				cargo 是一家专门从事启动Servlet容器的组织
+				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven2-plugin</artifactId>
-				<version>1.2.3</version> -->
+				<version>1.2.3</version>
 				
-				<!--针对插件进行的配置 --> 
-				<!--	<configuration>
+				针对插件进行的配置 
+					<configuration>
 					<container>
 						<containerId>tomcat6x</containerId>
 						<home>D:\DevInstall\apache-tomcat-6.0.39</home>
@@ -89,10 +89,10 @@
 							<cargo.servlet.port>8989</cargo.servlet.port>
 						</properties>
 					</configuration>
-				</configuration> -->
+				</configuration>
 				
-				<!-- 配置插件在什么情况下执行 -->
-				<!-- <executions>  
+				配置插件在什么情况下执行
+				<executions>  
 					<execution>  
 						<id>cargo-run</id> 
 						生命周期的阶段  
@@ -102,10 +102,10 @@
 							<goal>run</goal>  
 						</goals>  
 					</execution>  
-				</executions> -->
+				</executions>
 			</plugin>
 		</plugins>
-	</build>
+	</build> -->
 	
 	
 </project>
