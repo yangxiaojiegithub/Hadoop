@@ -1,3 +1,0 @@
-原始dao的开发方法：
-	需要向dao的实现类中注入 SqlSessionFactory。在方法体内通过SqlSessionFactory创建SqlSession
-	
