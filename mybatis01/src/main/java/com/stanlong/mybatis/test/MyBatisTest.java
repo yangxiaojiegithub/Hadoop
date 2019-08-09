@@ -10,6 +10,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
 import com.stanlong.mybatis.dao.EmployeeMapper;
+import com.stanlong.mybatis.dao.EmployeeMapperAnnoation;
 import com.stanlong.mybatis.pojo.Employee;
 
 /**
@@ -61,6 +62,10 @@ public class MyBatisTest {
 		}
 	}
 	
+	/**
+	 * 基于映射文件版的接口测试
+	 * @throws IOException
+	 */
 	@Test
 	public void test01() throws IOException{
 		//获取sqlSessionFactory对象
@@ -80,6 +85,29 @@ public class MyBatisTest {
 			openSession.close();
 		}
 		
+	}
+	
+	/**
+	 * 基于注解版的接口测试
+	 * @throws IOException
+	 */
+	@Test
+	public void test02() throws IOException{
+		//获取sqlSessionFactory对象
+		SqlSessionFactory sessionFactory = getSqlSessionFactory();
+		
+		//获取 sqlSession对象
+		SqlSession openSession = sessionFactory.openSession();
+		
+		//获取接口的实现类对象
+		try{
+			//mybatis会为接口创建一个代理对象，代理对象去执行增删改查方法
+			EmployeeMapperAnnoation mapper = openSession.getMapper(EmployeeMapperAnnoation.class);
+			Employee employee = mapper.getEmpById(1);
+			System.out.println(employee);
+		}finally{
+			openSession.close();
+		}
 	}
 	
 	
