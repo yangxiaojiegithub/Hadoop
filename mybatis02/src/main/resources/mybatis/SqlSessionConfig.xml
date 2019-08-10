@@ -100,6 +100,7 @@
 				比较重要的，复杂的Dao接口我们来写sql映射文件，不重要的，简单的为了快速开发可以使用注解
 		 -->
 		<mapper resource="mapper/EmployeeMapper.xml" />
+		<mapper resource="mapper/EmployeeMapperPlus.xml" />
 		<!-- <mapper class="com.stanlong.mybatis.dao.EmployeeMapperAnnoation"/> -->
 		
 		<!-- 批量注册  接口和映射文件名称一致且要放在同一个目录下-->

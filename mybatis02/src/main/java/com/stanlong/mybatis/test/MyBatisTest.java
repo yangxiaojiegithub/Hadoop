@@ -2,8 +2,6 @@ package com.stanlong.mybatis.test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -12,6 +10,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
 import com.stanlong.mybatis.dao.EmployeeMapper;
+import com.stanlong.mybatis.dao.EmployeeMapperPlus;
 import com.stanlong.mybatis.pojo.Employee;
 
 /**
@@ -43,14 +42,23 @@ public class MyBatisTest {
 		try{
 			EmployeeMapper mapper = openSession.getMapper(EmployeeMapper.class);
 			//测试命名参数
-			//Employee employee = mapper.getEmpByIdAndLastName(4, "lisi");
+			/*Employee employee = mapper.getEmpByIdAndLastName(4, "lisi");
+			System.out.println(employee);*/
 			
 			//将参数封装到map里
-			Map<String, Object> map = new HashMap<String, Object>();
+			/*Map<String, Object> map = new HashMap<String, Object>();
 			map.put("id", 4);
 			map.put("lastName", "lisi");
 			Employee employee = mapper.getEmpMap(map);
-			System.out.println(employee);
+			System.out.println(employee);*/
+			
+			//返回一个对象map
+			/*Map<String, Object> empMap = mapper.getEmpByIdReturnMap(4);
+			System.out.println(empMap);*/
+			
+			//返回多个对象map
+			/*Map<String, Object> map = mapper.getEmpByLastNameLikeReturnMap("%lisi%");
+			System.out.println(map);*/
 		}finally{
 			openSession.close();
 		}
@@ -61,7 +69,7 @@ public class MyBatisTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testAddEmp() throws Exception{
+	public void test02() throws Exception{
 		SqlSessionFactory sessionFactory = getSqlSessionFactory();
 		SqlSession openSession = sessionFactory.openSession();
 		try{
@@ -78,6 +86,19 @@ public class MyBatisTest {
 			//测试删除
 			//mapper.deleteById(2);
 			openSession.commit();
+		}finally{
+			openSession.close();
+		}
+	}
+	
+	@Test
+	public void test03()throws Exception{
+		SqlSessionFactory sessionFactory = getSqlSessionFactory();
+		SqlSession openSession = sessionFactory.openSession();
+		try{
+			EmployeeMapperPlus mapper = openSession.getMapper(EmployeeMapperPlus.class);
+			Employee employee = mapper.getEmpById(4);
+			System.out.println(employee);
 		}finally{
 			openSession.close();
 		}

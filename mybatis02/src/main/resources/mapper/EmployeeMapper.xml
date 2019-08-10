@@ -12,12 +12,20 @@
 	public Employee getEmpById(Integer id); select标签和方法名绑定
 	databaseId="mysql" 在mysql环境下执行这个查询
  -->
-	<select id="getEmpByIdAndLastName" resultType="emp" databaseId="mysql">
+	<select id="getEmpByIdAndLastName" resultType="com.stanlong.mybatis.pojo.Employee" databaseId="mysql">
 		select * from tbl_employee where id = #{id} and last_name=#{lastName}
 	</select>
 	
-	<select id="getEmpMap" resultType="emp" databaseId="mysql">
+	<select id="getEmpMap" resultType="com.stanlong.mybatis.pojo.Employee" databaseId="mysql">
 		select * from tbl_employee where id = #{id} and last_name=#{lastName}
+	</select>
+	
+	<select id="getEmpByIdReturnMap" resultType="map">
+		select * from tbl_employee where id = #{id}
+	</select>
+	
+	<select id="getEmpByLastNameLikeReturnMap" resultType="com.stanlong.mybatis.pojo.Employee">
+		select * from tbl_employee where last_name like #{lastName}
 	</select>
 	
 	<!--
