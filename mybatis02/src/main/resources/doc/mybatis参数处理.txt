@@ -49,3 +49,27 @@ public Employee getEmp(Integer id, @Param("e")Employee emp);
 public Employee getEmp(List<Integer> ids);
 	取值：取出第一个id的值 #{ids[0]}
 }
+
+=======================参数值的获取=========================================
+#{} 可以获取 到map中的值或者pojo对象属性的值
+${} 可以获取 到map中的值或者pojo对象属性的值
+区别：
+	#{}:是以预编译的形式，将参数设置到sql语句中，相当于PreparedStatement, 可以防止sql注入
+	${}:将取出的值直接拼装在sql语句中，会有安全问题
+	大多数情况下取参数的值都应该用#{}
+	原生jdbc不支持占位符，就可以使用${}进行取值
+	比如分表，排序
+	select * from ${table_name} order by ${}
+
+#{}更丰富的用法
+	规定参数的一些规则
+	javaType, jdbcType, mode(存储过程), numericScale,resultMap, typeHandler, jdbcTypeName, expression(未来准备支持的功能)
+	
+	jdbcType通常需要在某种特定的条件下被设置
+		在我们数据为null的时候，有些数据库可能不能识别mybatis对null的默认处理，比如oracle（报错）
+		JdbcType OTHER:无效的类型，因为mybatis对所有的null映射的是Jdbc OTHER 类型
+		由于全局配置中： jdbcTypeForNull=OTHER, oracle不支持
+		两种修改方法
+		1、#{email, jdbcType=NULL} --指明字段为空时
+		2、jdbcTypeForNull=NULL     --全局配置
+
