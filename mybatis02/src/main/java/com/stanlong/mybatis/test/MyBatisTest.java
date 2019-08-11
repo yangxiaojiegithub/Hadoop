@@ -2,6 +2,7 @@ package com.stanlong.mybatis.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -9,8 +10,10 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
+import com.stanlong.mybatis.dao.DepartmentMapper;
 import com.stanlong.mybatis.dao.EmployeeMapper;
 import com.stanlong.mybatis.dao.EmployeeMapperPlus;
+import com.stanlong.mybatis.pojo.Department;
 import com.stanlong.mybatis.pojo.Employee;
 
 /**
@@ -57,8 +60,8 @@ public class MyBatisTest {
 			System.out.println(empMap);*/
 			
 			//返回多个对象map
-			/*Map<String, Object> map = mapper.getEmpByLastNameLikeReturnMap("%lisi%");
-			System.out.println(map);*/
+			Map<String, Object> map = mapper.getEmpByLastNameLikeReturnMap("%lisi%");
+			System.out.println(map);
 		}finally{
 			openSession.close();
 		}
@@ -91,14 +94,51 @@ public class MyBatisTest {
 		}
 	}
 	
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void test03()throws Exception{
 		SqlSessionFactory sessionFactory = getSqlSessionFactory();
 		SqlSession openSession = sessionFactory.openSession();
 		try{
-			EmployeeMapperPlus mapper = openSession.getMapper(EmployeeMapperPlus.class);
+			//简单resultMap
+			/*EmployeeMapperPlus mapper = openSession.getMapper(EmployeeMapperPlus.class);
 			Employee employee = mapper.getEmpById(4);
+			System.out.println(employee);*/
+			
+			//复杂resultMap
+			/*EmployeeMapperPlus mapper = openSession.getMapper(EmployeeMapperPlus.class);
+			Employee empAndDept = mapper.getEmpAndDept(4);
+			System.out.println(empAndDept);
+			System.out.println(empAndDept.getDept());*/
+			
+			//测试分步查询 
+			EmployeeMapperPlus mapper = openSession.getMapper(EmployeeMapperPlus.class);
+			Employee employee = mapper.getEmpByIdStep(2);
 			System.out.println(employee);
+			System.out.println(employee.getDept());
+		}finally{
+			openSession.close();
+		}
+	}
+	
+	@Test
+	public void test04() throws Exception{
+		SqlSessionFactory sessionFactory = getSqlSessionFactory();
+		SqlSession openSession = sessionFactory.openSession();
+		try{
+			//测试集合
+			/*DepartmentMapper mapper = openSession.getMapper(DepartmentMapper.class);
+			Department department = mapper.getDeptByIdPlus(1);
+			System.out.println(department);
+			System.out.println(department.getEmps());*/
+			
+			DepartmentMapper mapper = openSession.getMapper(DepartmentMapper.class);
+			Department department = mapper.getDeptByIdStep(1);
+			System.out.println(department.getDepartmentName());
+			System.out.println(department.getEmps());
 		}finally{
 			openSession.close();
 		}

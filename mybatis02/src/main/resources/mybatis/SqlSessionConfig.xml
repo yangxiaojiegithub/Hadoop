@@ -19,7 +19,12 @@
 			如果数据库对应的字段名是  last_name， 开启驼峰命名后就可以和类中的 lastName映射上，而不用再起别名
 	 -->
 	<settings>
+		<!-- 开启对驼峰命名法的支持 -->
 		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<!-- 开启懒加载 -->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<!-- 按需加载 -->
+		<setting name="aggressiveLazyLoading" value="false"/>
 	</settings>
 	
 	<!-- 别名处理器，可以为java类型起别名
@@ -101,6 +106,7 @@
 		 -->
 		<mapper resource="mapper/EmployeeMapper.xml" />
 		<mapper resource="mapper/EmployeeMapperPlus.xml" />
+		<mapper resource="mapper/DepartmentMapper.xml" />
 		<!-- <mapper class="com.stanlong.mybatis.dao.EmployeeMapperAnnoation"/> -->
 		
 		<!-- 批量注册  接口和映射文件名称一致且要放在同一个目录下-->
