@@ -4,7 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.stanlong.mybatis.dao.DepartmentMapper">
 
-	
+	<!-- 引用缓存， namespace：指定和哪个名称空间下的缓存一样 -->
+	<cache-ref namespace="com.stanlong.mybatis.dao.EmployeeMapper"></cache>
 
 	<select id="getDeptById" resultType="com.stanlong.mybatis.pojo.Department">
 		select 

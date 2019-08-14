@@ -45,6 +45,12 @@ public class MyBatisTest {
 	 * 	1、开启全局二级缓存的配置 <setting name="cacheEnabled" value="true"/>
 	 * 	2、去mapper.xml中配置使用二级缓存 <cache></cache>
 	 * 	3、pojo需要实现序列化接口
+	 * 
+	 * 第三方缓存整合
+	 * 	1、导入第三方缓存包即可
+	 * 	2、导入与第三方整合的适配包
+	 * 	3、在mapper.xml中使用自定义缓存
+	 * 		<cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
 	 */
 	
 	/**

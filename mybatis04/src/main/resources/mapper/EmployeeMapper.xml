@@ -3,9 +3,13 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.stanlong.mybatis.dao.EmployeeMapper">
+
+	<!-- 使用第三方缓存框架encache -->
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
+
 	
 	<!-- 配置开启二级缓存 -->
-	<cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024"></cache>
+	<!-- <cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024"></cache> -->
 	<!-- 
 		eviction 缓存的回收策略
 			LRU：最近最少使用，移除最长时间不被使用的对象，默认策略
