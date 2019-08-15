@@ -7,4 +7,9 @@
 	<select id="getEmpById" resultType="com.stanlong.mybatis.pojo.Employee">
 		select * from tbl_employee where id = #{id}
 	</select>
+	
+	<select id="getEmps" resultType="com.stanlong.mybatis.pojo.Employee">
+		select * from tbl_employee
+	</select>
+	
 </mapper>
