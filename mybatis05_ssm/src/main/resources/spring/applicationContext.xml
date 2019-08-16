@@ -42,11 +42,11 @@
 	-->
 	<!-- 创建 sqlSessionFactory 对象 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<!-- 加载mybatis的配置文件 -->
-		<property name="configLocation" value="classpath:mybatis/SqlMapperConfig.xml"></property>
-		
 		<!-- 配置数据源 -->
 		<property name="dataSource" ref="dataSource"></property>
+	
+		<!-- 加载mybatis的配置文件 -->
+		<property name="configLocation" value="classpath:mybatis/SqlSessionConfig.xml"></property>
 		
 		<!-- mapperLocations:指定mapper文件的位置 -->
 		<property name="mapperLocations" value="classpath:mapper/*.xml"></property>
@@ -55,6 +55,10 @@
 	<!-- 扫描所有的mapper接口， 让这些mapper能够自动注入
 	base-package:指定mapper接口的包名
 	 -->
-	<mybatis-spring:scan base-package="com.stanlong.mybatis.dao">
-	</mybatis-spring:scan>
+	<!-- <mybatis-spring:scan base-package="com.stanlong.mybatis.dao">
+	</mybatis-spring:scan> -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.stanlong.mybatis.dao"></property>
+	</bean>
+	
 </beans>

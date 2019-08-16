@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>查询所有员工</title>
+<title>Insert title here</title>
 </head>
 <body>
-	<a href="emps">查询所有员工</a>
+	<a href="getEmps">查询所有员工</a>
 </body>
 </html>
