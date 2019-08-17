@@ -16,7 +16,7 @@ public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
 
-	@RequestMapping("/getemps")
+	@RequestMapping("/getEmps")
 	public String getEmps(Map<String, Object> map){
 		List<Employee> emps = employeeService.getEmps();
 		map.put("allEmps", emps);
