@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * µÏÃ×ÌØ·¨Ôò
+ * è¿ªç±³ç‰¹æ³•åˆ™
  * @author Administrator
  *
  */
 public class Demeter1 {
 	public static void main(String[] args) {
 		SchoolManager schoolManager = new SchoolManager();
-		// Êä³öÑ§ÔºÔ±¹¤idºÍÑ§Ğ£×Ü²¿Ô±¹¤id
+		// è¾“å‡ºå­¦é™¢å‘˜å·¥idå’Œå­¦æ ¡æ€»éƒ¨å‘˜å·¥id
 		schoolManager.printAllEmployee(new CollegeManager());
 		
 	}
 }
 
-// Ñ§Ğ£×Ü²¿Ô±¹¤
+// å­¦æ ¡æ€»éƒ¨å‘˜å·¥
 class Employee{
 	private String id;
 
@@ -30,7 +30,7 @@ class Employee{
 	}
 }
 
-// Ñ§ÔºµÄÔ±¹¤
+// å­¦é™¢çš„å‘˜å·¥
 class CollegeEmployee{
 	private String id;
 
@@ -43,45 +43,45 @@ class CollegeEmployee{
 	}
 }
 
-// ¹ÜÀíÑ§ÔºÔ±¹¤
+// ç®¡ç†å­¦é™¢å‘˜å·¥
 class CollegeManager{
 	public List<CollegeEmployee> getAllEmployee(){
 		List<CollegeEmployee> list = new ArrayList<CollegeEmployee>();
 		for(int i=0; i<10; i++){
 			CollegeEmployee emp = new CollegeEmployee();
-			emp.setId("Ñ§ÔºµÄÔ±¹¤id=" + i);
+			emp.setId("å­¦é™¢çš„å‘˜å·¥id=" + i);
 			list.add(emp);
 		}
 		return list;
 	}
 }
 
-// Ñ§Ğ£µÄ¹ÜÀíÀà
-// ·ÖÎö SchoolManager µÄÖ±½ÓÅóÓÑÀà£¬   Employee£¬ CollegeManager¡£
-// ¶ø CollegeEmployee²»ÊÇÖ±½ÓÅóÓÑ£¬ÒòÎªËüÊÇÒÔ¾Ö²¿±äÁ¿µÄĞÎÊ½³öÏÖµÄÀà£¬Î¥±³ÁËµÏÃ×ÌØ·¨Ôò
-// Ö±½ÓÅóÓÑ£º³öÏÖ³ÉÔ±±äÁ¿£¬·½·¨²ÎÊı£¬·½·¨·µ»ØÖµÖĞµÄÀàÎªÖ±½ÓÅóÓÑ
+// å­¦æ ¡çš„ç®¡ç†ç±»
+// åˆ†æ SchoolManager çš„ç›´æ¥æœ‹å‹ç±»ï¼Œ   Employeeï¼Œ CollegeManagerã€‚
+// è€Œ CollegeEmployeeä¸æ˜¯ç›´æ¥æœ‹å‹ï¼Œå› ä¸ºå®ƒæ˜¯ä»¥å±€éƒ¨å˜é‡çš„å½¢å¼å‡ºç°çš„ç±»ï¼Œè¿èƒŒäº†è¿ªç±³ç‰¹æ³•åˆ™
+// ç›´æ¥æœ‹å‹ï¼šå‡ºç°æˆå‘˜å˜é‡ï¼Œæ–¹æ³•å‚æ•°ï¼Œæ–¹æ³•è¿”å›å€¼ä¸­çš„ç±»ä¸ºç›´æ¥æœ‹å‹
 class SchoolManager{
 	public List<Employee> getAllEmployee(){
 		List<Employee> list = new ArrayList<Employee>();
 		for(int i=0; i<5; i++){
 			Employee emp = new Employee();
-			emp.setId("Ñ§ÔºµÄÔ±¹¤id=" + i);
+			emp.setId("å­¦é™¢çš„å‘˜å·¥id=" + i);
 			list.add(emp);
 		}
 		return list;
 	}
 	
-	// Êä³öÑ§Ğ£×Ü²¿ºÍÑ§ÔºÔ±¹¤ĞÅÏ¢
+	// è¾“å‡ºå­¦æ ¡æ€»éƒ¨å’Œå­¦é™¢å‘˜å·¥ä¿¡æ¯
 	void printAllEmployee(CollegeManager sub){
 		// 
 		List<CollegeEmployee> list1 = sub.getAllEmployee();
-		System.out.println("---------------------·Ö¹«Ë¾Ô±¹¤-------------------------");
+		System.out.println("---------------------åˆ†å…¬å¸å‘˜å·¥-------------------------");
 		for (CollegeEmployee e : list1) {
 			System.out.println(e.getId());
 		}
 		
 		List<Employee> list2 = this.getAllEmployee();
-		System.out.println("---------------------Ñ§Ğ£×Ü²¿Ô±¹¤-------------------------");
+		System.out.println("---------------------å­¦æ ¡æ€»éƒ¨å‘˜å·¥-------------------------");
 		for (Employee e : list2) {
 			System.out.println(e.getId());
 		}
