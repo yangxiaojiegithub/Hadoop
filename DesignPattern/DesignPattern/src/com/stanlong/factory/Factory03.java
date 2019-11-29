@@ -11,16 +11,16 @@ import java.io.InputStreamReader;
  */
 public class Factory03 {
 	public static void main(String[] args) {
-		String local = "bj";
+		/*String local = "bj";
 		if(local.equals("bj")){
 			new BJOrderPizza();
 		}else{
 			new LDOrderPizza();
-		}
+		}*/
 	}
 }
 
-abstract class Pizza {
+/*abstract class Pizza {
 	protected String name;
 
 	// 准备原材料， 不同的Pizza不一样，因此改方法设计成抽象方法
@@ -131,4 +131,4 @@ class LDOrderPizza extends OrderPizza{
 		return pizza;
 	}
 	
-}
+}*/
