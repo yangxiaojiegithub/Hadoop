@@ -1,6 +1,7 @@
 package com.example.demo.bean;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Map;
 // ConfigurationProperties 将本类中的所有属性和配置文件中相关的配置进行绑定
 @Component
 @ConfigurationProperties(prefix = "person")
+//@PropertySource(value = {"classpath:person.properties"})
 public class Person {
     private String lastName;
     private Integer age;

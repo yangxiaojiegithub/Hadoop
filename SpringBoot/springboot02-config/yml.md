@@ -7,7 +7,7 @@ server:
  path: /hello
 ~~~
 属性和值也是大小写敏感
-#2、值的写法
+# 2、值的写法
 #### 字面量：普通的值（数字，字符串，布尔）
 + k: v :字面量直接来写，字符串默认不加上单引号或者双引号
  - "":双引号不会转义字符串里面的特殊字符，特殊字符会作为本身想表示的意思。
@@ -80,4 +80,76 @@ k:v : 在下一行来写对象的属性和值的关系
      <optional>true</optional>
  </dependency>
  ~~~
+ # 4、两个注解 @PropertySource 和 @ImportResource
+ @PropertySource 加载指定的配置文件
+ 配置文件  person.properties
+ ~~~
+ person.last-name=李四
+ person.age=18
+ person.birth=2019/01/28
+ person.boss=false
+ person.maps.k1=v1
+ person.maps.k2=v2
+ person.lists=a,b,c
+ person.dog.name=豆豆
+ person.dog.age=8
+ ~~~
+ 注解的使用
+ ~~~
+ @Component
+ @ConfigurationProperties(prefix = "person")
+ @PropertySource(value = {"classpath:person.properties"})
+ public class Person {
+     private String lastName;
+     private Integer age;
+     private Boolean boss;
+     private Date birth;
  
+     private Map<String, Object> maps;
+     private List<Object> lists;
+     private Dog dog;
+     省略getter、setter、toString 方法
+ }
+ ~~~
+ 
+ @ImportResource,导入spring的配置文件，让配置文件里面的内容生效
+ ~~~
+ @ImportResource(locations = {"classpath:beans.xml"})
+ @SpringBootApplication
+ public class DemoApplication {
+ 
+     public static void main(String[] args) {
+         SpringApplication.run(DemoApplication.class, args);
+     }
+ 
+ }
+ ~~~
+ springboot推荐给容器中添加组件的方式
+ 1、 配置类===配置文件
+ 2、 使用@Bean给容器中添加组件
+ ~~~
+ @Configuration
+ public class MyAppConfig {
+ 
+     @Bean // 将方法的返回值添加到容器中：容器中这个组件的默认id就是方法名
+     public HelloService helloService(){
+         System.out.println("配置类bean给容器中添加组件了...");
+         return new HelloService();
+ 
+     }
+ }
+ ~~~
+ # 5、配置文件占位符
+ 占位符获取之前配置的值，如果没有可以使用 : 指定默认值
+ ~~~
+ person.last-name=张三${random.uuid}
+ person.age=${random.int}
+ person.birth=2019/01/28
+ person.boss=false
+ person.maps.k1=v1
+ person.maps.k2=v2
+ person.lists=a,b,c
+ person.dog.name=${person.last-name}_dog
+ person.dog.age=${person.hello:10}
+ 
+ ~~~
