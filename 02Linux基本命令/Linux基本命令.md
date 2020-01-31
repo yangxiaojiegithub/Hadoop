@@ -1,0 +1,77 @@
+# Linux 基本命令
+
+**type ifconfig**
+查看命令路径
+```
+[root@gmall opt]# type ifconfig
+ifconfig is hashed (/usr/sbin/ifconfig)
+```
+**file /usr/sbin/ifconfig**
+查看命令文件类型
+```
+[root@gmall opt]# file /usr/sbin/ifconfig
+/usr/sbin/ifconfig: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=dff548da1b4ad9ae2afe44c9ee33c2365a7c5f8f, stripped
+
+```
+
+**echo $$**
+打印当前进程号
+```
+[root@gmall opt]# echo $$
+1019
+
+```
+
+**df**
+```
+[root@gmall opt]# df -h
+Filesystem               Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root  198G  1.1G  197G   1% /
+devtmpfs                 478M     0  478M   0% /dev
+tmpfs                    489M     0  489M   0% /dev/shm
+tmpfs                    489M  6.7M  482M   2% /run
+tmpfs                    489M     0  489M   0% /sys/fs/cgroup
+/dev/sda1                197M  103M   95M  53% /boot
+tmpfs                     98M     0   98M   0% /run/user/0
+
+```
+**du**
+查看当前目录下所有文件所占用的磁盘空间大小
+```
+[root@gmall opt]# du -sh ./*
+31M	./dubbo-admin-2.6.0.war
+153M	./jdk-8u65-linux-x64.rpm
+```
+**stat**
+查看文件元数据信息
+```
+[root@gmall opt]# stat dubbo-admin-2.6.0.war 
+  File: ‘dubbo-admin-2.6.0.war’
+  Size: 32089280  	Blocks: 62680      IO Block: 4096   regular file
+Device: fd00h/64768d	Inode: 134218813   Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2020-01-31 00:29:42.000000000 +0800
+Modify: 2018-03-27 17:54:06.000000000 +0800
+Change: 2020-01-31 13:02:16.479957803 +0800
+ Birth: -
+
+```
+**cat**
++ cat ： 全量展示文件内的所有内容
++ more ： 只支持向下翻屏
++ less ： 可以来回翻屏
++ head ： 默认展示头十行
+	- head -n 文件名：显示文件头n行
++ tail ： 默认展示末尾十行
+	- tail -n 文件名： 显示文件末尾n行
+
+# / 根目录文件说明
+1. bin sbin：存放可执行程序
+2. boot： 引导程序目录
+3. dev： 设备文件目录
+4. etc：配置文件目录
+5. home： 普通用户的家目录
+6. lib lib64： Linux 扩展库
+7. media mnt： 挂载目录
+8. opt： 安装第三方程序
+9. var： 存放程序产生的数据文件，比如日志，数据库库文件
