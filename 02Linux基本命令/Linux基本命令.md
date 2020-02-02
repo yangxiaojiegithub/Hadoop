@@ -65,6 +65,30 @@ Change: 2020-01-31 13:02:16.479957803 +0800
 + tail ： 默认展示末尾十行
 	- tail -n 文件名： 显示文件末尾n行
 
+** vi最小化命令 **
+按下！最小化vi并回到外部bash执行 ls -l /opt/ 命令，按enter再回到vi
+```
+：！ ls -l /opt/
+```
+
+** 查找并替换 **
+s 查找并替换
+g 一行内全部替换
+i 忽略大小写
+从第一行到最后一行，查找after并替换成before
+```
+:1,$s/after/before/
+```
+
+** wc **
+统计文件行数
+```
+[root@gmall ~]# wc -l zlftext.txt 
+4 zlftext.txt
+[root@gmall ~]# cat zlftext.txt | wc -l
+4
+```
+
 # / 根目录文件说明
 1. bin sbin：存放可执行程序
 2. boot： 引导程序目录
