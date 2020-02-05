@@ -62,13 +62,45 @@ Mode: standalone
 ...
 WATCHER::
 WatchedEvent state:SyncConnected type:None path:null
-[zk: localhost:2181(CONNECTED) 0] 
+[zk: localhost:2181(CONNECTED) 0]
 ```
-5. 退出客户端
+5. 创建节点
+```
+[zk: localhost:2181(CONNECTED) 1] get /
+cZxid = 0x0
+ctime = Thu Jan 01 08:00:00 CST 1970
+mZxid = 0x0
+mtime = Thu Jan 01 08:00:00 CST 1970
+pZxid = 0x0
+cversion = -1
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x0
+dataLength = 0
+numChildren = 1
+[zk: localhost:2181(CONNECTED) 2] create -e /stanlong 123456 --根节点下创建一个stanlong节点，值为123456
+Created /stanlong
+[zk: localhost:2181(CONNECTED) 3] ls /
+[stanlong, zookeeper]
+[zk: localhost:2181(CONNECTED) 4] get /stanlong    -- 查看创建的节点
+123456
+cZxid = 0x4
+ctime = Wed Feb 05 17:59:27 CST 2020
+mZxid = 0x4
+mtime = Wed Feb 05 17:59:27 CST 2020
+pZxid = 0x4
+cversion = 0
+dataVersion = 0
+aclVersion = 0
+ephemeralOwner = 0x1000057e5030000
+dataLength = 6
+numChildren = 0
+```
+6. 退出客户端
 ```
 [zk: localhost:2181(CONNECTED) 0] quit
 ```
-6. 停止客户端
+7. 停止客户端
 ```
 [root@gmall bin]# ./zkServer.sh stop
 ZooKeeper JMX enabled by default
