@@ -73,7 +73,57 @@
 + docker help
 
 ## 镜像命令
-
++ docker images :列出本地主机镜像
+```
+[root@changgou ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello-world         latest              fce289e99eb9        13 months ago       1.84kB
+REPOSITORY : 表示镜像仓库
+TAG ： 镜像标签
+IMAGE ID ： 镜像ID
+CREATED ：镜像创建时间
+SIZE ： 镜像大小
+```
+	- -a:列出本地所有镜像（含中间映像层）
+	- -q:只显示镜像id
+	- --digests：只显示镜像的摘要信息
+	- --no-trunc:显示完整的镜像信息
++ docker search 某个镜像的名字 :查找镜像
+	- -s：列出收藏数不小于指定值的镜像
+	- --no-trunc:显示完整的镜像描述
+	- --automated:只列出automated build类型的镜像
++ docker pull 某个镜像的名字 ：下载镜像
++ docker rmi 某个镜像的名字 ：删除镜像
 
 ## 容器命令
-
++ 新建并启动容器
+```
+[root@changgou ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+centos              latest              470671670cac        2 weeks ago         237MB
+hello-world         latest              fce289e99eb9        13 months ago       1.84kB
+[root@changgou ~]# docker run -it 470671670cac
+[root@800d4a6c6eb7 /]#
+```
++ docker ps ：列出当前所有正在运行的容器
+```
+[root@changgou ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+800d4a6c6eb7        470671670cac        "/bin/bash"         2 minutes ago       Up 2 minutes                            funny_carson
+```
+	- -a:列出当前所有正在运行的容器+历史上运行过的
+	- -l:显示最近创建的容器
+	- -n:显示最近n个创建的容器
+	- -q:静默模式，只显示容器编号
+	- --no-trunc:不截断输出
++ exit:退出容器
+```
+[root@800d4a6c6eb7 /]# exit
+exit
+[root@changgou ~]#
+```
++ docker start 容器id或容器名: 启动容器
++ docker restart 容器id或容器名: 重启容器
++ docker stop 容器id或容器名: 停止容器
++ docker kill 容器id或容器名: 强制停止容器
++ docker rm 容器id： 删除已停止的容器
