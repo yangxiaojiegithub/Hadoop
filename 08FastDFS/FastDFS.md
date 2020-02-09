@@ -14,7 +14,7 @@ FastDFS 架构包括 Tracker server 和 Storage server。
 2. 安装libfastcommonV1.0.7.tar.gz
 	~~~
     yum仓库安装相关依赖
-    gcc-g++, pcre-devel, zlib-devel, openssl, openssl-devel
+    gcc-g++, pcre-devel, zlib-devel, openssl, openssl-devel, perl-devel
 
     [root@changgou libfastcommon-1.0.7]# tar -zxf libfastcommonV1.0.7.tar.gz
     [root@changgou libfastcommon-1.0.7]# cd libfastcommon-1.0.7/
@@ -188,7 +188,23 @@ CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -DFDFS_OUTPUT_CHUNK_SIZE='256*1024' -DFDF
 ~~~
 
 ## nginx安装（参考04编译安装）
-1. 在nginx.conf文件中配置插件信息
+
+1. 04安装nginx的时候没有加入fdfs模块，这里需要重新加入nginx模板
+~~~
+[root@changgou sbin]# ./nginx -V # 查看已支持的模块（没有fdfs的）
+进入 nginx安装目录，删除Makefile文件
+然后执行如下命令
+[root@changgou tengine-2.1.0]# ./configure --prefix=/opt/tengine-2.1.0/nginx --add-module=/opt/fdfs/fastdfs-nginx-module/src/
+# --add-module=/opt/fdfs/fastdfs-nginx-module/src/ 为添加 fdfs模块
+执行成功后，再执行 ./nginx -V 命令
+[root@changgou sbin]# ./nginx -V
+Tengine version: Tengine/2.1.0 (nginx/1.6.2)
+built by gcc 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) 
+TLS SNI support enabled
+configure arguments: --prefix=/opt/tengine-2.1.0/nginx --add-module=/opt/fdfs/fastdfs-nginx-module/src/
+~~~
+
+2. 在nginx.conf文件中配置插件信息
 ~~~
 [root@changgou conf]# cd /opt/tengine-2.1.0/nginx/conf
 47         #access_log  logs/host.access.log  main;
@@ -197,4 +213,18 @@ CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -DFDFS_OUTPUT_CHUNK_SIZE='256*1024' -DFDF
 50         }
 ~~~
 
+3. 启动nginx
+~~~
+[root@changgou sbin]# ./nginx
+ngx_http_fastdfs_set pid=6311
+~~~
 
+4. 写个html文件测试下
+~~~
+[root@changgou ~]# vi testFdfs.html
+<h1>Hello HDFS</h1>
+上传 testFdfs.html 到fdfs
+[root@changgou ~]# /usr/bin/fdfs_test /etc/fdfs/client.conf upload testFdfs.html
+example file url: http://192.168.235.21/group1/M00/00/00/wKjrFV4_vDuAGCOSAAAAFInvfFg85_big.html
+访问 http://192.168.235.21/group1/M00/00/00/wKjrFV4_vDuAGCOSAAAAFInvfFg85_big.html 成功
+~~~
