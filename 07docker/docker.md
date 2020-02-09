@@ -103,7 +103,16 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 centos              latest              470671670cac        2 weeks ago         237MB
 hello-world         latest              fce289e99eb9        13 months ago       1.84kB
 [root@changgou ~]# docker run -it 470671670cac
-[root@800d4a6c6eb7 /]#
+--name="窗口名字":为容器指定一个名称
+-d: 后台运行容器，并返回容器id,也即启动一个守护进程
+-i: 以交互模式运行容器，通常与-t同时使用
+-t: 为容器分配一个伪输入终端，通常与-i同时使用
+-P: 随机端口映射
+-p: 指定端口映射，有以下四种形式
+	ip:hostPort:containerPort
+    ip::containerPort
+    hostPort:containerPort
+    containerPort
 ```
 + docker ps ：列出当前所有正在运行的容器
 ```
@@ -127,3 +136,8 @@ exit
 + docker stop 容器id或容器名: 停止容器
 + docker kill 容器id或容器名: 强制停止容器
 + docker rm 容器id： 删除已停止的容器
+
+
+
+
+
