@@ -89,6 +89,17 @@ i 忽略大小写
 4
 ```
 
+** chkconfig **
+服务管理
+~~~
+[root@changgou init.d]# chkconfig --list
+dubbo-admin    	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+jexec          	0:off	1:on	2:on	3:on	4:on	5:on	6:off
+netconsole     	0:off	1:off	2:off	3:off	4:off	5:off	6:off
+network        	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+zookeeper      	0:off	1:off	2:on	3:on	4:on	5:on	6:off
+[root@changgou init.d]# chkconfig --del zookeeper --删除开机启动服务
+~~~
 # / 根目录文件说明
 1. bin sbin：存放可执行程序
 2. boot： 引导程序目录
