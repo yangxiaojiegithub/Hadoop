@@ -1,6 +1,15 @@
 # docker
+
+## 设置docker 开机启动
+~~~
+[root@changgou ~]# systemctl enable docker
+Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service to /usr/lib/systemd/system/docker.service.
+~~~
+
+
 ## docker的基本组成
 + 镜像
+	- 一个镜像可以启动多个容器，每个容器都是独立的，互不干扰
 + 容器
 + 仓库
 
@@ -103,6 +112,8 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 centos              latest              470671670cac        2 weeks ago         237MB
 hello-world         latest              fce289e99eb9        13 months ago       1.84kB
 [root@changgou ~]# docker run -it 470671670cac
+[root@changgou ~]# docker run -d -p 8888:8080 tomcat          -- 端口映射，把宿主机的8888端口地址映射到docker 8080端口上
+d2ec0703c79ac0effcb1785fef2f282de904b46d91551a58a6b5728a51f86678
 --name="窗口名字":为容器指定一个名称
 -d: 后台运行容器，并返回容器id,也即启动一个守护进程
 -i: 以交互模式运行容器，通常与-t同时使用
@@ -136,6 +147,7 @@ exit
 + docker stop 容器id或容器名: 停止容器
 + docker kill 容器id或容器名: 强制停止容器
 + docker rm 容器id： 删除已停止的容器
++ docker log 容器名称/容器id：查看容器日志
 
 
 
