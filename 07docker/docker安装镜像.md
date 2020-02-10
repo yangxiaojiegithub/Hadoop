@@ -1,0 +1,30 @@
+# 在dcoker上安装mysql
+```
+[root@changgou ~]# docker pull mysql
+[root@changgou ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+tomcat              latest              b56d8850aed5        3 days ago          529MB
+[root@changgou ~]# docker run -p 3306:3306 --name mysql_changgou -e MYSQL_ROOT_PASSWORD=root -d mysql
+33803e4f9753dd07b36975257e30b07584de3c066ea8b1351ca2bb68cac178e0
+[root@changgou ~]# docker ps -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                               NAMES
+33803e4f9753        mysql               "docker-entrypoint.s…"   31 seconds ago      Up 30 seconds       0.0.0.0:3306->3306/tcp, 33060/tcp   mysql_changgou
+```
+这里下载的是mysql最新版本，用cmd连接正常，但是用navicat 去连会出问题，连接协议不一样，有如下两种改法
++ 下载mysql5.7的版本， docker pull mysql:5.7
++ 更改最新版本mysql的连接协议
+	~~~
+    mysql> alter user 'root'@'%' identified with mysql_native_password by 'root';
+	Query OK, 0 rows affected (0.00 sec)
+    ~~~
+
+# 在 docker 上安装 fastdfs
+~~~
+[root@changgou ~]# docker pull morunchang/fastdfs
+[root@changgou ~]# docker run -d --name tracker --net=host morunchang/fastdfs sh tracker.sh
+5ab1650b6cc3ae49c4994fa744fb76844c2c20db6f13ac811c0f0b0de197f096   # 运行tracker
+[root@changgou ~]# docker run -d --name storage --net=host -e TRACKER_IP=192.168.235.21:22122 -e GROUP_NAME=group1 morunchang/fastdfs sh storage.sh                                   # 运行storage
+a8a3493ad2b1e43c4ec0b722bce69482bd069372a78c00080939f7c0bdd828e4
+~~~
+在我的环境上防火墙已经关了，所以不用配置开放端口什么的。
+morunchang/fastdfs 已经配置好了nginx和nginx的相关插件，不需要再重新配置。
