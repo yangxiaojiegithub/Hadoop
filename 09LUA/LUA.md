@@ -153,7 +153,38 @@ fun1
 fun2
 ```
 
+# 畅购商城项目中用到的lua脚本解读
+```
+ngx.header.content_type="application/json;charset=utf8"
+local cjson = require("cjson")
+local mysql = require("resty.mysql")
+local uri_args = ngx.req.get_uri_args() # 获取用户请求的参数
+local id = uri_args["id"] # 获取请求参数中的position的值
+local db = mysql:new() # 连接数据库
+db:set_timeout(1000)
+local props = {
+    host = "192.168.235.21",
+    port = 3306,
+    database = "changgou_content",
+    user = "root",
+    password = "root"
+}
+local res = db:connect(props) # 获取连接
+local select_sql = "select url,pic from tb_content where status ='1' and category_id='"..id.."' order by sort_order"
+res = db:query(select_sql) # 执行sql语句
+db:close()
+-- redis的相关操作
+local redis = require("resty.redis")
+local red = redis:new()
+red:set_timeout(2000)
+local ip ="192.168.235.21"
+local port = 6379
+red:connect(ip,port)
+red:set("content_"..id,cjson.encode(res)) # 把mysql中查到的数据转成 json 格式保存到redis中
+red:close()
+ngx.say("{flag:true}")
 
+```
 
 
 
