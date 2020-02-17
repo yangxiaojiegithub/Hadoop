@@ -149,6 +149,17 @@ exit
 + docker rm 容器id： 删除已停止的容器
 + docker log 容器名称/容器id：查看容器日志
 
+## 设置容器开机启动
+```
+[root@changgou conf]# docker ps -a
+CONTAINER ID        IMAGE                COMMAND                  CREATED             STATUS                    PORTS                               NAMES
+7270c5f37bfc        redis                "docker-entrypoint.s…"   9 hours ago         Up 35 minutes             0.0.0.0:6379->6379/tcp              changgou_redis
+fbe113d979f0        mysql                "docker-entrypoint.s…"   6 days ago          Up 34 minutes             0.0.0.0:3306->3306/tcp, 33060/tcp   mysql_changgou
+a47cb2124f55        morunchang/fastdfs   "sh storage.sh"          6 days ago          Exited (137) 6 days ago                                       storage
+17adfa82fe26        morunchang/fastdfs   "sh tracker.sh"          6 days ago          Exited (137) 6 days ago                                       tracker
+[root@changgou conf]# docker update --restart=always 7270c5f37bfc 开机启动redis
+7270c5f37bfc
+```
 
 
 
