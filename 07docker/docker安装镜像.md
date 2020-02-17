@@ -28,3 +28,14 @@ a8a3493ad2b1e43c4ec0b722bce69482bd069372a78c00080939f7c0bdd828e4
 ~~~
 在我的环境上防火墙已经关了，所以不用配置开放端口什么的。
 morunchang/fastdfs 已经配置好了nginx和nginx的相关插件，不需要再重新配置。
+
+# docker 安装redis
+```
+[root@changgou ~]# docker pull redis
+[root@changgou ~]# docker images
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+redis                latest              44d36d2c2374        2 weeks ago         98.2MB
+mysql                latest              791b6e40940c        2 weeks ago         465MB
+morunchang/fastdfs   latest              a729ac95698a        3 years ago         460MB
+[root@changgou ~]# docker run -itd --name changgou_redis -p 6379:6379 redis
+```
