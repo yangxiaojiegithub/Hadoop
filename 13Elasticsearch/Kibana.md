@@ -247,4 +247,158 @@ GET /user/userinfo/_search
 
     exists 过滤可以用于查找包含某个域的数据
 
+    ```
+    #  查询存在 address 域的数据
+    GET /user/userinfo/_search
+    {
+      "query": {
+        "exists":{
+          "field":"address"
+        }
+      }
+    }
+    ```
+    
+    ![](./doc/17.png)
+
+17. bool 过滤
+
+    bool 过滤可以用来合并多个过滤条件，它包含以下操作符
+
+    * must: 多个查询条件的完全匹配，相当于and
+
+    * must_not: 多个查询条件的相反匹配， 相当于not
+
+    * should: 至少有一个查询条件匹配，相当于or
+
+      这些参数可以分别继承一个过滤条件或者一个过滤条件的数组：
+
+      ```
+      # 搜索在深圳的用户
+      # 并且年龄在30-40之间
+      
+      GET /user/userinfo/_search
+      {
+        "query":{
+          "bool":{
+            "must":[
+              {
+                "term":{
+                  "city":{
+                    "value":"深圳"
+                  }
+                }
+              }
+            ]
+            ,"must":[
+              {
+                "range":{
+                  "age":{
+                    "gte":37,
+                    "lte":40
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+      ```
+
+      ![](./doc/18.png)
+
+查询语句可优化
+
+```
+# 搜索在深圳的用户
+# 并且年龄在30-40之间
+
+GET /user/userinfo/_search
+{
+  "query":{
+    "bool":{
+      "must":[
+        {
+          "term":{
+            "city":{
+              "value":"深圳"
+            }
+          }
+        },
+        {
+          "range":{
+            "age":{
+              "gte":37,
+              "lte":40
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+18. 查询所有数据
+
+    ```
+    #  查询所有数据
+    GET /user/userinfo/_search
+    {
+      "query": {
+        "match_all": {}
+      }
+    }
+    ```
+
+19. 搜索某个字段的值
+
+    ```
+    GET /user/userinfo/_search
+    {
+      "query": {
+        "match": {
+          "name": "李四"
+        }
+      }
+    }
+    ```
+
+    ![](./doc/20.png)
+
+20. 前缀搜索
+
+    ```
+    # 前缀搜索
+    # 搜索姓张
+    GET /user/userinfo/_search
+    {
+      "query": {
+        "prefix": {
+          "name": {
+            "value": "张"
+          }
+        }
+      }
+    }
+    ```
+
+    ![](./doc/19.png)
+
+21. 多个域匹配搜索
+
+    ```
+    #  多个域匹配搜索
+    # decsription|city中都有深圳的数据
+    GET /user/userinfo/_search
+    {
+      "query": {
+        "multi_match": {
+          "query": "深圳",
+          "fields": ["city", "description"]
+        }
+      }
+    }
+    ```
+
     
