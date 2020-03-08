@@ -1,6 +1,6 @@
 #  python对接es的相关操作
 
-```
+```python
 # python 对接 elasticserch 的相关操作
 
 
