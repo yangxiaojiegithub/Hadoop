@@ -16,7 +16,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 	~~~
     mysql> alter user 'root'@'%' identified with mysql_native_password by 'root';
 	Query OK, 0 rows affected (0.00 sec)
-    ~~~
+  ~~~
 
 # 在 docker 上安装 fastdfs
 ~~~
@@ -39,3 +39,17 @@ mysql                latest              791b6e40940c        2 weeks ago        
 morunchang/fastdfs   latest              a729ac95698a        3 years ago         460MB
 [root@changgou ~]# docker run -itd --name changgou_redis -p 6379:6379 redis
 ```
+
+# docker 安装 Elasticsearch
+
+```shell
+下载
+[root@changgou ~]# docker pull elasticsearch
+安装
+[root@changgou ~]# docker run -di --name=changgou_elasticsearch -p 9200:9200 -p 9300:9300 elasticsearch
+eee8bb3d5248a8e0cfccc7e94e29e56c0fd47919c172e98799cb283da8557682
+```
+
+9200 端口（Web管理平台端口） 9300端口（服务默认端口）
+
+安装完成后在浏览器里访问地址  http://192.168.235.21:9200/

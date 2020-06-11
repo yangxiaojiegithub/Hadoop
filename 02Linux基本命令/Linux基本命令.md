@@ -22,7 +22,12 @@ ifconfig is hashed (/usr/sbin/ifconfig)
 
 ```
 
+**ps -fe**
+
+打印进程信息
+
 **df**
+
 ```
 [root@gmall opt]# df -h
 Filesystem               Size  Used Avail Use% Mounted on
@@ -44,6 +49,7 @@ tmpfs                     98M     0   98M   0% /run/user/0
 ```
 **stat**
 查看文件元数据信息
+
 ```
 [root@gmall opt]# stat dubbo-admin-2.6.0.war 
   File: ‘dubbo-admin-2.6.0.war’
@@ -56,7 +62,19 @@ Change: 2020-01-31 13:02:16.479957803 +0800
  Birth: -
 
 ```
+**man**
+
+- 1：用命令(/bin, /usr/bin, /usr/local/bin)
+- 2：系统调用
+- 3：库用户
+- 4：特殊文件（设备文件）
+- 5：文件格式（配置文件的语法）
+- 6：游戏
+- 7：杂项（Miscellaneous）
+- 8：管理命令(/sbin, /usr/sbin/, /usr/local/sbin)
+
 **cat**
+
 + cat ： 全量展示文件内的所有内容
 + more ： 只支持向下翻屏
 + less ： 可以来回翻屏
@@ -65,23 +83,26 @@ Change: 2020-01-31 13:02:16.479957803 +0800
 + tail ： 默认展示末尾十行
 	- tail -n 文件名： 显示文件末尾n行
 
-** vi最小化命令 **
+**vi最小化命令 **
 按下！最小化vi并回到外部bash执行 ls -l /opt/ 命令，按enter再回到vi
+
 ```
 ：！ ls -l /opt/
 ```
 
-** 查找并替换 **
+**查找并替换 **
 s 查找并替换
 g 一行内全部替换
 i 忽略大小写
 从第一行到最后一行，查找after并替换成before
+
 ```
 :1,$s/after/before/
 ```
 
-** wc **
+**wc **
 统计文件行数
+
 ```
 [root@gmall ~]# wc -l zlftext.txt 
 4 zlftext.txt
@@ -89,7 +110,7 @@ i 忽略大小写
 4
 ```
 
-** chkconfig **
+**chkconfig **
 服务管理
 ~~~
 [root@changgou init.d]# chkconfig --list

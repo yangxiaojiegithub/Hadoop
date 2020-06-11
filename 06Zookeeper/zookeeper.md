@@ -25,7 +25,7 @@
 
 # 操作zookeeper
 1. 启动zookeeper
-```
+```shell
 [root@gmall bin]# ll
 total 36
 -rwxr-xr-x 1 502 games  232 Nov  2  2017 README.txt
@@ -44,20 +44,20 @@ Using config: /opt/zookeeper-3.4.11/bin/../conf/zoo.cfg
 Starting zookeeper ... STARTED
 ```
 2. 查看进程是否启动
-```
+```shell
 [root@gmall bin]# jps
 3203 QuorumPeerMain
 3246 Jps
 ```
 3. 查看状态
-```
+```shell
 [root@gmall bin]# ./zkServer.sh status
 ZooKeeper JMX enabled by default
 Using config: /opt/zookeeper-3.4.11/bin/../conf/zoo.cfg
 Mode: standalone
 ```
 4. 启动客户端
-```
+```shell
 [root@gmall bin]# ./zkCli.sh
 ...
 WATCHER::
@@ -65,7 +65,7 @@ WatchedEvent state:SyncConnected type:None path:null
 [zk: localhost:2181(CONNECTED) 0]
 ```
 5. 创建节点
-```
+```shell
 [zk: localhost:2181(CONNECTED) 1] get /
 cZxid = 0x0
 ctime = Thu Jan 01 08:00:00 CST 1970
@@ -101,7 +101,7 @@ numChildren = 0
 [zk: localhost:2181(CONNECTED) 0] quit
 ```
 7. 停止客户端
-```
+```shell
 [root@gmall bin]# ./zkServer.sh stop
 ZooKeeper JMX enabled by default
 Using config: /opt/zookeeper-3.4.11/bin/../conf/zoo.cfg
@@ -109,7 +109,7 @@ Stopping zookeeper ... STOPPED
 ```
 
 # zookeeper配置参数解读
-```
+```shell
 # The number of milliseconds of each tick
 tickTime=2000  --2s心跳一次
 # The number of ticks that the initial
