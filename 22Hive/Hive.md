@@ -773,12 +773,11 @@ SerDe是Serialize/Deserilize的简称，目的是用于序列化和反序列化�
     loc int
     )
     row format delimited fields terminated by '\t';
+    ```
     
-    ```
-
-    创建员工表
-
-    ```
+创建员工表
+    
+```
     create external table if not exists default.emp(
     empno int,
     ename string,
@@ -790,8 +789,8 @@ SerDe是Serialize/Deserilize的简称，目的是用于序列化和反序列化�
     deptno int)
     row format delimited fields terminated by '\t';
     ```
-
-  - 查看创建的表
+    
+- 查看创建的表
   
   ```sql
   0: jdbc:hive2://node01:10000> show tables;
@@ -1225,7 +1224,92 @@ hive (default)> select * from emp where sal RLIKE '[2]';
 
 分桶是将数据集分解成更容易管理的若干部分的另一个技术
 
+- **先创建分桶表，通过直接导入数据文件的方式（这种方式并没有生成四个桶）**
 
+  - 数据准备
+
+  stu.txt
+
+  ```
+  1001	ss1
+  1002	ss2
+  1003	ss3
+  1004	ss4
+  1005	ss5
+  1006	ss6
+  1007	ss7
+  1008	ss8
+  1009	ss9
+  1010	ss10
+  1011	ss11
+  1012	ss12
+  1013	ss13
+  1014	ss14
+  1015	ss15
+  1016	ss16
+  ```
+
+  - 创建分桶表
+
+  ```sql
+  create table stu_buck(id int, name string)
+  clustered by(id) 
+  into 4 buckets
+  row format delimited fields terminated by '\t';
+  ```
+
+  - 查看表结构
+
+  ```sql
+  desc formatted stu_buck;
+  | Num Buckets:                  | 4                                                   
+  ```
+
+  - 导入数据到分桶表中
+
+  ```sql
+  load data local inpath '/root/stu.txt' into table stu_buck;
+  ```
+
+  ![](./doc/04.png)
+
+发现并没有分成4个桶，
+
+- **创建分桶表时，数据通过子查询的方式导入**
+
+  - 先建一个普通的stu表
+
+  ```sql
+  create table stu(id int, name string)
+  row format delimited fields terminated by '\t';
+  ```
+
+  - 向普通的stu表中导入数据
+
+  ```sql
+  load data local inpath '/root/stu.txt' into table stu;
+  ```
+
+  - 清空stu_buck表中数据
+
+  ```sql
+  truncate table stu_buck;
+  ```
+
+  - 通过子查询的方式,导入数据到分桶表
+
+  ```sql
+  insert into table stu_buck
+  select id, name from stu;
+  ```
+
+  这步执行的时候报错了
+
+  ```xml
+  2020-06-12 12:17:35,748 FATAL [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Error starting MRAppMaster
+  ```
+
+  ![](./doc/05.png)
 
 
 
