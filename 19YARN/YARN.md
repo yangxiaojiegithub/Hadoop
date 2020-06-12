@@ -120,7 +120,7 @@ node03: starting nodemanager, logging to /opt/stanlong/hadoop-2.9.2/logs/yarn-ro
 [root@node01 hadoop]# 
 ```
 
-- 在node03和node04节点上手动启动yarn
+- 在node03和node04节点上手动启动resourcemanager
 
 ```shell
 [root@node03 ~]# yarn-daemon.sh start resourcemanager
