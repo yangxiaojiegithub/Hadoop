@@ -391,9 +391,29 @@ numChildren = 0
 
 ![](./doc/02.png)
 
-## 测试(有问题待验证)
+## 测试(测试结果与预期不符)
 
 
 
 
 
+## Hadoop-HA启动顺序
+
+先启动zookeeper
+
+zkServer.sh start
+
+启动journalnode
+
+hadoop-daemon.sh start journalnode
+
+启动主namenode
+
+hadoop-daemon.sh start namenode
+
+启动备namenode（第一次需要启动，后面就不需要了）
+
+hdfs namenode -bootstrapStandby
+
+在主节点上启动datanode
+start-dfs.sh
