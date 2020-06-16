@@ -1584,13 +1584,76 @@ load data local inpath "/opt/module/datas/business.txt" into table business;
   tony	2017-01-02	15	1
   ```
 
-## Rank
+## Rank(计算排名)
 
 ```
 RANK() 排序相同时会重复，总数不会变
 DENSE_RANK() 排序相同时会重复，总数会减少
 ROW_NUMBER() 会根据顺序计算
 ```
+
+- 需求： 计算每门学科成绩排名
+- 创建本地movie.txt，导入数据
+
+| name   | subject | score |
+| ------ | ------- | ----- |
+| 孙悟空 | 语文    | 87    |
+| 孙悟空 | 数学    | 95    |
+| 孙悟空 | 英语    | 68    |
+| 大海   | 语文    | 94    |
+| 大海   | 数学    | 56    |
+| 大海   | 英语    | 84    |
+| 宋宋   | 语文    | 64    |
+| 宋宋   | 数学    | 86    |
+| 宋宋   | 英语    | 84    |
+| 婷婷   | 语文    | 65    |
+| 婷婷   | 数学    | 85    |
+| 婷婷   | 英语    | 78    |
+
+```shell
+vi score.txt
+```
+
+- 创建hive表并导入数据
+
+```sql
+create table score(
+name string,
+subject string, 
+score int) 
+row format delimited fields terminated by "\t";
+load data local inpath '/opt/module/datas/score.txt' into table score;
+```
+
+- 按需求查询数据
+
+```sql
+select name,
+subject,
+score,
+rank() over(partition by subject order by score desc) rp,
+dense_rank() over(partition by subject order by score desc) drp,
+row_number() over(partition by subject order by score desc) rmp
+from score;
+
+name    subject score   rp      drp     rmp
+孙悟空  数学    95      1       1       1
+宋宋    数学    86      2       2       2
+婷婷    数学    85      3       3       3
+大海    数学    56      4       4       4
+宋宋    英语    84      1       1       1
+大海    英语    84      1       1       2
+婷婷    英语    78      3       2       3
+孙悟空  英语    68      4       3       4
+大海    语文    94      1       1       1
+孙悟空  语文    87      2       2       2
+婷婷    语文    65      3       3       3
+宋宋    语文    64      4       4       4
+```
+
+
+
+
 
 # 函数
 
