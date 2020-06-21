@@ -14,31 +14,31 @@
 ```
 
 ```shell
-#!/bi
-n/bash
+#!/bin/bash
 #获取输入参数的个数.没有参数直接退出
 pcount=$#
 if((pcount==0));then
 echo no args;
 exit;
 fi
- 
+
 #2.获取文件名称
 p1=$1
 fname=`basename $p1`
 echo fname=$fname
- 
+
 #3.获取上级目录到绝对路径
 pdir=`cd -P $(dirname $p1); pwd`
 echo pdir=$pdir
- 
+
 #4.获取当前用户名称
 user=`whoami`
- 
+
 #5.循环
-for ((host=102; host<105;host++));do
-	echo ----------------hadoop$host------------------
-	rsync -av $pdir/$fname $user@hadoop$host:$pdir
+for i in node02 node03 node04
+do
+        echo ----------------$i------------------
+        rsync -av $pdir/$fname $user@$i:$pdir
 done
 ```
 
