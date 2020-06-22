@@ -31,3 +31,149 @@
   找。例如你想找位于 2049 的位置，只要找到 2048.kafka 的文件即可。当然 the first offset 就
   是 00000000000.kafka。
 
+## kafka 安装
+
+- 上传kafka并重命名
+
+```shell
+[root@node01 ~]# tar -zxf kafka_2.13-2.5.0.tgz 
+[root@node01 ~]# mv kafka_2.13-2.5.0 /opt/stanlong/
+[root@node01 ~]# cd /opt/stanlong/
+[root@node01 stanlong]# mv kafka_2.13-2.5.0/ kafka
+[root@node01 stanlong]# ll
+total 0
+drwxr-xr-x  9 root root 210 Jun 20 11:12 flume
+drwxr-xr-x 10 root root 161 Jun 11 10:27 hadoop-2.9.2
+drwxr-xr-x 10 root root 161 Jun 11 10:13 hadoop-2.9.2-full
+drwxr-xr-x  8 root root 172 Jun 14 11:28 hbase
+drwxr-xr-x 10 root root 208 Jun 12 03:59 hive
+drwxr-xr-x  6 root root  89 Apr  7 21:18 kafka
+[root@node01 stanlong]# 
+```
+
+- 修改配置文件
+
+```shell
+[root@node01 config]# ll
+total 72
+-rw-r--r-- 1 root root  906 Apr  7 21:13 connect-console-sink.properties
+-rw-r--r-- 1 root root  909 Apr  7 21:13 connect-console-source.properties
+-rw-r--r-- 1 root root 5321 Apr  7 21:13 connect-distributed.properties
+-rw-r--r-- 1 root root  883 Apr  7 21:13 connect-file-sink.properties
+-rw-r--r-- 1 root root  881 Apr  7 21:13 connect-file-source.properties
+-rw-r--r-- 1 root root 2247 Apr  7 21:13 connect-log4j.properties
+-rw-r--r-- 1 root root 2540 Apr  7 21:13 connect-mirror-maker.properties
+-rw-r--r-- 1 root root 2262 Apr  7 21:13 connect-standalone.properties
+-rw-r--r-- 1 root root 1221 Apr  7 21:13 consumer.properties
+-rw-r--r-- 1 root root 4675 Apr  7 21:13 log4j.properties
+-rw-r--r-- 1 root root 1925 Apr  7 21:13 producer.properties
+-rw-r--r-- 1 root root 6849 Apr  7 21:13 server.properties
+-rw-r--r-- 1 root root 1032 Apr  7 21:13 tools-log4j.properties
+-rw-r--r-- 1 root root 1169 Apr  7 21:13 trogdor.conf
+-rw-r--r-- 1 root root 1205 Apr  7 21:13 zookeeper.properties
+[root@node01 config]# vi server.properties 
+20 # The id of the broker. This must be set to a unique integer for each broker.
+21 broker.id=1 # broker.id 是唯一的整数，集群里每台机器都不一样
+
+59 # A comma separated list of directories under which to store log files
+60 log.dirs=/opt/stanlong/kafka/logs # 这里的日志目录该成自己定义的
+
+123 zookeeper.connect=node02:2181,node03:2181,node04:2181
+```
+
+- 分发kafka到node02，node03，node04上去
+
+```shell
+[root@node01 stanlong]# xsync.sh kafka/
+```
+
+- 到node02，node03，node04上去，改 server.properties 里broker.id的值分别为 2，3，4
+
+## 启动kafka
+
+```shell
+kafka依赖zookeeper，需要先启动 zookeeper
+[root@node01 config]# zk.sh start
+[root@node01 kafka]# bin/kafka-server-start.sh -daemon config/server.properties 
+[root@node01 kafka]# jps
+9092 Jps
+9054 Kafka
+[root@node01 kafka]# 
+```
+
+## kafka 群启脚本
+
+```shell
+#!/bin/bash
+
+case $1 in
+"start"){
+	for i in node01 node02 node03 node04
+	do
+		echo "***********$i***********"
+		ssh $i "/opt/stanlong/kafka/bin/kafka-server-start.sh -daemon /opt/stanlong/kafka/config/server.properties"
+	done
+};;
+"stop"){
+	for i in node01 node02 node03 node04
+	do
+		echo "***********$i***********"
+		ssh $i "/opt/stanlong/kafka/bin/kafka-server-stop.sh"
+	done
+};;
+esac
+```
+
+## kafka 常用命令
+
+- 创建topic
+
+```shell
+[root@node01 kafka]# bin/kafka-topics.sh --zookeeper node02:2181 --create --replication-factor 3 --partitions 1 --topic first-topic
+Created topic first-topic.
+```
+
+- 查看当前服务器中的所有 topic
+
+```shell
+[root@node01 kafka]# bin/kafka-topics.sh --zookeeper node02:2181 --list
+first
+first-topic
+[root@node01 kafka]# 
+```
+
+- 删除topic
+
+```shell
+[root@node01 kafka]# bin/kafka-topics.sh --zookeeper node02:2181 --delete --topic first
+Topic first is marked for deletion.
+Note: This will have no impact if delete.topic.enable is not set to true.
+[root@node01 kafka]# 
+```
+
+需要 server.properties 中设置 delete.topic.enable=true 否则只是标记删除或者直接重启
+
+- 查看某个 Topic 的详情
+
+```shell
+[root@node01 kafka]# bin/kafka-topics.sh --zookeeper node02:2181 --describe --topic first-topic
+Topic: first-topic	PartitionCount: 1	ReplicationFactor: 3	Configs: 
+	Topic: first-topic	Partition: 0	Leader: 2	Replicas: 2,1,3	Isr: 2,1,3
+[root@node01 kafka]# 
+```
+
+- 生产者发送消息
+
+```shell
+[root@node01 kafka]# bin/kafka-console-producer.sh --broker-list node02:9092 --topic first-topic
+>Hello
+>
+```
+
+- 消费者消费消息
+
+```shell
+[root@node02 kafka]# bin/kafka-console-consumer.sh --bootstrap-server node02:9092 --topic first-topic
+Hello
+```
+
