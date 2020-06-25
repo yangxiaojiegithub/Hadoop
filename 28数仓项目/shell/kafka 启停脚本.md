@@ -1,4 +1,4 @@
-# kafka 群启脚本
+# kafka 启停脚本
 
 ```shell
 #!/bin/bash

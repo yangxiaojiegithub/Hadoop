@@ -1,4 +1,4 @@
-# 日志采集Flume启动停止脚本
+# 日志采集Flume启停脚本
 
 ```shell
 #! /bin/bash

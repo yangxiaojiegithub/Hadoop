@@ -1,4 +1,4 @@
-# Kafka Manager启动停止脚本
+# Kafka Manager启停脚本
 
 ```shell
 #! /bin/bash
