@@ -2593,5 +2593,272 @@ where
 </property>
 ```
 
+# Hive 运行引擎Tez
+
+Tez是一个Hive的运行引擎，性能优于MR。为什么优于MR呢？看下图。
+
+![](./doc/08.png)
+
+用Hive直接编写MR程序，假设有四个有依赖关系的MR作业，上图中，绿色是Reduce Task，云状表示写屏蔽，需要将中间结果持久化写到HDFS。
+
+Tez可以将多个有依赖的作业转换为一个作业，这样只需写一次HDFS，且中间节点较少，从而大大提升作业的计算性能。
+
+## 安装包准备
+
+1. 下载tez的依赖包：http://tez.apache.org
+2. 拷贝，解压缩，修改名称
+
+```shell
+[root@node01 ~]# tar -zxf apache-tez-0.9.2-bin.tar.gz
+[root@node01 ~]# mv apache-tez-0.9.2-bin /opt/stanlong/
+[root@node01 ~]# cd /opt/stanlong/
+[root@node01 stanlong]# ll
+total 4
+drwxr-xr-x  5  502 games 4096 Mar 19  2019 apache-tez-0.9.2-bin
+drwxr-xr-x  9 root root   210 Jun 20 11:12 flume
+drwxr-xr-x 10 root root   161 Jun 11 10:27 hadoop-2.9.2
+drwxr-xr-x 10 root root   161 Jun 11 10:13 hadoop-2.9.2-full
+drwxr-xr-x  8 root root   172 Jun 14 11:28 hbase
+drwxr-xr-x 10 root root   208 Jun 12 03:59 hive
+drwxr-xr-x  7 root root   101 Jun 22 01:17 kafka
+drwxr-xr-x  8 root root   138 Jun 26 21:49 kafka-manager
+[root@node01 stanlong]# mv apache-tez-0.9.2-bin/ tez-0.9.2
+[root@node01 stanlong]# ll
+total 4
+drwxr-xr-x  9 root root   210 Jun 20 11:12 flume
+drwxr-xr-x 10 root root   161 Jun 11 10:27 hadoop-2.9.2
+drwxr-xr-x 10 root root   161 Jun 11 10:13 hadoop-2.9.2-full
+drwxr-xr-x  8 root root   172 Jun 14 11:28 hbase
+drwxr-xr-x 10 root root   208 Jun 12 03:59 hive
+drwxr-xr-x  7 root root   101 Jun 22 01:17 kafka
+drwxr-xr-x  8 root root   138 Jun 26 21:49 kafka-manager
+drwxr-xr-x  5  502 games 4096 Mar 19  2019 tez-0.9.2
+[root@node01 stanlong]# 
+```
+
+## 在Hive中配置Tez
+
+1. 进入到Hive的配置目录：
+
+```shell
+[root@node01 stanlong]# cd /opt/stanlong/hive/conf/
+```
+
+2. 在hive-env.sh文件中添加tez环境变量配置和依赖包环境变量配置
+
+```shell
+[root@node01 conf]# vi hive-env.sh
+export TEZ_HOME=/opt/stanlong/tez-0.9.2
+export TEZ_JARS=""
+for jar in `ls $TEZ_HOME |grep jar`; do
+    export TEZ_JARS=$TEZ_JARS:$TEZ_HOME/$jar
+done
+for jar in `ls $TEZ_HOME/lib`; do
+    export TEZ_JARS=$TEZ_JARS:$TEZ_HOME/lib/$jar
+done
+
+export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-2.9.2/share/hadoop/common/hadoop-lzo-0.4.20.jar$TEZ_JARS
+```
+
+3. 在hive-site.xml文件中添加如下配置，更改hive计算引擎
+
+```xml
+[root@node01 conf]# vi core-site.xml 
+<property>
+    <name>hive.execution.engine</name>
+    <value>tez</value>
+</property>
+
+```
+
+## 配置Tez
+
+- 在Hive的/opt/stanlong/hive/conf下面创建一个tez-site.xml文件
+
+```xml
+[root@node01 conf]# vi tez-site.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+	<property>
+		<name>tez.lib.uris</name>    
+		<value>${fs.defaultFS}/tez/tez-0.9.1,${fs.defaultFS}/tez/tez-0.9.1/lib</value>
+	</property>
+	<property>
+		<name>tez.lib.uris.classpath</name>    	
+		<value>${fs.defaultFS}/tez/tez-0.9.1,${fs.defaultFS}/tez/tez-0.9.1/lib</value>
+	</property>
+	<property>
+		 <name>tez.use.cluster.hadoop-libs</name>
+		 <value>true</value>
+	</property>
+	<property>
+		 <name>tez.history.logging.service.class</name>        
+		 <value>org.apache.tez.dag.history.logging.ats.ATSHistoryLoggingService</value>
+	</property>
+</configuration>
+
+```
+
+## 上传Tez到集群
+
+将/opt/stanlong/tez-0.9.1上传到HDFS的/tez路径
+
+```shell
+[root@node01 conf]# hadoop dfs -mkdir /tez
+[root@node01 conf]# hadoop dfs -put /opt/stanlong/tez-0.9.2 /tez
+[root@node01 conf]# hadoop dfs -ls /tez
+Found 1 items
+drwxr-xr-x   - root supergroup          0 2020-06-26 22:24 /tez/tez-0.9.2
+
+```
+
+## 测试
+
+```shell
+[root@node01 hive]# hive
+
+hive (default)> create table student(
+id int,
+name string);
+
+hive (default)> insert into student values(1,"zhangsan");
+
+如果没报错，就算成功了
+hive (default)> select * from student;
+1       zhangsan
+```
+
+# 小结
+
+1. 运行Tez时检查到用过多内存而被NodeManager杀死进程问题：
+
+```
+Caused by: org.apache.tez.dag.api.SessionNotRunning: TezSession has already shutdown. Application application_1546781144082_0005 failed 2 times due to AM Container for appattempt_1546781144082_0005_000002 exited with  exitCode: -103
+For more detailed output, check application tracking page:http://hadoop103:8088/cluster/app/application_1546781144082_0005Then, click on links to logs of each attempt.
+Diagnostics: Container [pid=11116,containerID=container_1546781144082_0005_02_000001] is running beyond virtual memory limits. Current usage: 216.3 MB of 1 GB physical memory used; 2.6 GB of 2.1 GB virtual memory used. Killing container.
+```
+
+这种问题是从机上运行的Container试图使用过多的内存，而被NodeManager kill掉了。
+
+```
+[摘录] The NodeManager is killing your container. It sounds like you are trying to use hadoop streaming which is running as a child process of the map-reduce task. The NodeManager monitors the entire process tree of the task and if it eats up more memory than the maximum set in mapreduce.map.memory.mb or mapreduce.reduce.memory.mb respectively, we would expect the Nodemanager to kill the task, otherwise your task is stealing memory belonging to other containers, which you don't want.
+```
+
+解决方法：
+
+方案一：或者是关掉虚拟内存检查。我们选这个，修改yarn-site.xml
+
+```xml
+<property>
+<name>yarn.nodemanager.vmem-check-enabled</name>
+<value>false</value>
+</property>
+```
+
+方案二：mapred-site.xml中设置Map和Reduce任务的内存配置如下：(value中实际配置的内存需要根据自己机器内存大小及应用情况进行修改)
+
+```xml
+<property>
+　　<name>mapreduce.map.memory.mb</name>
+　　<value>1536</value>
+</property>
+<property>
+　　<name>mapreduce.map.java.opts</name>
+　　<value>-Xmx1024M</value>
+</property>
+<property>
+　　<name>mapreduce.reduce.memory.mb</name>
+　　<value>3072</value>
+</property>
+<property>
+　　<name>mapreduce.reduce.java.opts</name>
+　　<value>-Xmx2560M</value>
+</property>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
