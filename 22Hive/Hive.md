@@ -1408,6 +1408,59 @@ CONCAT_WS(separator, str1, str2,...)：它是一个特殊形式的 CONCAT()。�
 COLLECT_SET(col)：函数只接受基本数据类型，它的主要作用是将某字段的值进行去重汇总，产生array类型字段
 ```
 
+### COLLECT_SET
+
+1）创建原数据表
+
+```sql
+hive (gmall)>
+drop table if exists stud;
+create table stud (name string, area string, course string, score int);
+```
+
+2）向原数据表中插入数据
+
+```sql
+hive (gmall)>
+insert into table stud values('zhang3','bj','math',88);
+insert into table stud values('li4','bj','math',99);
+insert into table stud values('wang5','sh','chinese',92);
+insert into table stud values('zhao6','sh','chinese',54);
+insert into table stud values('tian7','bj','chinese',91);
+```
+
+3）查询表中数据
+
+```sql
+hive (gmall)> select * from stud;
+stud.name    stud.area    stud.course   stud.score
+zhang3 bj   math  88
+li4   bj   math  99
+wang5  sh   chinese 92
+zhao6  sh   chinese 54
+tian7  bj   chinese 91
+```
+
+4）把同一分组的不同行的数据聚合成一个集合 
+
+```sql
+hive (gmall)> select course, collect_set(area), avg(score) from stud group by course;
+
+chinese ["sh","bj"]   79.0
+
+math  ["bj"] 93.5
+```
+
+5） 用下标可以取某一个
+
+```sql
+hive (gmall)> select course, collect_set(area)[0], avg(score) from stud group by course;
+
+chinese sh   79.0
+
+math  bj   93.5
+```
+
 ## 列转行
 
 ```
@@ -2241,13 +2294,15 @@ load data inpath "/gulivideo/user/2008/0903" into table gulivideo_user_ori;
 
 gulivideo_orc：
 
-  insert into table gulivideo_orc select * from gulivideo_ori;  
-
- 
+```sql
+insert into table gulivideo_orc select * from gulivideo_ori;  
+```
 
 gulivideo_user_orc：
 
-  insert into table gulivideo_user_orc select *  from gulivideo_user_ori;  
+```sql
+insert into table gulivideo_user_orc select *  from gulivideo_user_ori;  
+```
 
 ## 业务分析
 
@@ -2730,7 +2785,7 @@ hive (default)> select * from student;
 1       zhangsan
 ```
 
-# 小结
+## 小结
 
 1. 运行Tez时检查到用过多内存而被NodeManager杀死进程问题：
 
