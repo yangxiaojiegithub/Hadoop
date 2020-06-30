@@ -732,11 +732,11 @@ SerDe是Serialize/Deserilize的简称，目的是用于序列化和反序列化�
 
 - 案例实操
 
-  - 数据准备
+  1. 数据准备
 
-    dept.txt
+  dept.txt
 
-  ```
+  ```sql
   10	ACCOUNTING	1700
   20	RESEARCH	1800
   30	SALES	1900
@@ -762,37 +762,32 @@ SerDe是Serialize/Deserilize的简称，目的是用于序列化和反序列化�
   7934	MILLER	CLERK	7782	1982-1-23	1300.00		10
   ```
 
-  - 建表语句
+  2. 创建部门表 和 创建员工表   
 
-    创建部门表
+  ```sql
+  create external table if not exists default.dept(
+  deptno int,
+  dname string,
+  loc int
+  )
+  row format delimited fields terminated by '\t';
+  ```
 
-    ```
-    create external table if not exists default.dept(
-    deptno int,
-    dname string,
-    loc int
-    )
-    row format delimited fields terminated by '\t';
-    ```
-    
+  ```sql
+   create external table if not exists default.emp(
+      empno int,
+      ename string,
+      job string,
+      mgr int,
+      hiredate string, 
+      sal double, 
+      comm double,
+      deptno int)
+      row format delimited fields terminated by '\t';
+  ```
 
-创建员工表
-    
-```
-    create external table if not exists default.emp(
-    empno int,
-    ename string,
-    job string,
-    mgr int,
-    hiredate string, 
-    sal double, 
-    comm double,
-    deptno int)
-    row format delimited fields terminated by '\t';
-```
+  3. 查看创建的表
 
-- 查看创建的表
-  
   ```sql
   0: jdbc:hive2://node01:10000> show tables;
   +-----------+--+
@@ -805,16 +800,16 @@ SerDe是Serialize/Deserilize的简称，目的是用于序列化和反序列化�
   +-----------+--+
   4 rows selected (0.108 seconds)
   ```
-  
-  - 向外部表中导入数据
-  
+
+  4. 向外部表中导入数据
+
   ```sql
   0: jdbc:hive2://node01:10000> load data local inpath '/root/emp.txt' into table default.emp;
   0: jdbc:hive2://node01:10000> load data local inpath '/root/dept.txt' into table default.dept;
   ```
-  
-  - 查询结果
-  
+
+  5.查询结果
+
   ```sql
   0: jdbc:hive2://node01:10000> select * from dept;
   +--------------+-------------+-----------+--+
@@ -826,7 +821,7 @@ SerDe是Serialize/Deserilize的简称，目的是用于序列化和反序列化�
   | 40           | OPERATIONS  | 1700      |
   +--------------+-------------+-----------+--+
   ```
-  
+
 - 内部表与外部表的互相转换
 
   - 修改内部表student2为外部表
@@ -1529,7 +1524,7 @@ load data local inpath "/opt/module/datas/business.txt" into table business;
 
 - 按需求查询数据
 
-  - （1）查询在2017年4月份购买过的顾客及总人数
+  （1）查询在2017年4月份购买过的顾客及总人数
 
   ```sql
   select name,count(*) over () 
@@ -1542,7 +1537,7 @@ load data local inpath "/opt/module/datas/business.txt" into table business;
   jack	2
   ```
 
-  - （2）查询顾客的购买明细及月购买总额
+  （2）查询顾客的购买明细及月购买总额
 
   ```sql
   select name,orderdate,cost,sum(cost) over(partition by month(orderdate)) from
@@ -1566,7 +1561,7 @@ load data local inpath "/opt/module/datas/business.txt" into table business;
   neil	2017-06-12	80	80
   ```
 
-  - （3）上述的场景,要将cost按照日期进行累加
+  （3）上述的场景,要将cost按照日期进行累加
 
   ```sql
   select name,orderdate,cost, 
@@ -1597,7 +1592,7 @@ load data local inpath "/opt/module/datas/business.txt" into table business;
   tony	2017-01-07	50	661	94	94	94	79	79	50
   ```
 
-  - （4）查看顾客上次的购买时间
+  （4）查看顾客上次的购买时间
 
   ```sql
   select name,orderdate,cost, 
@@ -1622,7 +1617,7 @@ load data local inpath "/opt/module/datas/business.txt" into table business;
   tony	2017-01-07	50	2017-01-04	2017-01-02
   ```
 
-  - （5）查询前20%时间的订单信息
+  （5）查询前20%时间的订单信息
 
   ```sql
   select * from (
@@ -1703,10 +1698,6 @@ name    subject score   rp      drp     rmp
 婷婷    语文    65      3       3       3
 宋宋    语文    64      4       4       4
 ```
-
-
-
-
 
 # 函数
 
@@ -1916,7 +1907,6 @@ Hive提供了一个严格模式，可以防止用户执行那些可能意想不�
     <name>hive.mapred.mode</name>
     <value>strict</value>
 </property>
-
 ```
 
 1)    对于分区表，除非where语句中含有分区字段过滤条件来限制范围，否则不允许执行。换句话说，就是用户不允许扫描所有分区。进行这个限制的原因是，通常分区表都拥有非常大的数据集，而且数据增加迅速。没有进行分区限制的查询可能会消耗令人不可接受的巨大资源来处理这个表。
@@ -2286,7 +2276,7 @@ load data inpath "/gulivideo/output/video/2008/0222" into table gulivideo_ori;
 
 gulivideo_user_ori：
 
-```sql 
+```sql
 load data inpath "/gulivideo/user/2008/0903" into table gulivideo_user_ori;
 ```
 
