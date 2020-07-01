@@ -41,10 +41,11 @@ spark-submit \
 --total-executor-cores 2 \
 /opt/stanlong/spark/examples/jars/spark-examples_2.12-3.0.0.jar \
 100
+```
 
 执行结果
-Pi is roughly 3.1423247142324713
-```
+
+![](./doc/01.png)
 
 - 语法介绍
 
@@ -72,7 +73,54 @@ application-arguments: 传给 main()方法的参数
 --total-executor-cores 2 指定每个 executor 使用的 cup 核数为 2 个
 ```
 
+# wordcount 案例
 
+1. 准备文件
+
+```shell
+[root@node01 ~]# mkdir input
+[root@node01 ~]# cd input
+[root@node01 input]# vi 1.txt
+[root@node01 input]# vi 2.txt
+[root@node01 input]# cat 1.txt
+Hello World
+Hello spark
+[root@node01 input]# cat 2.txt
+Hello StanLong
+```
+
+2.  启动spark-shell
+
+```shell
+[root@node01 input]# spark-shell
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Spark context Web UI available at http://node01:4040
+Spark context available as 'sc' (master = local[*], app id = local-1593593683764).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 3.0.0
+      /_/
+         
+Using Scala version 2.12.10 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_65)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> 
+```
+
+spark web页面访问地址
+
+![](./doc/02.png)
+
+3. 运行wordcount程序
+
+```shell
+scala> sc.textFile("/root/input").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_).collect
+res8: Array[(String, Int)] = Array((Hello,3), (World,1), (StanLong,1), (spark,1))
+```
 
 
 
