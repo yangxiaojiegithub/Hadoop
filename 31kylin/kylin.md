@@ -35,8 +35,6 @@ export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/b
 kylin 启动之前要先把环境准备好。这里准备一个脚本
 
 ```
-
-
 kylin启动时遇到 ERROR: Check hive's usability failed, please check the status of your cluster解决办法如下:
 
 1、检查/etc/profile.d/env.sh中HIVE_HOME是否有配置，配置后需要source一下
@@ -44,6 +42,9 @@ kylin启动时遇到 ERROR: Check hive's usability failed, please check the stat
 2、bin/hive进入hive客户端，执行hive命令检查hive是否可用
 
 3、以上1、2都正确，则问题可能是hive执行时间过长超时，kylin中bin目录下的check-hive-usability.sh中timeLeft时间是60s，可以将其调到适合自己机器的值
+
+kylin启动后，tomcat 又报了一个错
+Caused by: java.lang.ClassCastException: com.fasterxml.jackson.datatype.jsr310.JavaTimeModule cannot be cast to com.fasterxml.jackson.databind.Module
 ```
 
 
