@@ -169,7 +169,6 @@ export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/b
 
 ```shell
 [root@node01 hbase]# start-hbase.sh
-[root@node01 hbase]# hbase-daemon.sh start master
 starting master, logging to /opt/stanlong/hbase/logs/hbase-root-master-node01.out
 [root@node01 hbase]# 
 ```
