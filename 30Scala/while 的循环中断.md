@@ -1,5 +1,7 @@
 #  while 的循环中断
 
+Scala内置控制结构特地去掉了**break**和**continue**，是为了更好的适应函数化编程，推荐使用**函数式的风格**解决break和contine的功能，而不是一个关键字
+
 ```scala
 package com.stanlong
 
