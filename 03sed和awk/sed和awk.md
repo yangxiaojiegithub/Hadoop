@@ -12,47 +12,54 @@
 - w FILE：将指定范围内的行另存至指定的文件中
 - s /patern/string/修饰符：查找并替换
 
-## 测试文件
-```
+**命令测试**
+
+1. 文件准备
+
+```shell
 [root@gmall ~]# vi zlftext.txt
 abc
 123
 def
 ```
-1. 在指定行下面追加新行
+2. 在指定行下面追加新行
+
+```shell
 在第一行下追加hello word
-```
 [root@gmall ~]# sed "1a\hello word" zlftext.txt 
 abc
 hello word
 123
 def
 ```
-2. 删除指定行
+3. 删除指定行
+
+```shell
 删除第二行
-```
 [root@gmall ~]# sed "2d" zlftext.txt 
 abc
 def
 ```
-3. 匹配删除
+4. 匹配删除
+
+```shell
 删除包含def的这一行
-```
 [root@gmall ~]# sed "/def/d" zlftext.txt 
 abc
 123
 ```
-4. 查找并替换
+5. 查找并替换
+
+```shell
 把123替换成123456
-```
 [root@gmall ~]# sed "s@123@123456@" zlftext.txt 
 abc
 123456
 def
 ```
 
-# awk 强大的文本分析工具
-** 简单来说awk就是把文件逐行读入，（空格，制表符）为默认分隔符将每行切片，切开的部分再进行各种分析处理 **
+# awk:文本分析工具
+**简单来说awk就是把文件逐行读入，（空格，制表符）为默认分隔符将每行切片，切开的部分再进行各种分析处理** 
 
 + awk -F'{pattern + action}' {filenames}
  - 支持自定义分隔符
@@ -75,8 +82,11 @@ def
  - 支持流程控制语言，类c语言
     - if、while、do/while、for、break、continue
 
-## 文件准备
-```
+**awk实操**
+
+1. 文件准备
+
+```shell
 [root@gmall ~]# cp /etc/passwd ./
 [root@gmall ~]# ll
 total 12
@@ -102,11 +112,11 @@ dbus:x:81:81:System message bus:/:/sbin/nologin
 polkitd:x:999:997:User for polkitd:/:/sbin/nologin
 postfix:x:89:89::/var/spool/postfix:/sbin/nologin
 sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
-
 ```
 
-1. 只显示文件中的第一列（）信息,按冒号分隔，打印出第一列的信息
-```
+2. 只显示文件中的第一列（）信息,按冒号分隔，打印出第一列的信息
+
+```shell
 [root@gmall ~]# awk -F':' '{print $1 }' passwd 
 root
 bin
@@ -128,7 +138,7 @@ postfix
 sshd
 ```
 + 用cut命令也可以 -f1 打印第一列
-```
+```shell
 [root@gmall ~]# cut -d':' -f1 passwd 
 root
 bin
@@ -150,8 +160,9 @@ postfix
 sshd
 ```
 
-2. 只显示帐户和帐户对应的shell， 而帐户与shell之间以逗号分割，而且在所有行开始前添加列名name， shell，在最后一行添加"blue,/bin/nosh"
-```
+3. 只显示帐户和帐户对应的shell， 而帐户与shell之间以逗号分割，而且在所有行开始前添加列名name， shell，在最后一行添加"blue,/bin/nosh"
+
+```shell
 [root@gmall ~]# awk -F':' 'BEGIN{print "name\tshell"} {print $1 "\t" $7} END{print "blue,/bin/nosh"}' passwd 
 name	shell
 root	/bin/bash
@@ -175,7 +186,7 @@ sshd	/sbin/nologin
 blue,/bin/nosh
 ```
 + 用cut和sed命令实现
-```
+```shell
 [root@gmall ~]# cut -d':' -f1,7 passwd | sed "1i\name:shell"
 name:shell
 root:/bin/bash
@@ -198,16 +209,18 @@ postfix:/sbin/nologin
 sshd:/sbin/nologin
 ```
 
-3. 搜索有root关键字的所有行
+4. 搜索有root关键字的所有行
+
+```shell
 $0 打印整行
-```
 [root@gmall ~]# awk -F':' '/root/{print $0}' passwd 
 root:x:0:0:root:/root:/bin/bash
 operator:x:11:0:operator:/root:/sbin/nologin
 ```
 
-4. 统计每行的行号，每行的列数，对应的完整内容
-```
+5. 统计每行的行号，每行的列数，对应的完整内容
+
+```shell
 [root@gmall ~]# awk -F':' '{print NR"\t"NF"\t" $0}' passwd 
 1	7	root:x:0:0:root:/root:/bin/bash
 2	7	bin:x:1:1:bin:/bin:/sbin/nologin
@@ -229,10 +242,13 @@ operator:x:11:0:operator:/root:/sbin/nologin
 18	7	sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 ```
 
-# 统计报表：合计每人1月工资， 0：manager， 1：worker
+# 统计报表
 
-## 文件准备
-```
+**合计每人1月工资， 0：manager， 1：worker**
+
+**文件准备**
+
+```shell
 [root@gmall ~]# cat awk.txt 
 Tom	0	2012-12-11	car	3000
 John	1	2013-01-13	bike	1000
@@ -244,7 +260,6 @@ John	1	2013-01-28	bike	3500
 vivi	2800
 Tom	2500
 John	4500
-
 ```
 
 
