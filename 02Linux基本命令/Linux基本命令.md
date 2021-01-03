@@ -1,5 +1,17 @@
 ## Linux 基本命令
 
+### cd
+
+回到上一次所在的目录
+
+```shell
+[root@node01 stanlong]# cd -
+/etc
+[root@node01 etc]#
+```
+
+
+
 ### type ifconfig
 
 查看命令路径
