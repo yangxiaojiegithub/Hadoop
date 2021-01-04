@@ -1,13 +1,14 @@
-# 脚本 编程
-## 文件准备
-```
+# 脚本编程
+**文件准备**
+
+```shell
 [root@gmall ~]# cp /etc/profile ./
 [root@gmall ~]# ll
 total 8
 -rw-------. 1 root root 1552 Jan 30 21:36 anaconda-ks.cfg
 -rw-r--r--  1 root root 1795 Feb  4 10:57 profile
 ```
-```
+```shell
 [root@gmall ~]# cat profile 
 # /etc/profile
 
@@ -87,7 +88,8 @@ unset i
 unset -f pathmunge
 ```
 
-# 文件描述符
+## 文件描述符
+
 + **0 输入流**
 + **1 正确输出**
 + **2 错误输出**
@@ -97,6 +99,7 @@ unset -f pathmunge
 [root@gmall ~]# cat ls01.txt
 ls: cannot access /god: No such file or directory
 /:
+
 bin
 boot
 dev
@@ -119,7 +122,8 @@ var
 [root@gmall ~]#
 ```
 
-# 变量
+## 变量
+
 + 本地变量
 	- 当前shell拥有
 	- 生命周期随shell
@@ -142,17 +146,20 @@ var
 	- unset:取消变量
 	- set：查看shell变量
 
-# 引用与命令替换
+## 引用与命令替换
+
 + 双引号引用不能阻止变量替换，变量扩展
 + 单引号可以阻止变量的替换过程
 + {}扩展不能被引用
 + 命令执行前删除引用
 + 使用`（反引号）进行命令替换
 
-# 退出状态
+## 退出状态
+
 + echo $?
 
-# 算术表达式
+## 算术表达式
+
 + let 算术运算表达式
 	- let C=$A+$B
 + $[算术表达示]
@@ -163,7 +170,8 @@ var
 	- 注意表达示中各操作数及运算符之间要有空格。而且要使用命令引用
 	- C=`expr $A + $B`
 
-# 条件表达示 test
+## 条件表达示 test
+
 ```
 [root@gmall ~]# test 3 -gt 8
 [root@gmall ~]# echo $?
@@ -179,9 +187,10 @@ test 可以用 [] 替换
 1
 ```
 
-# 流程控制语句
+## 流程控制语句
 
-### 小练习
+## 小练习
+
 + 添加用户
 + 用户密码同用户名
 + 静默运行脚本
