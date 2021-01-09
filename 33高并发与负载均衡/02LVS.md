@@ -94,11 +94,11 @@ ipvsadm：ipvs的客户端管理程序
 
    准备三台虚拟机
 
-   |        |      |          | eth0 |            |                           |             |
-   | ------ | ---- | -------- | ---- | ---------- | ------------------------- | ----------- |
-   | node01 | LVS  | ipvsadm  | DIP  | eth0:0 VIP |                           | 配置ipvsadm |
-   | node02 | RS01 | httpd 80 | RIP  | lo:0 VIP   | 调整内核ARP通告和响应级别 | 启动httpd   |
-   | node03 | RS02 | httpd 80 | RIP  | lo:0 VIP   | 调整内核ARP通告和响应级别 | 启动httpd   |
+   |        |      |          | ens33 |             |                           |             |
+   | ------ | ---- | -------- | ----- | ----------- | ------------------------- | ----------- |
+   | node01 | LVS  | ipvsadm  | DIP   | ens33:0 VIP |                           | 配置ipvsadm |
+   | node02 | RS01 | httpd 80 | RIP   | lo:0 VIP    | 调整内核ARP通告和响应级别 | 启动httpd   |
+   | node03 | RS02 | httpd 80 | RIP   | lo:0 VIP    | 调整内核ARP通告和响应级别 | 启动httpd   |
 
 2. 配置三台虚拟机的网络
 
@@ -132,7 +132,7 @@ ipvsadm：ipvs的客户端管理程序
    [root@node01 ~]# echo 1 > /proc/sys/net/ipv4/ip_forward # 配置地址转发功能        
    ```
 
-4. 调整RS的响应，通告级别（每一台RS都配）
+4. 调整RS的响应和通告级别（每一台RS都配）
 
    这里记录了node02上的操作，在node03上做同样的操作即可
 
