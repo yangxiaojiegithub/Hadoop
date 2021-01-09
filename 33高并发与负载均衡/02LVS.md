@@ -2,7 +2,7 @@
 
 LVS是Linux Virtual Server 的简写， 意即Linux虚拟服务器，是一个虚拟的服务器集群系统
 
-ipvs： 嵌入到linux的内核
+ipvs： 已嵌入到linux的内核
 
 ipvsadm：ipvs的客户端管理程序
 
