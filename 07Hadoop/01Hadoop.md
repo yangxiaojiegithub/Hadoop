@@ -115,3 +115,78 @@
 
   ![](./doc/05.png)
 
+## MapReduce
+
+ mapreduce是hadoop中一个批量计算的框架, 包括MapTask和ReduceTask。MapTask的输出是ReduceTask的输入，所以只有MapTask执行完了才能执行ReduceTask
+
+### MR原语
+
+输入数据集--》map映射成一个中间数据集（k,v）--》reduce
+
+相同的key为一组，调用一次reduce方法，方法内迭代这一组数据进行计算
+
+### MR计算框架
+
+![](D:/StanLong/git_repository/Hadoop/07Hadoop/doc/01.jpg)
+
+input：hdfs 存储的数据作为mr的输入，也称为原始数据，数据比较大，可以是视频 图片 文档等。。。
+
+split: 切片，对输入数据进行分割 切片，分发到不同的节点计算
+
+map: 映射 也可以叫建模，对数据切片并行的进行建模，有多少个切片就有多少个map进程。
+
+SM：sort&merge 合并排序，对map的而结果进行合并排序操作
+
+shuff：对相同的key值的数据移动到同一个block中
+
+redu：对shuff的结果计算，数据清洗和处理，
+
+### MR角色
+
+#### JobTracker
+
+- 负责资源管理和作业控制
+- 核心，主，单点
+
+#### TaskTracker
+
+- 负责任务的运行
+
+#### Client
+
+- 规划作业计算分布
+- 提交资源到HDFS
+
+#### 弊端
+
+- JobTracker：负载过重，容易出现单点故障
+- 资源管理和调度强耦合，其他计算框架需要重复实现资源管理
+- 不同框架对资源不能全局管理
+
+## YARN
+
+ Apache Yarn（Yet Another Resource Negotiator的缩写）是hadoop集群资源管理器系统，Yarn从hadoop 2引入，最初是为了改善MapReduce的实现，解耦资源与计算。但是它具有通用性，同样执行其他分布式计算模式。
+
+### YARN角色
+
+#### ResourceManager
+
+ ResourceManager的主要职责在于调度
+
+- 主， 核心
+- 集群节点资源管理
+
+#### NodeManager
+
+NodeManager是yarn节点的一个“工作进程”代理，管理hadoop集群中独立的计算节点，主要负责与ResourceManager通信，负责启动和管理应用程序的container的生命周期，监控它们的资源使用情况（cpu和内存），跟踪节点的监控状态，管理日志等。并报告给RM
+
+- 与MR汇报资源
+- 管理Container生命周期
+- 计算框架中的角色都以Container表示
+
+#### Container
+
+Container是Yarn框架的计算单元，是具体执行应用task（如map task、reduce task）的基本单位。Container和集群节点的关系是：一个节点会运行多个Container，但一个Container不会跨节点。
+
+
+
