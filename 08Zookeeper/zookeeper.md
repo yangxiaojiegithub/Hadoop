@@ -131,9 +131,11 @@ server.4=192.168.235.14:2888:3888
 zkCleanup.sh  zkCli.cmd     zkCli.sh      zkEnv.cmd     zkEnv.sh      zkServer.cmd  zkServer.sh 
 ```
 
-## 启动zookeeper
+## 操作zookeeper
 
-按node01，node02，node03，node04的顺序启动
+### 启动zookeeper
+
+按node01，node02，node03，node04的顺序启动(其实顺序无所谓)
 
 ```shell
 [root@node01 ~]# zkServer.sh start
@@ -172,10 +174,6 @@ ZooKeeper JMX enabled by default
 Using config: /opt/stanlong/zookeeper-3.4.11/bin/../conf/zoo.cfg
 Mode: follower # 其他节点都被选为 follower
 ```
-
-
-
-# 操作zookeeper
 
 ### 启动客户端
 
