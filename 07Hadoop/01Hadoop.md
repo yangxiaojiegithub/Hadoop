@@ -127,7 +127,7 @@
 
 ### MR计算框架
 
-![](D:/StanLong/git_repository/Hadoop/07Hadoop/doc/01.jpg)
+![](./doc/01.jpg)
 
 input：hdfs 存储的数据作为mr的输入，也称为原始数据，数据比较大，可以是视频 图片 文档等。。。
 
