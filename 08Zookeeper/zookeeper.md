@@ -8,33 +8,34 @@
 4. 更新请求顺序进行，来自同一个clinet的更新请求按其发送顺序依次进行
 5. 数据更新原子性，一次数据要么更新成功，要么更新失败
 6. 实时性，在一定时间范围内，clinet能读到最新数据
+7. 集群中只要有过半的机器是正常工作的，那么整个集群对外就是可用的。也就是说如果有2个zookeeper，那么只要有1个死了zookeeper就不能用了，因为1没有过半，所以2个zookeeper的死亡容忍度为0；同理，要是有3个zookeeper，一个死了，还剩下2个正常的，过半了，所以3个zookeeper的容忍度为1；同理你多列举几个：2->0;3->1;4->1;5->2;6->2会发现一个规律，2n和2n-1的容忍度是一样的，都是n-1，所以为了更加高效，zookeeper集群节点配置个数应该是奇数
 
 ## 集群规划
 
-| node01    | node02    | node03    | node04    |
-| --------- | --------- | --------- | --------- |
-| zookeeper | zookeeper | zookeeper | zookeeper |
+| node02    | node03    | node04    |
+| --------- | --------- | --------- |
+| zookeeper | zookeeper | zookeeper |
 
 ## 部署zookeeper
 
 ### 解压
 
 ```shell
-[root@node01 ~]# tar -zxf zookeeper-3.4.11.tar.gz -C /opt/stanlong/
+[root@node02 ~]# tar -zxf zookeeper-3.4.11.tar.gz -C /opt/stanlong/
 ```
 
 ### 配置环境变量
 
 ```shell
-root@node01 zookeeper-3.4.11]# pwd
+[root@node02 zookeeper-3.4.11]# pwd
 /opt/stanlong/zookeeper-3.4.11
-[root@node01 zookeeper-3.4.11]# vi /etc/profile
+[root@node02 zookeeper-3.4.11]# vi /etc/profile
 
 export ZOOKEEPER_HOME=/opt/stanlong/zookeeper-3.4.11
 export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin
 
-[root@node01 zookeeper-3.4.11]# source /etc/profile
-[root@node01 zookeeper-3.4.11]# zk # 命令能自动补全zookeeper环境变量生效
+[root@node02 zookeeper-3.4.11]# source /etc/profile
+[root@node02 zookeeper-3.4.11]# zk # 命令能自动补全zookeeper环境变量生效
 zkCleanup.sh  zkCli.cmd     zkCli.sh      zkEnv.cmd     zkEnv.sh      zkServer.cmd  zkServer.sh 
 ```
 
@@ -43,15 +44,15 @@ zkCleanup.sh  zkCli.cmd     zkCli.sh      zkEnv.cmd     zkEnv.sh      zkServer.c
 注意所有的注释都不要写在键值对后面
 
 ```shell
-[root@node01 conf]# pwd
+[root@node02 conf]# pwd
 /opt/stanlong/zookeeper-3.4.11/conf
-[root@node01 conf]# ll
+[root@node02 conf]# ll
 total 12
 -rw-r--r-- 1 502 games  535 Nov  2  2017 configuration.xsl
 -rw-r--r-- 1 502 games 2161 Nov  2  2017 log4j.properties
 -rw-r--r-- 1 502 games  922 Nov  2  2017 zoo_sample.cfg
-[root@node01 conf]# cp zoo_sample.cfg zoo.cfg
-[root@node01 conf]# vi zoo.cfg 
+[root@node02 conf]# cp zoo_sample.cfg zoo.cfg
+[root@node02 conf]# vi zoo.cfg 
 ```
 
 ```properties
@@ -87,14 +88,12 @@ clientPort=2181
 # 配置zookeeper节点，两个端口号是因为zookeeper运行时又两个状态，可用和不可用状态
 # zookeeper 也是主从模型 一个领导者 leader，多个跟随者follwoer组成的集群
 # 如果leader挂了， 可以根据数字快速选取出下一个leader
-server.1=192.168.235.11:2888:3888
 server.2=192.168.235.12:2888:3888
 server.3=192.168.235.13:2888:3888
 server.4=192.168.235.14:2888:3888
 ```
 
 ```shell
-[root@node01 ~]# echo 1 > /var/data/zk/myid # 把配置的server数字覆盖到数据目录myid这个文件
 [root@node02 ~]# echo 2 > /var/data/zk/myid # 把配置的server数字覆盖到数据目录myid这个文件
 [root@node03 ~]# echo 3 > /var/data/zk/myid # 把配置的server数字覆盖到数据目录myid这个文件
 [root@node04 ~]# echo 4 > /var/data/zk/myid # 把配置的server数字覆盖到数据目录myid这个文件
@@ -105,7 +104,7 @@ server.4=192.168.235.14:2888:3888
 分发脚本参考 23自定义集群脚本/分发脚本
 
 ```shell
-[root@node01 myshell]# ./rsyncd.sh /opt/stanlong/zookeeper-3.4.11/
+[root@node02 myshell]# ./rsyncd.sh /opt/stanlong/zookeeper-3.4.11/
 ```
 
 **配置node02，03，04上的zookeeper数据目录和myid文件**
@@ -135,18 +134,9 @@ zkCleanup.sh  zkCli.cmd     zkCli.sh      zkEnv.cmd     zkEnv.sh      zkServer.c
 
 ### 启动zookeeper
 
-按node01，node02，node03，node04的顺序启动(其实顺序无所谓)
+按node02，node03，node04的顺序启动(其实顺序无所谓)
 
 ```shell
-[root@node01 ~]# zkServer.sh start
-ZooKeeper JMX enabled by default
-Using config: /opt/stanlong/zookeeper-3.4.11/bin/../conf/zoo.cfg
-Starting zookeeper ... STARTED
-[root@node01 ~]# zkServer.sh status
-ZooKeeper JMX enabled by default
-Using config: /opt/stanlong/zookeeper-3.4.11/bin/../conf/zoo.cfg
-Error contacting service. It is probably not running. # 说明zookeeper 启动数量未过半
-
 [root@node02 ~]# zkServer.sh start
 ZooKeeper JMX enabled by default
 Using config: /opt/stanlong/zookeeper-3.4.11/bin/../conf/zoo.cfg
@@ -178,7 +168,7 @@ Mode: follower # 其他节点都被选为 follower
 ### 启动客户端
 
 ```shell
-[root@gmall bin]# ./zkCli.sh
+[root@node02 ~]# zkCli.sh
 ...
 WATCHER::
 WatchedEvent state:SyncConnected type:None path:null
@@ -225,7 +215,7 @@ numChildren = 0
 ### 停止zookeeper
 
 ```shell
-[root@gmall bin]# ./zkServer.sh stop
+[root@node02 ~]# zkServer.sh stop
 ZooKeeper JMX enabled by default
 Using config: /opt/zookeeper-3.4.11/bin/../conf/zoo.cfg
 Stopping zookeeper ... STOPPED
