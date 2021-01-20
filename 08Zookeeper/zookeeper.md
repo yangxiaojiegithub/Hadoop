@@ -207,6 +207,12 @@ ephemeralOwner = 0x1000057e5030000
 dataLength = 6
 numChildren = 0
 ```
+### 删除节点
+
+```shell
+[zk: localhost:2181(CONNECTED) 3] delete /hadoop-ha
+```
+
 ### 退出客户端
 
 ```
