@@ -12,11 +12,13 @@ Hive 是基于Hadoop的一个数据仓库工具，可以将结构化的数据文
 
 ![](./doc/01.png)
 
+Hive中搭建分为三种方式 `内嵌Derby方式` 、`Local方式`、 `Remote方式` 三种方式归根到底就是元数据的存储位置不一样
+
 ## 节点规划
 
-|        |      |
-| ------ | ---- |
-| node01 | Hive |
+|        |                              |
+| ------ | ---------------------------- |
+| node01 | apache-hive-1.2.2-bin.tar.gz |
 
 ## Hive安装部署
 
@@ -30,6 +32,23 @@ Hive 是基于Hadoop的一个数据仓库工具，可以将结构化的数据文
 [root@node01 ~]# tar -zxf apache-hive-1.2.2-bin.tar.gz -C /opt/stanlong/hive
 ```
 
+### 配置hive环境变量
+
+```shell
+[root@node01 bin]# pwd
+/opt/stanlong/hive/apache-hive-1.2.2-bin
+[root@node01 bin]# vi /etc/profile # 在文件最后添加
+export HIVE_HOME=/opt/stanlong/hive/apache-hive-1.2.2-bin  # HIVE环境变量
+export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/bin
+[root@node01 bin]# source /etc/profile # 使配置文件生效
+[root@node01 bin]# hi # 命令提示
+history         hive            hive-config.sh  hiveserver2   
+```
+
+## 内嵌Derby方式
+
+使用derby存储方式时，运行hive会在**当前目录**生成一个derby文件和一个metastore_db目录。这种存储方式的弊端是在同一个目录下同时只能有一个hive客户端能使用数据库
+
 ### 配置hive-env.sh
 
 ```shell
@@ -40,51 +59,7 @@ Hive 是基于Hadoop的一个数据仓库工具，可以将结构化的数据文
 ```
 
 ```properties
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# Set Hive and Hadoop environment variables here. These variables can be used
-# to control the execution of Hive. It should be used by admins to configure
-# the Hive installation (so that users do not have to set environment variables
-# or set command line parameters to get correct behavior).
-#
-# The hive service being invoked (CLI/HWI etc.) is available via the environment
-# variable SERVICE
-
-
-# Hive Client memory usage can be an issue if a large number of clients
-# are running at the same time. The flags below have been useful in 
-# reducing memory usage:
-#
-# if [ "$SERVICE" = "cli" ]; then
-#   if [ -z "$DEBUG" ]; then
-#     export HADOOP_OPTS="$HADOOP_OPTS -XX:NewRatio=12 -Xms10m -XX:MaxHeapFreeRatio=40 -XX:MinHeapFreeRatio=15 -XX:+UseParNewGC -XX:-UseGCOverheadLimit"
-#   else
-#     export HADOOP_OPTS="$HADOOP_OPTS -XX:NewRatio=12 -Xms10m -XX:MaxHeapFreeRatio=40 -XX:MinHeapFreeRatio=15 -XX:-UseGCOverheadLimit"
-#   fi
-# fi
-
-# The heap size of the jvm stared by hive shell script can be controlled via:
-#
-# export HADOOP_HEAPSIZE=1024
-#
-# Larger heap size may be required when running queries over large number of files or partitions. 
-# By default hive shell scripts use a heap size of 256 (MB).  Larger heap size would also be 
-# appropriate for hive server (hwi etc).
-
+... 省略掉文件中的注释
 
 # Set HADOOP_HOME to point to a specific hadoop install directory
 # 配置Hadoop环境变量，在/etc/profile里配置过的话，这里也可以不用再配置
@@ -93,26 +68,6 @@ Hive 是基于Hadoop的一个数据仓库工具，可以将结构化的数据文
 # Hive Configuration Directory can be controlled by:
 # 配置Hive配置文件的路径
 export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
-
-# Folder containing extra ibraries required for hive compilation/execution can be controlled by:
-# export HIVE_AUX_JARS_PATH=
-```
-
-### 启动hive
-
-```shell
-[root@node01 bin]# pwd
-/opt/stanlong/hive/apache-hive-1.2.2-bin/bin
-[root@node01 bin]# ./hive
-
-Logging initialized using configuration in jar:file:/opt/stanlong/hive/lib/hive-common-1.2.2.jar!/hive-log4j.properties
-hive> 
-```
-
-### 退出hive
-
-```sql
-hive> quit;
 ```
 
 ### 更改hive 默认配置
@@ -128,9 +83,73 @@ hive> quit;
 [root@node01 hive]# hdfs dfs -chmod g+w /user/hive/warehouse
 ```
 
-定位下这个错 Error during job, obtaining debugging information...
+### 启动hive
+
+```shell
+[root@node01 ~]# hive
+
+Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
+hive> 
+
+```
+
+使用derby存储方式时，运行hive会在**当前目录**生成一个derby文件和一个metastore_db目录
+
+![](./doc/02.png)
+
+### 退出hive
+
+```sql
+hive> quit;
+```
+
+### derby 方式简单测试
+
+```sql
+hive> create table hehe(id String); # 建表
+OK
+Time taken: 0.941 seconds
+hive> insert into hehe values ("Hello Hive"); # 插入数据
+Query ID = root_20210122062951_5288a120-7ce8-496e-bd8f-f21742b18bdc
+Total jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1611264698467_0002, Tracking URL = http://node02:8088/proxy/application_1611264698467_0002/
+Kill Command = /opt/stanlong/hadoop-ha/hadoop-2.9.2/bin/hadoop job  -kill job_1611264698467_0002
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2021-01-22 06:30:43,298 Stage-1 map = 0%,  reduce = 0%
+2021-01-22 06:31:28,861 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 8.8 sec
+MapReduce Total cumulative CPU time: 8 seconds 800 msec
+Ended Job = job_1611264698467_0002
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to: hdfs://hacluster/user/hive/warehouse/hehe/.hive-staging_hive_2021-01-22_06-29-51_792_7409469211417145821-1/-ext-10000
+Loading data to table default.hehe
+Table default.hehe stats: [numFiles=1, numRows=1, totalSize=11, rawDataSize=10]
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 8.8 sec   HDFS Read: 3097 HDFS Write: 79 SUCCESS
+Total MapReduce CPU Time Spent: 8 seconds 800 msec
+OK
+Time taken: 102.511 seconds
+hive> select * from hehe; # 查询数据
+OK
+Hello Hive
+Time taken: 0.544 seconds, Fetched: 1 row(s)
+hive> 
+```
 
 
+
+
+
+
+
+
+
+### 查看hive日志
+
+hive默认日志路径 /tmp/<user.name>文件夹的hive.log文件中，全路径就是/tmp/当前用户名/hive.log
 
 
 
