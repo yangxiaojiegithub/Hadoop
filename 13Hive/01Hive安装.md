@@ -16,9 +16,11 @@ Hive中搭建分为三种方式 `内嵌Derby方式` 、`Local方式`、 `Remote�
 
 ## 节点规划
 
-|        |                              |
-| ------ | ---------------------------- |
-| node01 | apache-hive-1.2.2-bin.tar.gz |
+|                    |                              |
+| ------------------ | ---------------------------- |
+| node01（服务器端） | apache-hive-1.2.2-bin.tar.gz |
+| node02 （客户端）  | apache-hive-1.2.2-bin.tar.gz |
+| node03 （客户端）  | apache-hive-1.2.2-bin.tar.gz |
 
 ## Hive安装部署
 
@@ -87,10 +89,8 @@ export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
 
 ```shell
 [root@node01 ~]# hive
-
 Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
 hive> 
-
 ```
 
 使用derby存储方式时，运行hive会在**当前目录**生成一个derby文件和一个metastore_db目录
@@ -138,6 +138,221 @@ Hello Hive
 Time taken: 0.544 seconds, Fetched: 1 row(s)
 hive> 
 ```
+
+## Local方式安装
+
+这种存储方式需要在本地运行一个mysql服务器，元数据存储在mysql里
+
+### 安装mysql
+
+参考 DBA/mysql/01mysql安装.md
+
+### Hive元数据配置到mysql
+
+1. 上传mysql驱动jar包
+
+   ```shell
+   [root@node01 lib]# pwd
+   /opt/stanlong/hive/apache-hive-1.2.2-bin/lib
+   [root@node01 lib]# mv ~/mysql-connector-java-5.1.37.jar .
+   ```
+
+2. 配置 hive-site.xml文件
+
+   ```shell
+   [root@node01 conf]# pwd
+   /opt/stanlong/hive/apache-hive-1.2.2-bin/conf
+   [root@node01 conf]# vi hive-site.xml
+   ```
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+   <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+   <configuration>
+   
+   	<!-- 配置hive文件在hdfs上的保存路径 -->
+       <property>
+           <name>hive.metastore.warehouse.dir</name>  
+           <value>/user/hivedb/warehouse</value>
+       </property>
+       <property>
+           <name>hive.metastore.local</name>
+           <!-- 单用户模式下值为 false -->
+           <value>false</value>
+       </property>
+       <property>
+           <!-- 元数据库的链接地址 mysql, hive元数据库名称 hivedb -->
+           <name>javax.jdo.option.ConnectionURL</name>  
+           <value>jdbc:mysql://192.168.235.11:3306/hivedb?createDatabaseIfNotExist=true</value>
+       </property>
+       <property>
+           <!-- 指定mysql驱动 -->
+           <name>javax.jdo.option.ConnectionDriverName</name>
+           <value>com.mysql.jdbc.Driver</value>
+       </property>
+       <property>
+           <!-- 指定mysql用户名 -->
+           <name>javax.jdo.option.ConnectionUserName</name>
+           <value>root</value>
+       </property>
+       <property>
+           <name>javax.jdo.option.ConnectionPassword</name>
+           <value>root</value>
+       </property>
+   	
+   	<!-- 表头信息配置 -->
+   	<property>
+   		<name>hive.cli.print.header</name>
+   		<value>true</value>
+   	</property>
+   
+   	<!-- 显示当前数据库 -->
+   	<property>
+   		<name>hive.cli.print.current.db</name>
+   		<value>true</value>
+   	</property>
+   
+   </configuration>
+   ```
+
+3. 启动hive
+
+   ```shell
+   [root@node01 ~]# hive
+   21/01/23 18:36:46 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
+   
+   Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
+   hive (default)> 
+   ```
+
+4.  查看MySQL数据库
+
+   hivedb库已成功创建， 表TBLS和DBS保存了hive表和相关的数据库信息
+
+   ```sql
+   mysql> show databases;
+   +--------------------+
+   | Database           |
+   +--------------------+
+   | information_schema |
+   | hivedb             |
+   | mysql              |
+   | performance_schema |
+   | sys                |
+   +--------------------+
+   5 rows in set (0.00 sec)
+   ```
+
+   ```sql
+   mysql> use hivedb;
+   mysql> select * from TBLS;
+   +--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
+   | TBL_ID | CREATE_TIME | DB_ID | LAST_ACCESS_TIME | OWNER | RETENTION | SD_ID | TBL_NAME | TBL_TYPE      | VIEW_EXPANDED_TEXT | VIEW_ORIGINAL_TEXT |
+   +--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
+   |      1 |  1611398538 |     1 |                0 | root  |         0 |     1 | hehe     | MANAGED_TABLE | NULL               | NULL               |
+   +--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
+   1 row in set (0.00 sec)
+   
+   mysql> select * from DBS;
+   +-------+-----------------------+----------------------------------------+---------+------------+------------+
+   | DB_ID | DESC                  | DB_LOCATION_URI                        | NAME    | OWNER_NAME | OWNER_TYPE |
+   +-------+-----------------------+----------------------------------------+---------+------------+------------+
+   |     1 | Default Hive database | hdfs://hacluster/user/hivedb/warehouse | default | public     | ROLE       |
+   +-------+-----------------------+----------------------------------------+---------+------------+------------+
+   1 row in set (0.00 sec)
+   ```
+
+5. 基本测试及hive多窗口登录
+
+   参考 derby 方式简单测试
+
+6. 删除derby方式安装生成的 derby.log 和 metastore_db
+
+## Remote方式安装
+
+采取服务端和客户端分离的方式安装，按节点规划，服务端在node01，客户端在node02，node03上. 客户端与服务端之间通过 thrift 协议通信，端口号9083
+
+1. 分发node01上是hive目录到node02，node03
+
+   ```shell
+   [root@node01 stanlong]# pwd
+   /opt/stanlong
+   [root@node01 stanlong]# scp -r hive/ node02:`pwd`
+   [root@node01 stanlong]# scp -r hive/ node03:`pwd`
+   ```
+
+2. 分发 node01 上的 /etc/profile 文件到 node02，node03. 并使文件生效
+
+   ```shell
+   [root@node01 ~]# scp /etc/profile node02:/etc/profile
+   [root@node01 ~]# scp /etc/profile node03:/etc/profile
+   [root@node02 stanlong]# source /etc/profile
+   [root@node02 stanlong]# hi
+   history         hive/           hive-config.sh  hiveserver2 
+   [root@node03 stanlong]# source /etc/profile
+   [root@node03 stanlong]# hi
+   history         hive/           hive-config.sh  hiveserver2 
+   ```
+
+3. node01 后台启动
+
+   ```shell
+   [root@node01 ~]# nohup hive --service metastore & # 后台启动
+   [1] 12109
+   [root@node01 ~]# jobs # 查看后台启动任务，任务编号 1
+   [1]+  Running                 nohup hive --service metastore &
+   [root@node01 ~]# ss -nal | grep 9083 # 监听9083端口是否启用
+   Netid  State      Recv-Q Send-Q                         Local Address:Port                                        Peer Address:Port
+   tcp    LISTEN     0      50                                        *:9083                                                  *:*
+   
+   [root@node01 ~]# fg 1 后台任务挪到前台
+   nohup hive --service metastore
+   ctrl+c 退出后台任务
+   ```
+
+4. 编辑node02，node03的 hive-site.xml 文件
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+   <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+   <configuration>
+   
+   	<!-- 配置hive文件在hdfs上的保存路径 -->
+       <property>
+           <name>hive.metastore.warehouse.dir</name>  
+           <value>/user/hivedb/warehouse</value>
+       </property>
+       <!-- 配置与服务端的通信 -->
+       <property>
+   	    <name>hive.metastore.uris</name>
+   	    <value>thrift://node01:9083</value>
+   	</property>
+   </configuration>
+   ```
+
+5. 客户端启动hive
+
+   ```shell
+   [root@node02 ~]# hive
+   
+   Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
+   hive> 
+   ```
+6. 基本测试
+
+   参考 derby 方式简单测试
+
+   
+
+   
+
+   
+
+
+
+
+
+
 
 
 
