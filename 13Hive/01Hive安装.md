@@ -159,6 +159,8 @@ hive>
 
 2. 配置 hive-site.xml文件
 
+   官方文档路径 https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin
+
    ```shell
    [root@node01 conf]# pwd
    /opt/stanlong/hive/apache-hive-1.2.2-bin/conf
@@ -225,7 +227,7 @@ hive>
    hive (default)> 
    ```
 
-4.  查看MySQL数据库
+4. 查看MySQL数据库
 
    hivedb库已成功创建， 表TBLS和DBS保存了hive表和相关的数据库信息
 
@@ -272,7 +274,7 @@ hive>
 
 采取服务端和客户端分离的方式安装，按节点规划，服务端在node01，客户端在node02，node03上. 客户端与服务端之间通过 thrift 协议通信，端口号9083
 
-1. 分发node01上是hive目录到node02，node03
+1. 分发node01上的hive目录到node02，node03
 
    ```shell
    [root@node01 stanlong]# pwd
@@ -297,7 +299,7 @@ hive>
 3. node01 后台启动
 
    ```shell
-   [root@node01 ~]# nohup hive --service metastore & # 后台启动
+   [root@node01 ~]# nohup hive --service metastore > /dev/null 2>&1 & # 后台启动
    [1] 12109
    [root@node01 ~]# jobs # 查看后台启动任务，任务编号 1
    [1]+  Running                 nohup hive --service metastore &
@@ -338,9 +340,38 @@ hive>
    Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
    hive> 
    ```
+   
 6. 基本测试
 
    参考 derby 方式简单测试
+
+## jdbc访问hive
+
+在服务端后台启动一个hiveserver进程
+
+```shell
+[root@node01 ~]# nohup hiveserver2 > /dev/null 2>&1 &
+[root@node01 ~]# jobs
+[1]-  Running                 nohup hive --service metastore &
+[2]+  Running                 nohup hiveserver2 &
+```
+
+客户端执行beeline命令
+
+```shell
+[root@node02 ~]# beeline
+Beeline version 1.2.2 by Apache Hive
+beeline> !connect jdbc:hive2://node01:10000 # 连接到服务端的 hiveserver2
+Connecting to jdbc:hive2://node01:10000
+Enter username for jdbc:hive2://node01:10000: root
+Enter password for jdbc:hive2://node01:10000: ****
+Connected to: Apache Hive (version 1.2.2)
+Driver: Hive JDBC (version 1.2.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://node01:10000> 
+```
+
+
 
    
 
@@ -366,178 +397,19 @@ hive>
 
 hive默认日志路径 /tmp/<user.name>文件夹的hive.log文件中，全路径就是/tmp/当前用户名/hive.log
 
+- 
+
+## 
 
 
 
 
 
 
-**3.Hive基本操作**
-
-- 启动hive
-
-```sql
-[root@node01 hive]# pwd
-/opt/stanlong/hive
-[root@node01 hive]# bin/hive
-
-Logging initialized using configuration in jar:file:/opt/stanlong/hive/lib/hive-common-1.2.2.jar!/hive-log4j.properties
-hive> 
-```
-
-- 退出hive
-
-```sql
-
-[root@node01 hive]#
-```
-
-## 将本地文件导入hive案例
-
-将本地/root/student.txt这个目录下的数据导入到hive的student(id int, name string)表中
-
-- 数据准备
-
-```shell
-[root@node01 ~]# vi student.txt
-1001	zhangshan
-1002	lishi
-1003	zhaoliu
-```
-
-注意以tab键间隔
-
-- hive实际操作
-
-  - 创建student表, 并声明文件分隔符’\t’
-
-  ```shell
-  hive> create table student(id int, name string) ROW FORMAT DELIMITED FIELDS TERMINATED
-      >  BY '\t';
-  OK
-  Time taken: 3.487 seconds
-  ```
-
-  - 加载/root/student.txt文件到student数据库表中
-
-  ```shell
-  hive> load data local inpath '/root/student.txt' into table student;
-  Loading data to table default.student
-  Table default.student stats: [numFiles=1, totalSize=39]
-  OK
-  Time taken: 2.733 seconds
-  hive> 
-  ```
-
-  - Hive查询结果
-
-  ```sql
-  hive> select * from student;
-  OK
-  1001	zhangshan
-  1002	lishi
-  1003	zhaoliu
-  Time taken: 0.788 seconds, Fetched: 3 row(s)
-  hive> 
-  ```
-
-## mysql安装（参考 MySql_DBA/安装mysql.docx）
-
-安装完数据库之后需要修改下user表
-
-```sql
-mysql>update user set host='%' where host='localhost';
-```
 
 
 
-## hive元数据配置到mysql
 
-- 拷贝mysql连接驱动到 hive/lib目录下
-
-```shell
-[root@node01 ~]# cp mysql-connector-java-5.1.37.jar /opt/stanlong/hive/lib/
-```
-
-- 配置Metastore到MySql
-
-  - 在 /hive/conf目录下创建一个hive-site.xml
-
-  ```shell
-  [root@node01 conf]# pwd
-  /opt/stanlong/hive/conf
-  [root@node01 conf]# touch hive-site.xml
-  ```
-
-  - 配置 hive-site.xml文件中
-
-  官方文档地址 https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin
-
-  ```xml
-  <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-  <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-  <configuration>
-  
-  	<!-- 配置hive文件在hdfs上的保存路径 -->
-      <property>
-          <name>hive.metastore.warehouse.dir</name>  
-          <value>/user/hivedb/warehouse</value>
-      </property>
-      <property>
-          <name>hive.metastore.local</name>
-          <!-- 单用户模式下值为 false -->
-          <value>false</value>
-      </property>
-      <property>
-          <!-- 元数据库的链接地址 mysql -->
-          <name>javax.jdo.option.ConnectionURL</name>  
-          <value>jdbc:mysql://192.168.235.11:3306/hivedb?createDatabaseIfNotExist=true</value>
-      </property>
-      <property>
-          <!-- 指定mysql驱动 -->
-          <name>javax.jdo.option.ConnectionDriverName</name>
-          <value>com.mysql.jdbc.Driver</value>
-      </property>
-      <property>
-          <!-- 指定mysql用户名 -->
-          <name>javax.jdo.option.ConnectionUserName</name>
-          <value>root</value>
-      </property>
-      <property>
-          <name>javax.jdo.option.ConnectionPassword</name>
-          <value>root</value>
-      </property>
-  	
-  	<!-- 表头信息配置 -->
-  	<property>
-  		<name>hive.cli.print.header</name>
-  		<value>true</value>
-  	</property>
-  
-  	<!-- 显示当前数据库 -->
-  	<property>
-  		<name>hive.cli.print.current.db</name>
-  		<value>true</value>
-  	</property>
-  
-  </configuration>
-  ```
-
-  - 配置好之后重启hive会发现mysql目录下多了一个 hivedb的数据库
-
-  ```shell
-  mysql> show databases;
-  +--------------------+
-  | Database           |
-  +--------------------+
-  | information_schema |
-  | hivedb             |
-  | mysql              |
-  | performance_schema |
-  | sys                |
-  +--------------------+
-  5 rows in set (0.00 sec)
-  ```
 
 ## Hive JDBC 访问
 
