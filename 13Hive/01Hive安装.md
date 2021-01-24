@@ -414,96 +414,11 @@ Beeline version 1.2.2 by Apache Hive
 
 
 
-## Hive常见属性配置
 
-- Hive数据仓库位置配置， 修改hive-site.xml文件
 
-```xml
-<!-- 配置hive文件在hdfs上的保存路径 -->
-<property>
-	<name>hive.metastore.warehouse.dir</name>
-	<value>/user/hivedb/warehouse</value>
-</property>
-```
 
-配置同组用户有执行权限
 
-```shell
-[root@node01 ~]# hdfs dfs -chmod g+w /user/hive/warehouse
-```
 
-## Hive运行日志信息配置
-
-- Hive的log默认存放在/tmp/root/hive.log目录下
-
-```shell
-[root@node01 conf]# cd /tmp/root/
-[root@node01 root]# ll
-total 1988
-drwx------ 2 root root       6 Jun 12 03:26 4d156c34-1b5e-4a12-8d1a-6e748d9d42e4
--rw-r--r-- 1 root root       0 Jun 12 03:26 4d156c34-1b5e-4a12-8d1a-6e748d9d42e47941722375069889495.pipeout
-drwx------ 2 root root       6 Jun 12 03:48 73682e93-575e-4949-bea0-e096dcaeaa85
--rw-r--r-- 1 root root       0 Jun 12 03:48 73682e93-575e-4949-bea0-e096dcaeaa85100815794926489045.pipeout
--rw-r--r-- 1 root root 2031794 Jun 12 03:50 hive.log
-drwxr-xr-x 2 root root       6 Jun 12 03:50 operation_logs
-[root@node01 root]# 
-```
-
-- 修改hive的log存放日志到/opt/stanlong/hive/logs
-
-  - 修改/opt/stanlong/hive/conf/hive-log4j.properties.template文件名称为
-
-    hive-log4j.properties
-
-    ```shell
-    [root@node01 conf]# cp hive-log4j.properties.template hive-log4j.properties
-    ```
-
-  - 在hive-log4j.properties文件中修改log存放位置
-
-    ```shell
-    [root@node01 conf]# vi hive-log4j.properties
-    20 hive.log.dir=/opt/stanlong/hive/logs
-    ```
-
-## 参数配置方式
-
-- 查看当前所有的配置信息
-
-```shell
-hive (default)> set;
-```
-
-- 参数的配置三种方式
-
-  - 配置文件方式
-
-  ```
-  默认配置文件：hive-default.xml 
-  用户自定义配置文件：hive-site.xml
-  	注意：用户自定义配置会覆盖默认配置。另外，Hive也会读入Hadoop的配置，因为Hive是作为Hadoop的客户端启动的，Hive的配置会覆盖Hadoop的配置。配置文件的设定对本机启动的所有Hive进程都有效。
-  ```
-
-  - 命令行参数方式
-
-  ```
-  启动Hive时，可以在命令行添加-hiveconf param=value来设定参数
-  例如: [root@node01 conf]# hive -hiveconf mapred.reduce.tasks=10;
-  注意：仅对本次hive启动有效
-  查看参数设置: hive (default)> set mapred.reduce.tasks;
-  ```
-
-  - 参数声明方式
-
-  ```
-  可以在HQL中使用SET关键字设定参数
-  例如：hive (default)> set mapred.reduce.tasks=100;
-  注意：仅对本次hive启动有效。
-  查看参数设置
-  hive (default)> set mapred.reduce.tasks;
-  ```
-
-  上述三种设定方式的优先级依次递增。即配置文件<命令行参数<参数声明。注意某些系统级的参数，例如log4j相关的设定，必须用前两种方式设定，因为那些参数的读取在会话建立以前已经完成了
 
 # Hive数据类型
 
