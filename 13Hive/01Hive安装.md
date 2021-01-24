@@ -359,19 +359,16 @@ hive>
 客户端执行beeline命令
 
 ```shell
-[root@node02 ~]# beeline
-Beeline version 1.2.2 by Apache Hive
-beeline> !connect jdbc:hive2://node01:10000 # 连接到服务端的 hiveserver2
+[root@node02 conf]# beeline -u "jdbc:hive2://node01:10000"  -n root -p root
 Connecting to jdbc:hive2://node01:10000
-Enter username for jdbc:hive2://node01:10000: root
-Enter password for jdbc:hive2://node01:10000: ****
 Connected to: Apache Hive (version 1.2.2)
 Driver: Hive JDBC (version 1.2.2)
 Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 1.2.2 by Apache Hive
 0: jdbc:hive2://node01:10000> 
 ```
 
-
+启动脚本参考 23自定义集群脚本/Hive启停脚本.md
 
    
 
