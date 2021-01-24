@@ -345,7 +345,7 @@ hive>
 
    参考 derby 方式简单测试
 
-## jdbc访问hive
+## JDBC访问hive
 
 在服务端后台启动一个hiveserver进程
 
@@ -370,166 +370,49 @@ Beeline version 1.2.2 by Apache Hive
 
 启动脚本参考 23自定义集群脚本/Hive启停脚本.md
 
-   
+## 查看Hive日志
 
-   
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 查看hive日志
-
-hive默认日志路径 /tmp/<user.name>文件夹的hive.log文件中，全路径就是/tmp/当前用户名/hive.log
-
-- 
-
-## 
-
-
-
-
-
-
-
-
-
-
-
-## Hive JDBC 访问
-
-- 启动hiveserver2, 这是一个阻塞进程
+默认文件存放路径
 
 ```shell
-[root@node01 conf]# hiveserver2
-20/06/12 03:26:42 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
+[root@node01 conf]# pwd
+/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
+[root@node01 conf]# vi hive-log4j.properties.template 
+18 hive.log.threshold=ALL
+19 hive.root.logger=INFO,DRFA
+20 hive.log.dir=${java.io.tmpdir}/${user.name}
+21 hive.log.file=hive.log
 ```
 
-- 新起一个窗口，启动beeline
+可知默认日志文件 /${java.io.tmpdir}/${user.name}/hive.log，在本例中也就是 /tmp/root/hive.log
 
 ```shell
-[root@node01 ~]# beeline
-Beeline version 1.2.2 by Apache Hive
-beeline> 
+[root@node01 conf]# cd /tmp/root/
+[root@node01 root]# ll
+-rw-r--r-- 1 root root 383198 Jan 25 06:06 hive.log
 ```
 
-- 连接hiveserver2
 
-```shell
-beeline> !connect jdbc:hive2://node01:10000
-Connecting to jdbc:hive2://node01:10000
-Enter username for jdbc:hive2://node01:10000: root
-Enter password for jdbc:hive2://node01:10000: ****
-Connected to: Apache Hive (version 1.2.2)
-Driver: Hive JDBC (version 1.2.2)
-Transaction isolation: TRANSACTION_REPEATABLE_READ
-0: jdbc:hive2://node01:10000> 
-```
 
-## Hive常用交互命令
 
-```shell
-[root@node01 ~]# hive -help
-20/06/12 03:36:03 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
-usage: hive
- -d,--define <key=value>          Variable subsitution to apply to hive
-                                  commands. e.g. -d A=B or --define A=B
-    --database <databasename>     Specify the database to use
- -e <quoted-query-string>         SQL from command line
- -f <filename>                    SQL from files
- -H,--help                        Print help information
-    --hiveconf <property=value>   Use value for given property
-    --hivevar <key=value>         Variable subsitution to apply to hive
-                                  commands. e.g. --hivevar A=B
- -i <filename>                    Initialization SQL file
- -S,--silent                      Silent mode in interactive shell
- -v,--verbose                     Verbose mode (echo executed SQL to the
-                                  console)
-[root@node01 ~]# 
-```
 
-- -e 不进入hive的交互窗口执行sql语句
 
-```shell
-[root@node01 ~]# hive -e "select * from student";
-20/06/12 03:39:41 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
 
-Logging initialized using configuration in jar:file:/opt/stanlong/hive/lib/hive-common-1.2.2.jar!/hive-log4j.properties
-OK
-student.id	student.name
-1001	zhangshan
-1002	lishi
-1003	zhaoliu
-Time taken: 6.374 seconds, Fetched: 3 row(s)
-```
 
-- -f 执行脚本中sql语句
 
-  - 创建hivef.sql文件
 
-  ```shell
-  [root@node01 ~]# touch hivef.sql
-  ```
 
-  - 在文件中写入正确的Sql语句
 
-  ```shell
-  [root@node01 ~]# vi hivef.sql
-  select *from student;
-  ```
 
-  - 执行文件中的sql语句
 
-  ```shell
-  [root@node01 ~]# hive -f hivef.sql 
-  20/06/12 03:42:23 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
-  
-  Logging initialized using configuration in jar:file:/opt/stanlong/hive/lib/hive-common-1.2.2.jar!/hive-log4j.properties
-  OK
-  student.id	student.name
-  1001	zhangshan
-  1002	lishi
-  1003	zhaoliu
-  Time taken: 4.916 seconds, Fetched: 3 row(s)
-  ```
 
-# Hive其他操作命令
 
-- 在hive cli命令窗口中如何查看hdfs文件系统， 在beeline也可以查看
 
-```shell
-0: jdbc:hive2://node01:10000> dfs -ls /;
-+-------------------------------------------------------------------+--+
-|                            DFS Output                             |
-+-------------------------------------------------------------------+--+
-| Found 2 items                                                     |
-| drwx-wx-wx   - root supergroup          0 2020-06-12 01:11 /tmp   |
-| drwxr-xr-x   - root supergroup          0 2020-06-12 02:06 /user  |
-+-------------------------------------------------------------------+--+
-3 rows selected (0.269 seconds)
-```
 
-- 在hive cli命令窗口中如何查看本地文件系统
 
-```shell
-hive (default)> ! ls /opt/stanlong;
-hadoop-2.9.2
-hadoop-2.9.2-full
-hive
-hive (default)> 
-```
+
+
+
 
 ## Hive常见属性配置
 
