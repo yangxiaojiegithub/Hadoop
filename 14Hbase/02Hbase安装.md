@@ -4,12 +4,12 @@
 
 ## 节点规划
 
-|        | master       | regionserver |
-| ------ | ------------ | ------------ |
-| node01 | master（主） |              |
-| node02 |              | regionserver |
-| node03 |              | regionserver |
-| node04 | master（备） |              |
+|        | HMaster      | HRegionServer |
+| ------ | ------------ | ------------- |
+| node01 | master（主） |               |
+| node02 |              | regionserver  |
+| node03 |              | regionserver  |
+| node04 | master（备） |               |
 
 ### 角色说明
 
@@ -22,7 +22,7 @@
 5. 空闲时对数据进行负载均衡
 6. 通过zookeeper发布自己的位置给客户端
 
-**RegionServer**
+**HRegionServer**
 
 1. 负责存储Hbase的实际数据
 2. 处理分配给它的region
@@ -238,12 +238,12 @@ node04: starting master, logging to /opt/stanlong/hbase/hbase-1.3.6/bin/../logs/
 9380 Jps
 8151 DataNode
 8327 NodeManager
-9209 HRegionServer # RegionServer
+9209 HRegionServer # HRegionServer
 8924 RunJar
 8398 ResourceManager
 --------- node03 ----------
 9220 Jps
-9047 HRegionServer # RegionServer
+9047 HRegionServer # HRegionServer
 7945 QuorumPeerMain
 8377 ResourceManager
 8745 RunJar
