@@ -103,72 +103,9 @@ cell 中的所有字段数据 都没有数据类型，全部是字节码形式�
 
 ![](./doc/03.png)
 
-## 节点规划
+## 
 
-|        | master | regionserver |
-| ------ | ------ | ------------ |
-| node01 | *      |              |
-| node02 |        | *            |
-| node03 |        | *            |
-| node04 |        | *            |
 
-## Hbase安装
-
-```sql
-[root@node01 ~]# tar zxf hbase-1.3.6-bin.tar.gz
-[root@node01 ~]# mv hbase-1.3.6 /opt/stanlong/
-[root@node01 ~]# cd /opt/stanlong/
-[root@node01 stanlong]# mv hbase-1.3.6/ hbase
-[root@node01 stanlong]# ll
-total 0
-drwxr-xr-x 10 root root 161 Jun 11 10:27 hadoop-2.9.2
-drwxr-xr-x 10 root root 161 Jun 11 10:13 hadoop-2.9.2-full
-drwxr-xr-x  7 root root 160 Jun 14 10:19 hbase
-drwxr-xr-x 10 root root 208 Jun 12 03:59 hive
-```
-
-## Hbase 配置
-
-```shell
-[root@node01 conf]# pwd
-/opt/stanlong/hbase/conf
-[root@node01 conf]# ll
--rw-r--r-- 1 503 games 1811 Oct  5  2019 hadoop-metrics2-hbase.properties
--rw-r--r-- 1 503 games 4616 Oct 11  2019 hbase-env.cmd
--rw-r--r-- 1 503 games 7530 Oct 14  2019 hbase-env.sh
--rw-r--r-- 1 503 games 2257 Oct  5  2019 hbase-policy.xml
--rw-r--r-- 1 503 games  934 Oct  5  2019 hbase-site.xml
--rw-r--r-- 1 503 games 1169 Oct 11  2019 log4j-hbtop.properties
--rw-r--r-- 1 503 games 4722 Oct 14  2019 log4j.properties
--rw-r--r-- 1 503 games   10 Oct  5  2019 regionservers
-```
-
-- 配置 regionservers
-
-```shell
-[root@node01 conf]# vi regionservers 
-node02
-node03
-node04
-```
-
-- 配置 hbase-env.sh
-
-```shell
-[root@node01 conf]# vi hbase-env.sh
-27 export JAVA_HOME=/usr/java/jdk1.8.0_65
-
-46 行和17号在 1jdk 1.8以上的版本用不到，可以注释起来
-45 # Configure PermSize. Only needed in JDK7. You can safely remove it for JDK8+
-     46 #export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m"
-     47 #export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m -XX:ReservedCodeCacheSize=256m"
-
-# 不要用 Hbase 自带的 zk
-127 # Tell HBase whether it should manage it's own instance of Zookeeper or not.
-128 export HBASE_MANAGES_ZK=false
-```
-
-- 配置 hbase-site.xml
 
 ```shell
 [root@node01 conf]# vi hbase-site.xml
@@ -228,43 +165,9 @@ node04
 </configuration>
 ```
 
-- 复制hadoop目录下的  core-site.xml 及hdfs-site.xml 到hbase/conf 目录
 
-```shell
-[root@node01 conf]# cp /opt/stanlong/hadoop-2.9.2/etc/hadoop/core-site.xml .
-[root@node01 conf]# cp /opt/stanlong/hadoop-2.9.2/etc/hadoop/hdfs-site.xml .
-[root@node01 conf]# ll
-total 208
--rw-r--r-- 1 root root   1139 Mar 30  2017 beeline-log4j.properties.template
--rw-r--r-- 1 root root   1126 Jun 14 11:10 core-site.xml
--rw-r--r-- 1 root root   2774 Jun 14 11:10 hdfs-site.xml
--rw-r--r-- 1 root root 168715 Mar 31  2017 hive-default.xml.template
--rw-r--r-- 1 root root   2411 Jun 12 00:54 hive-env.sh
--rw-r--r-- 1 root root   2378 Mar 30  2017 hive-env.sh.template
--rw-r--r-- 1 root root   2662 Mar 30  2017 hive-exec-log4j.properties.template
--rw-r--r-- 1 root root   3043 Jun 12 03:59 hive-log4j.properties
--rw-r--r-- 1 root root   3050 Mar 30  2017 hive-log4j.properties.template
--rw-r--r-- 1 root root   1550 Jun 14 11:09 hive-site.xml
--rw-r--r-- 1 root root   1593 Mar 31  2017 ivysettings.xml
-[root@node01 conf]# 
-```
 
-- 将Hbase分发到 node02, node02, node04 上
 
-```shell
-[root@node01 stanlong]# scp -r hbase/ node02:`pwd`
-[root@node01 stanlong]# scp -r hbase/ node03:`pwd`
-[root@node01 stanlong]# scp -r hbase/ node04:`pwd`
-```
-
-- 配置Hbase环境变量
-
-```shell
-[root@node01 hbase]# vi /etc/profile
-export HBASE_HOME=/opt/stanlong/hbase
-export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/bin:$HBASE_HOME/bin
-[root@node01 hbase]# source /etc/profile
-```
 
 ## 启动Hbase
 
