@@ -159,7 +159,7 @@ export HBASE_MANAGES_ZK=false
 	<!-- 配置zookeeper的dataDir路径(会自动创建)  -->
 	<property>
 		<name>hbase.zookeeper.property.dataDir</name>
-		<value>/opt/module/zookeeper-3.4.5-cdh5.3.6/data/zkData</value>
+		<value>/var/data/zk</value>
 	</property>
 </configuration>
 ```
