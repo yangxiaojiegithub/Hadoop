@@ -211,6 +211,7 @@ numChildren = 0
 
 ```shell
 [zk: localhost:2181(CONNECTED) 3] delete /hadoop-ha
+[zk: localhost:2181(CONNECTED) 3] rmr /hadoop-ha # 递归删除
 ```
 
 ### 退出客户端
