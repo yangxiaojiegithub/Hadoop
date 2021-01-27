@@ -91,7 +91,11 @@ HBase中的每个列，由列簇加上列限定符组成，一般是“列簇：
 
 每个cell中，不同版本的数据按照时间倒序排序，即最新的数据排在最前面。
 
-为了避免数据存在过多版本造成的的管理(包括存贮和索引)负担，hbase 提供了两种数据版本回收方式： 1、保存数据的最后 n 个版本 ； 2、保存最近一段时间内的版本（设置数据的生命周期 TTL）。
+为了避免数据存在过多版本造成的的管理(包括存贮和索引)负担，hbase 提供了两种数据版本回收方式： 
+
+1、**保存数据的最后 n 个版本 ；** 
+
+2、**保存最近一段时间内的版本（设置数据的生命周期 TTL）。**
 
 **7）Cell**
 
@@ -106,94 +110,3 @@ cell 中的所有字段数据 都没有数据类型，全部是字节码形式�
 
 
 
-
-# Hbase Shell操作
-
-
-
-- put 往表里插入数据
-
-```shell
-hbase(main):019:0> create 'stu','info'
-0 row(s) in 2.3160 seconds
-
-=> Hbase::Table - stu
-hbase(main):020:0> put 'stu','1001','info:name','zhangsan'
-0 row(s) in 0.3640 seconds
-```
-
-- scan 扫描表
-
-```shell
-hbase(main):021:0> scan 'stu'
-ROW                                     COLUMN+CELL                                                                                                        
- 1001                                   column=info:name, timestamp=1592195231009, value=zhangsan                                                          
-1 row(s) in 0.1000 seconds
-```
-
-- get 查询
-
-```sql
-hbase(main):022:0> get 'stu','1001'
-COLUMN                                  CELL                                                                                                               
- info:name                              timestamp=1592195231009, value=zhangsan                                                                            
-1 row(s) in 0.0640 seconds
-```
-
-- put 修改表数据
-
-```shell
-hbase(main):023:0> put 'stu','1001','info:name','lisi'
-0 row(s) in 0.0550 seconds
-hbase(main):025:0> scan 'stu'
-ROW                                     COLUMN+CELL                                                                                                        
- 1001                                   column=info:name, timestamp=1592196452049, value=lisi                                                              
-1 row(s) in 0.0290 seconds
-```
-
-- scan 全量扫描(10个版本内的数据都可以扫描到，包括已删除和已修改的)
-
-```shell
-hbase(main):026:0> scan 'stu',{RAW => true, VERSIONS =>10 }
-ROW                                     COLUMN+CELL                                                                                                        
- 1001                                   column=info:name, timestamp=1592196452049, value=lisi                                                              
- 1001                                   column=info:name, timestamp=1592195231009, value=zhangsan                                                          
-1 row(s) in 0.0470 seconds
-```
-
-- 删除表数据
-
-```shell
-删除列
-hbase(main):027:0> delete 'stu','1001','info:name'
-0 row(s) in 0.1830 seconds
-删除rowkey
-hbase(main):032:0> deleteall 'stu','1001'
-0 row(s) in 0.0360 seconds
-删除表
-hbase(main):034:0> truncate 'stu'
-
-```
-
-- flush 刷新内存数据到hdfs
-
-```sql
-hbase(main):036:0> create 'stu3','info'
-0 row(s) in 5.2790 seconds
-
-=> Hbase::Table - stu3
-hbase(main):037:0> put 'stu3','1001','info:name','zhangsan'
-0 row(s) in 0.2110 seconds
-
-hbase(main):038:0> scan 'stu3'
-ROW                                     COLUMN+CELL                                                                                                        
- 1001                                   column=info:name, timestamp=1592211676841, value=zhangsan                                                          
-1 row(s) in 0.0290 seconds
-
-hbase(main):039:0> flush 'stu3'
-0 row(s) in 2.2230 seconds
-```
-
-![](./doc/03.png)
-
-![](./doc/04.png)
