@@ -412,55 +412,25 @@ Beeline version 1.2.2 by Apache Hive
 
 
 
-# DDL数据定义
 
-- 创建数据库
 
-```shell
-0: jdbc:hive2://node01:10000> create database if not exists db_hive;
-```
 
-- 创建一个数据库，指定数据库在HDFS上存放的位置
-
-```sql
-0: jdbc:hive2://node01:10000> create database db_hive2 location '/db_hive2.db';
-```
-
-![](./doc/02.png)
 
   
 
--   修改数据库
 
-  使用ALTER DATABASE命令为某个数据库的DBPROPERTIES设置键-值对属性值，来描述这个数据库的属性信息。数据库的其他元数据信息都是不可更改的，包括数据库名和数据库所在的目录位置
 
-```shell
-0: jdbc:hive2://node01:10000> alter database db_hive set dbproperties('createtime'='20170830');
-No rows affected (0.162 seconds)
-```
 
-在hive中查看修改结果
 
-```
-0: jdbc:hive2://node01:10000> desc database extended db_hive;
-+----------+----------+----------------------------------------------------+-------------+-------------+------------------------+--+
-| db_name  | comment  |                      location                      | owner_name  | owner_type  |       parameters       |
-+----------+----------+----------------------------------------------------+-------------+-------------+------------------------+--+
-| db_hive  |          | hdfs://mycluster/user/hivedb/warehouse/db_hive.db  | root        | USER        | {createtime=20170830}  |
-+----------+----------+----------------------------------------------------+-------------+-------------+------------------------+--+
-1 row selected (0.13 seconds)
-0: jdbc:hive2://node01:10000> 
 
-```
 
-- 删除数据库
 
-如果数据库不为空，可以采用cascade命令，强制删除
 
-```shell
-0: jdbc:hive2://node01:10000> drop database db_hive cascade;
-No rows affected (0.507 seconds)
-```
+
+
+
+
+
 
 ## 创建表
 
