@@ -4,12 +4,10 @@
 
 ## 节点规划
 
-|        | HMaster      | HRegionServer |
-| ------ | ------------ | ------------- |
-| node01 | master（主） |               |
-| node02 |              | regionserver  |
-| node03 |              | regionserver  |
-| node04 | master（备） |               |
+|               | node01      | node02        | node03        | node04      |
+| ------------- | ----------- | ------------- | ------------- | ----------- |
+| HMaster       | HMaster(主) |               |               | HMaster(备) |
+| HRegionServer |             | HRegionServer | HRegionServer |             |
 
 ### 角色说明
 
