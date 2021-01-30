@@ -436,7 +436,7 @@ Beeline version 1.2.2 by Apache Hive
 
 
 
-### 
+
 
 
 
@@ -475,201 +475,37 @@ RLIKE子句是Hive中这个功能的一个扩展，其可以通过Java的正则�
 hive (default)> select * from emp where sal RLIKE '[2]';
 ```
 
-## 排序
+## 
 
-- Order By：全局排序，一个Reducer
 
-- 每个MapReduce内部排序（Sort By）
 
-  Sort By：每个Reducer内部进行排序，对全局结果集来说不是排序
 
-  - 设置reduce个数
 
-  ```sql
-  hive (default)> set mapreduce.job.reduces=3;
-  ```
 
-  - 查看设置reduce个数
 
-  ```sql
-  hive (default)> set mapreduce.job.reduces;
-  ```
 
-  - 根据部门编号降序查看员工信息
 
-  ```sql
-  hive (default)> select * from emp sort by empno desc;
-  ```
 
-- 分区排序（Distribute By）
 
-  Distribute By：类似MR中partition，进行分区，结合sort by使用。  注意，Hive要求DISTRIBUTE BY语句要写在SORT BY语句之前。
 
-  对于distribute by进行测试，一定要分配多reduce进行处理，否则无法看到distribute by的效果
 
--  Cluster By
 
-  当distribute by和sorts by字段相同时，可以使用cluster by方式。
 
-  cluster by除了具有distribute by的功能外还兼具sort by的功能。但是排序只能是升序排序，不能指定排序规则为ASC或者DESC
 
-  - 以下两种写法等价
 
-  ```sql
-  hive (default)> select * from emp cluster by deptno;
-  hive (default)> select * from emp distribute by deptno sort by deptno;
-  ```
 
-## 分桶及抽样查询
 
-### 分桶表数据存储
 
-分区针对的是数据的存储路径；分桶针对的是数据文件。
 
-分区提供一个隔离数据和优化查询的便利方式。不过，并非所有的数据集都可形成合理的分区，特别是之前所提到过的要确定合适的划分大小这个疑虑。
 
-分桶是将数据集分解成更容易管理的若干部分的另一个技术
 
-- **先创建分桶表，通过直接导入数据文件的方式（这种方式并没有生成四个桶）**
 
-  - 数据准备
 
-  stu.txt
 
-  ```
-  1001	ss1
-  1002	ss2
-  1003	ss3
-  1004	ss4
-  1005	ss5
-  1006	ss6
-  1007	ss7
-  1008	ss8
-  1009	ss9
-  1010	ss10
-  1011	ss11
-  1012	ss12
-  1013	ss13
-  1014	ss14
-  1015	ss15
-  1016	ss16
-  ```
 
-  - 创建分桶表
 
-  ```sql
-  create table stu_buck(id int, name string)
-  clustered by(id) 
-  into 4 buckets
-  row format delimited fields terminated by '\t';
-  ```
 
-  - 查看表结构
 
-  ```sql
-  desc formatted stu_buck;
-  | Num Buckets:                  | 4                                                   
-  ```
-
-  - 导入数据到分桶表中
-
-  ```sql
-  load data local inpath '/root/stu.txt' into table stu_buck;
-  ```
-
-  ![](./doc/04.png)
-
-发现并没有分成4个桶，
-
-- **创建分桶表时，数据通过子查询的方式导入(这种方式只生成了一个桶)**
-
-  - 先建一个普通的stu表
-
-  ```sql
-  create table stu(id int, name string)
-  row format delimited fields terminated by '\t';
-  ```
-
-  - 向普通的stu表中导入数据
-
-  ```sql
-  load data local inpath '/root/stu.txt' into table stu;
-  ```
-
-  - 清空stu_buck表中数据
-
-  ```sql
-  truncate table stu_buck;
-  ```
-
-  - 通过子查询的方式,导入数据到分桶表
-
-  ```sql
-  insert into table stu_buck
-  select id, name from stu;
-  ```
-
-  这步执行的时候报错了
-
-  ```xml
-  2020-06-12 12:17:35,748 FATAL [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Error starting MRAppMaster
-  ```
-
-  ![](./doc/05.png)
-  
-  解决方法:
-  
-  ```
-  HA机制下yarn-site.xml需要加入以下配置:
-  
-  <property> 
-      <name>yarn.resourcemanager.webapp.address.rm1</name>  
-      <value>xxx1:8088</value> 
-  </property>  
-  
-  <property> 
-      <name>yarn.resourcemanager.webapp.address.rm2</name>  
-      <value>xxx2:8088</value> 
-  </property>
-  其中xxx1和xxx2需要替换成你的ResourceManager的主机名
-  ```
-  
-  配置完成后重启虚拟机即可。
-  
-  - 发现还是只有一个分桶
-  
-  ![](./doc/06.png)
-
-- **设置分桶属性(这样会生成四个桶)**
-
-```sql
-hive (default)> set hive.enforce.bucketing=true;
-hive (default)> set mapreduce.job.reduces=-1;
-hive (default)> insert into table stu_buck
-select id, name from stu;
-```
-
-![](./doc/07.png)
-
-### 分桶抽样查询
-
-对于非常大的数据集，有时用户需要使用的是一个具有代表性的查询结果而不是全部结果。Hive可以通过对表进行抽样来满足这个需求。
-
-查询表stu_buck中的数据
-
-```sql
-hive (default)> select * from stu_buck tablesample(bucket 1 out of 4 on id);
-```
-
-注：tablesample是抽样语句，语法：TABLESAMPLE(BUCKET x OUT OF y) 。
-
-y必须是table总bucket数的倍数或者因子。hive根据y的大小，决定抽样的比例。例如，table总共分了4份，当y=2时，抽取(4/2=)2个bucket的数据，当y=8时，抽取(4/8=)1/2个bucket的数据。
-
-x表示从哪个bucket开始抽取，如果需要取多个分区，以后的分区号为当前分区号加上y。例如，table总bucket数为4，tablesample(bucket 1 out of 2)，表示总共抽取（4/2=）2个bucket的数据，抽取第1(x)个和第3(x+y)个bucket的数据。
-
-注意：x的值必须小于等于y的值，否则
-
-FAILED: SemanticException [Error 10061]: Numerator should not be bigger than denominator in sample clause for table stu_buck
 
 # 其他查询函数
 
