@@ -456,34 +456,11 @@ Beeline version 1.2.2 by Apache Hive
 
 
 
-## 修改表
 
-- 重命名表
 
-```sql
-ALTER TABLE table_name RENAME TO new_table_name
-```
 
-- 增加/修改/替换列信息
 
-  - 添加列
 
-  ```sql
-  alter table dept_partition add columns(deptdesc string);
-  ```
-
-  - 更新列
-
-  ```sql
-  alter table dept_partition change column deptdesc desc int;
-  ```
-
-  - 替换列
-
-  ```sql
-  alter table dept_partition replace columns(deptno string, dname
-   string, loc string);
-  ```
 
 # 基本查询
 
