@@ -33,6 +33,62 @@ Hbase 是一种分布式、可扩展、支持海量数据存贮的NoSQL数据库
 
 ![](./doc/01.png)
 
+## 写流程
+
+![](./doc/06.png)
+
+1. Client 向ZK集群发送请求，获取meta表所在的RS
+
+   ```shell
+   [zk: localhost:2181(CONNECTED) 4] get /hbase/meta-region-server
+   �regionserver:16020q���]>�"PBUF
+    
+   node02�}�Ŝ��. # RS在node02上 
+   cZxid = 0x280000003c
+   ctime = Sun Jan 31 00:37:04 CST 2021
+   mZxid = 0x280000003c
+   mtime = Sun Jan 31 00:37:04 CST 2021
+   pZxid = 0x280000003c
+   cversion = 0
+   dataVersion = 0
+   aclVersion = 0
+   ephemeralOwner = 0x0
+   dataLength = 59
+   numChildren = 0
+   ```
+
+2. ZK集群返回meta所在的RS信息
+
+   ```shell
+   hbase(main):001:0> scan 'hbase:meta'
+   ROW                                              COLUMN+CELL                                                                                                                                   
+    hbase:namespace,,1611617957334.1e05edc11286e62e column=info:regioninfo, timestamp=1612024631312, value={ENCODED => 1e05edc11286e62e4d41282bda935a58, NAME => 'hbase:namespace,,1611617957334.1
+    4d41282bda935a58.                               e05edc11286e62e4d41282bda935a58.', STARTKEY => '', ENDKEY => ''}                                                                              
+    hbase:namespace,,1611617957334.1e05edc11286e62e column=info:seqnumDuringOpen, timestamp=1612024631312, value=\x00\x00\x00\x00\x00\x00\x00\x16                                                 
+    4d41282bda935a58.                                                                                                                                                                             
+    hbase:namespace,,1611617957334.1e05edc11286e62e column=info:server, timestamp=1612024631312, value=node02:16020                                                                               
+    4d41282bda935a58.                                                                                                                                                                             
+    hbase:namespace,,1611617957334.1e05edc11286e62e column=info:serverstartcode, timestamp=1612024631312, value=1612024586931                                                                     
+    4d41282bda935a58.                                                                                                                                                                             
+    person,,1611787567290.e44c249012cb98443bb76576f column=info:regioninfo, timestamp=1612024632023, value={ENCODED => e44c249012cb98443bb76576f6d5143f, NAME => 'person,,1611787567290.e44c249012
+    6d5143f.                                        cb98443bb76576f6d5143f.', STARTKEY => '', ENDKEY => ''}                                                                                       
+    person,,1611787567290.e44c249012cb98443bb76576f column=info:seqnumDuringOpen, timestamp=1612024632023, value=\x00\x00\x00\x00\x00\x00\x00\x06                                                 
+    6d5143f.                                                                                                                                                                                      
+    person,,1611787567290.e44c249012cb98443bb76576f column=info:server, timestamp=1612024632023, value=node03:16020                                                                               
+    6d5143f.                                                                                                                                                                                      
+    person,,1611787567290.e44c249012cb98443bb76576f column=info:serverstartcode, timestamp=1612024632023, value=1612024587625                                                                     
+    6d5143f.                                                                                                                                                                                      
+   2 row(s) in 1.0630 seconds
+   ```
+
+3. Client向HregionServer发送写请求；
+
+4. HregionServer将数据写到HLog（write ahead log）。为了数据的持久化和恢复；
+
+5. HregionServer将数据写到内存（MemStore）；
+
+6. 反馈Client写成功。
+
 ## 数据模型
 
 逻辑上，Hbase的数据模型同关系型数据库很类似，有行有列，数据存储在一张表中。但从Hbase的底层物理存储结构（K-V）来看，Hbase更向是一个 multi-dimensional map
