@@ -45,13 +45,6 @@ do
         sleep 1s
 done
 
-echo ----------------启动JNN------------------
-for i in node02 node03 node04
-do
-        ssh $i hadoop-daemon.sh start journalnode
-        sleep 1s
-done
-
 
 echo ----------------启动DFS------------------
 ssh node01 start-dfs.sh
