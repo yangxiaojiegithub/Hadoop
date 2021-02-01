@@ -462,132 +462,69 @@ Beeline version 1.2.2 by Apache Hive
 
 
 
-# 基本查询
 
-## 正则匹配
 
-- RLike
 
-RLIKE子句是Hive中这个功能的一个扩展，其可以通过Java的正则表达式这个更强大的语言来指定匹配条件
 
-```sql
-查找薪水中含有2的员工信息
-hive (default)> select * from emp where sal RLIKE '[2]';
-```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 其他查询函数
-
-## 空字段赋值
-
-NVL：给值为NULL的数据赋值，它的格式是NVL( string1, replace_with)。它的功能是如果string1为NULL，则NVL函数返回replace_with的值，否则返回string1的值，如果两个参数都为NULL ，则返回NULL
-
-## 行转列
-
-```
-CONCAT(string A/col, string B/col…)：返回输入字符串连接后的结果，支持任意个输入字符串;
-```
-
-```
-CONCAT_WS(separator, str1, str2,...)：它是一个特殊形式的 CONCAT()。第一个参数剩余参数间的分隔符。分隔符可以是与剩余参数一样的字符串。如果分隔符是 NULL，返回值也将为 NULL。这个函数会跳过分隔符参数后的任何 NULL 和空字符串。分隔符将被加到被连接的字符串之间;
-```
-
-```
-COLLECT_SET(col)：函数只接受基本数据类型，它的主要作用是将某字段的值进行去重汇总，产生array类型字段
-```
-
-### COLLECT_SET
-
-1）创建原数据表
-
-```sql
-hive (gmall)>
-drop table if exists stud;
-create table stud (name string, area string, course string, score int);
-```
-
-2）向原数据表中插入数据
-
-```sql
-hive (gmall)>
-insert into table stud values('zhang3','bj','math',88);
-insert into table stud values('li4','bj','math',99);
-insert into table stud values('wang5','sh','chinese',92);
-insert into table stud values('zhao6','sh','chinese',54);
-insert into table stud values('tian7','bj','chinese',91);
-```
-
-3）查询表中数据
-
-```sql
-hive (gmall)> select * from stud;
-stud.name    stud.area    stud.course   stud.score
-zhang3 bj   math  88
-li4   bj   math  99
-wang5  sh   chinese 92
-zhao6  sh   chinese 54
-tian7  bj   chinese 91
-```
-
-4）把同一分组的不同行的数据聚合成一个集合 
-
-```sql
-hive (gmall)> select course, collect_set(area), avg(score) from stud group by course;
-
-chinese ["sh","bj"]   79.0
-
-math  ["bj"] 93.5
-```
-
-5） 用下标可以取某一个
-
-```sql
-hive (gmall)> select course, collect_set(area)[0], avg(score) from stud group by course;
-
-chinese sh   79.0
-
-math  bj   93.5
-```
-
-## 列转行
-
-```
-EXPLODE(col)：将hive一列中复杂的array或者map结构拆分成多行。
-LATERAL VIEW
-用法：LATERAL VIEW udtf(expression) tableAlias AS columnAlias
-解释：用于和split, explode等UDTF一起使用，它能够将一列数据拆成多行数据，在此基础上可以对拆分后的数据进行聚合
-```
 
 # 函数
 
