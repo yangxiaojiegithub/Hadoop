@@ -378,7 +378,7 @@ location ~* \.(gif|jpg|jpeg)$ {
    from 192.168.235.12<br>session=<%=session.getId()%>
    ```
 
-   启动tomcat观察效果
+   启动tomcat, 观察到 session 不一致
 
    ![](./doc/06.png)
 
@@ -400,7 +400,7 @@ location ~* \.(gif|jpg|jpeg)$ {
    -c <num>      max simultaneous connections (default: 1024)
    ```
 
-4. 配置tomcat配置文件 context.xml
+4. 配置两台tomcat上的配置文件 context.xml
 
    ```shell
    [root@node02 conf]# pwd
@@ -455,9 +455,11 @@ location ~* \.(gif|jpg|jpeg)$ {
    </Context>
    ```
 
-5. 导入tomcat与memcached通信的jar包
+5. 导入tomcat与memcached通信的jar包到两天tomcat 的 lib 目录下
 
    ```
+   [root@node02 lib]# pwd
+   /opt/stanlong/tomcat/apache-tomcat-7.0.42/lib
    asm-3.2.jar
    kryo-1.04.jar
    kryo-serializers-0.11.jar
