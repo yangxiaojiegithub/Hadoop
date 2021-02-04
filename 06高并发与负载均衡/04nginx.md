@@ -455,7 +455,7 @@ location ~* \.(gif|jpg|jpeg)$ {
    </Context>
    ```
 
-5. 导入tomcat与memcached通信的jar包到两天tomcat 的 lib 目录下
+5. 导入tomcat与memcached通信的jar包到两台tomcat 的 lib 目录下
 
    ```
    [root@node02 lib]# pwd
