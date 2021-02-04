@@ -522,31 +522,11 @@ Beeline version 1.2.2 by Apache Hive
 
 
 
-## 
 
 
 
-# 函数
 
-## 系统内置函数
 
-- 查看系统自带的函数
-
-```sql
-hive> show functions;
-```
-
-- 显示自带的函数的用法
-
-```sql
-hive> desc function upper;
-```
-
-- 详细显示自带的函数的用法
-
-```sql
-hive> desc function extended upper;
-```
 
 # 企业级调优
 
