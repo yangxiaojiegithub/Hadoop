@@ -37,7 +37,7 @@ Hbase 是一种分布式、可扩展、支持海量数据存贮的NoSQL数据库
 
 ![](./doc/06.png)
 
-1. Client 向ZK集群发送请求，获取meta表所在的RS
+1. Client 向ZK集群发送请求，获取hbase:meta表所在的RS
 
    ```shell
    [zk: localhost:2181(CONNECTED) 4] get /hbase/meta-region-server
@@ -88,6 +88,24 @@ Hbase 是一种分布式、可扩展、支持海量数据存贮的NoSQL数据库
 5. HregionServer将数据写到内存（MemStore）；
 
 6. 反馈Client写成功。
+
+## 读流程
+
+![](./doc/07.png)
+
+1）Client先访问zookeeper，从meta表读取region的位置，然后读取meta表中的数据。meta中又存储了用户表的region信息；
+
+2）根据namespace、表名和rowkey在meta表中找到对应的region信息；
+
+3）找到这个region对应的regionserver；
+
+4）查找对应的region；
+
+5）先从MemStore找数据，如果没有，再到BlockCache里面读；
+
+6）BlockCache还没有，再到StoreFile上读(为了读取的效率)；
+
+7）如果是从StoreFile里面读取的数据，不是直接返回给客户端，而是先写入BlockCache，再返回给客户端。
 
 ## 数据模型
 
