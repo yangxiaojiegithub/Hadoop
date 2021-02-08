@@ -16,11 +16,11 @@ Agent是一个JVM进程，它以事件的形式将数据从源头送至目的，
 
 Agent主要有3个部分组成，Source、Channel、Sink。
 
-### Source
+#### Source
 
 Source是负责接收数据到Flume Agent的组件。Source组件可以处理各种类型、各种格式的日志数据，包括avro、thrift、exec、jms、spooling directory、netcat、sequence generator、syslog、http、legacy。
 
-### Channel
+#### Channel
 
 Channel是位于Source和Sink之间的缓冲区。因此，Channel允许Source和Sink运作在不同的速率上。Channel是线程安全的，可以同时处理几个Source的写入操作和几个Sink的读取操作。
 
@@ -30,7 +30,7 @@ Memory Channel是内存中的队列。Memory Channel在不需要关心数据丢�
 
 File Channel将所有事件写到磁盘。因此在程序关闭或机器宕机的情况下不会丢失数据。
 
-### Sink
+#### Sink
 
 Sink不断地轮询Channel中的事件且批量地移除它们，并将这些事件批量写入到存储或索引系统、或者被发送到另一个Flume Agent。
 
