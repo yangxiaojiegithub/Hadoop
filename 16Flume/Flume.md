@@ -1,68 +1,127 @@
 # Flume
 
-## 节点规划
+## 定义
 
-|        | flume 采集日志 | flume（消费kafka） |
-| ------ | -------------- | ------------------ |
-| node01 | *              |                    |
-| node02 | *              |                    |
-| node03 |                | *                  |
-| node04 |                | *                  |
+Flume是Cloudera提供的一个高可用的，高可靠的，分布式的海量日志采集、聚合和传输的系统。Flume基于流式架构，灵活简单
 
-## flume 官方配置指导手册
-
- http://flume.apache.org/FlumeUserGuide.html
-
-## flume架构图
+## 架构图
 
 ![](./doc/01.png)
 
-## flume组件
+## 组件
 
-1）Source
-（1）Taildir Source相比Exec Source、Spooling Directory Source的优势
-TailDir Source：断点续传、多目录。Flume1.6以前需要自己自定义Source记录每次读取文件位置，实现断点续传。
-Exec Source可以实时搜集数据，但是在Flume不运行或者Shell命令出错的情况下，数据将会丢失。
-Spooling Directory Source监控目录，不支持断点续传。
-（2）batchSize大小如何设置？
-答：Event 1K左右时，500-1000合适（默认为100）
-2）Channel
-采用Kafka Channel，省去了Sink，提高了效率
+### Agent
 
+Agent是一个JVM进程，它以事件的形式将数据从源头送至目的，是Flume数据传输的基本单元。
 
+Agent主要有3个部分组成，Source、Channel、Sink。
 
-## flume安装
+### Source
+
+Source是负责接收数据到Flume Agent的组件。Source组件可以处理各种类型、各种格式的日志数据，包括avro、thrift、exec、jms、spooling directory、netcat、sequence generator、syslog、http、legacy。
+
+### Channel
+
+Channel是位于Source和Sink之间的缓冲区。因此，Channel允许Source和Sink运作在不同的速率上。Channel是线程安全的，可以同时处理几个Source的写入操作和几个Sink的读取操作。
+
+Flume自带两种Channel：Memory Channel和File Channel。
+
+Memory Channel是内存中的队列。Memory Channel在不需要关心数据丢失的情景下适用。如果需要关心数据丢失，那么Memory Channel就不应该使用，因为程序死亡、机器宕机或者重启都会导致数据丢失。
+
+File Channel将所有事件写到磁盘。因此在程序关闭或机器宕机的情况下不会丢失数据。
+
+### Sink
+
+Sink不断地轮询Channel中的事件且批量地移除它们，并将这些事件批量写入到存储或索引系统、或者被发送到另一个Flume Agent。
+
+Sink是完全事务性的。在从Channel批量删除数据之前，每个Sink用Channel启动一个事务。批量事件一旦成功写出到存储系统或下一个Flume Agent，Sink就利用Channel提交事务。事务一旦被提交，该Channel从自己的内部缓冲区删除事件。
+
+Sink组件目的地包括hdfs、logger、avro、thrift、ipc、file、null、HBase、solr、自定义。
+
+### Event
+
+传输单元，Flume数据传输的基本单元，以事件的形式将数据从源头送至目的地
+
+## 拓扑结构
+
+![](./doc/01.png)
+
+![](./doc/02.png)
+
+![](./doc/03.png)
+
+![](./doc/04.png)
+
+![](./doc/05.png)
+
+## 节点规划
+
+| flume-1.9.0 | node01     | node02     | node03    | node04    |
+| ----------- | ---------- | ---------- | --------- | --------- |
+| flume 采集  | flume 采集 | flume 采集 |           |           |
+| flume消费   |            |            | flume消费 | flume消费 |
+
+## 安装
 
 ```shell
-[root@node01 ~]# tar -zxf apache-flume-1.9.0-bin.tar.gz 
-[root@node01 ~]# mv apache-flume-1.9.0-bin /opt/stanlong/
-[root@node01 ~]# cd /opt/stanlong/
-[root@node01 stanlong]# mv apache-flume-1.9.0-bin/ flume
-[root@node01 stanlong]# ll
-total 0
-drwxr-xr-x  7 root root 187 Jun 19 22:18 flume
-drwxr-xr-x 10 root root 161 Jun 11 10:27 hadoop-2.9.2
-drwxr-xr-x 10 root root 161 Jun 11 10:13 hadoop-2.9.2-full
-drwxr-xr-x  8 root root 172 Jun 14 11:28 hbase
-drwxr-xr-x 10 root root 208 Jun 12 03:59 hive
-[root@node01 stanlong]# 
+[root@node01 ~]# tar -zxf apache-flume-1.9.0-bin.tar.gz -C /opt/stanlong/flume/
 ```
 
-## flume配置 java环境变量
+## 修改配置文件
 
 ```shell
 [root@node01 conf]# pwd
-/opt/stanlong/flume/conf
-[root@node01 conf]# ll
-total 16
--rw-r--r-- 1 1000 1000 1661 Nov 16  2017 flume-conf.properties.template
--rw-r--r-- 1 1000 1000 1455 Nov 16  2017 flume-env.ps1.template
--rw-r--r-- 1 1000 1000 1568 Aug 30  2018 flume-env.sh.template
--rw-rw-r-- 1 1000 1000 3107 Dec  9  2018 log4j.properties
+/opt/stanlong/flume/apache-flume-1.9.0-bin/conf
 [root@node01 conf]# cp flume-env.sh.template flume-env.sh
 [root@node01 conf]# vi flume-env.sh
 export JAVA_HOME=/usr/java/jdk1.8.0_65
 ```
+
+```sh
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# If this file is placed at FLUME_CONF_DIR/flume-env.sh, it will be sourced
+# during Flume startup.
+
+# Enviroment variables can be set here.
+
+export JAVA_HOME=/usr/java/jdk1.8.0_65
+
+# Give Flume more memory and pre-allocate, enable remote monitoring via JMX
+# export JAVA_OPTS="-Xms100m -Xmx2000m -Dcom.sun.management.jmxremote"
+
+# Let Flume write raw event data and configuration information to its log files for debugging
+# purposes. Enabling these flags is not recommended in production,
+# as it may result in logging sensitive user information or encryption secrets.
+# export JAVA_OPTS="$JAVA_OPTS -Dorg.apache.flume.log.rawdata=true -Dorg.apache.flume.log.printconfig=true "
+
+# Note that the Flume conf directory is always included in the classpath.
+#FLUME_CLASSPATH=""
+```
+
+## 分发flume到其他节点
+
+分发脚本参考 25自定义集群脚本/分发脚本.md
+
+```shell
+[root@node01 flume]# ~/myshell/rsyncd.sh apache-flume-1.9.0-bin/
+```
+
+
 
 ## 官方案例-监控端口
 
