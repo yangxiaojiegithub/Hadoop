@@ -185,11 +185,7 @@ group.initial.rebalance.delay.ms=0
 [root@node01 kafka]# ~/myshell/rsyncd.sh kafka/
 ```
 
-## 配置其他节点
-
-登录node02，node03，node04上去，改 server.properties 里broker.id的值分别为 2，3，4
-
-
+分发完成后到`node02，node03，node04`上去，改 `server.properties` 里`broker.id`的值分别为` 2，3，4`
 
 ## 启动kafka
 
