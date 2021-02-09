@@ -44,8 +44,6 @@ Sink组件目的地包括hdfs、logger、avro、thrift、ipc、file、null、HBa
 
 ## 拓扑结构
 
-![](./doc/01.png)
-
 ![](./doc/02.png)
 
 ![](./doc/03.png)
@@ -121,15 +119,15 @@ export JAVA_HOME=/usr/java/jdk1.8.0_65
 [root@node01 flume]# ~/myshell/rsyncd.sh apache-flume-1.9.0-bin/
 ```
 
-
-
 ## 官方案例-监控端口
 
-- 案例需求：使用flume监听一个端口，收集该端口数据，并打印到控制台
+- 案例需求：
+
+  使用flume监听一个端口，收集该端口数据，并打印到控制台
 
 - 案例分析：
 
-  - 通过 netcat 工具向本机的44444端口发送数据
+  通过 netcat 工具向本机的44444端口发送数据
 
 - 实现步骤
 
@@ -223,8 +221,6 @@ export JAVA_HOME=/usr/java/jdk1.8.0_65
   flume会接收到数据
   Event: { headers:{} body: 48 65 6C 6C 6F 20 46 6C 75 6D 65                Hello Flume }
   ```
-
-- 将 flume 分发到 node02，node03， node04 上
 
 
 
