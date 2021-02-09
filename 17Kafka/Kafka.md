@@ -6,17 +6,9 @@
 
 1）Apache Kafka是一个开源**消息队列**系统，由Scala写成。是由Apache软件基金会开发的一个开源消息系统项目。
 
-2）Kafka最初是由LinkedIn公司开发，并于2011年初开源。2012年10月从Apache Incubator毕业。该项目的目标是为处理实时数据提供一个统一、高通量、低等待的平台。
+2）Kafka是一个分布式消息队列。Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接受者称为Consumer，此外kafka集群有多个kafka实例组成，每个实例(server)称为broker。
 
-3）Kafka是一个分布式消息队列。Kafka对消息保存时根据Topic进行归类，发送消息者称为Producer，消息接受者称为Consumer，此外kafka集群有多个kafka实例组成，每个实例(server)称为broker。
-
-4）无论是kafka集群，还是consumer都依赖于**zookeeper**集群保存一些meta信息，来保证系统可用性。
-
-## 
-
-|      |      |      |      |      |
-| ---- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |
+3）无论是kafka集群，还是consumer都依赖于**zookeeper**集群保存一些meta信息，来保证系统可用性。
 
 ## 架构
 
