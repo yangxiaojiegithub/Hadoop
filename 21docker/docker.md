@@ -4,6 +4,8 @@
 
 Docker是一种新兴的虚拟化技术，能够一定程度上的代替传统虚拟机。
 
+官网地址： https://docs.docker.com/install/linux/docker-ce/centos/
+
 ## 架构
 
 ![](./doc/01.png)
@@ -57,57 +59,63 @@ No Match for argument: docker-engine
 No Packages marked for removal
 ```
 
-官网地址： https://docs.docker.com/install/linux/docker-ce/centos/
-
 ### 使用存储库安装
 
-+ 设置存储库
+**设置存储库**
 
-  yum install -y yum-utils device-mapper-persistent-data lvm2
+```shell
+yum install -y yum-utils device-mapper-persistent-data lvm2
+```
 
-+ 安装阿里云镜像仓库地址
+**安装阿里云镜像仓库地址**
 
-  yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+```shell
+yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+```
 
-+ 安装最新版本的Docker Engine-Community和containerd
-	
-	yum install docker-ce docker-ce-cli containerd.io
-+ 配置docker阿里云加速器
+**安装最新版本的Docker Engine-Community和containerd**
 
-  https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
+```shell
+yum install -y docker-ce docker-ce-cli containerd.io
+```
 
-  ![](./doc/02.png)
+**配置docker阿里云加速器**
 
-  ![](./doc/03.png)
+https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 
-  ```
-  针对Docker客户端版本大于 1.10.0 的用户
-  您可以通过修改daemon配置文件/etc/docker/daemon.json来使用加速器
-    sudo mkdir -p /etc/docker
-    sudo tee /etc/docker/daemon.json <<-'EOF'
-    {
-      "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"] -- 这个要先注册账号之后才会有
-    }
-    EOF
-    sudo systemctl daemon-reload
-    sudo systemctl restart docker
-  ```
-    ```
-  # 新建文件夹
-  [root@node01 ~]# mkdir -p /etc/docker
-  # 配置加速器
-  [root@node01 ~]# tee /etc/docker/daemon.json <<-'EOF'
-  > {
-  >   "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"]
-  > }
-  > EOF
+![](./doc/02.png)
+
+![](./doc/03.png)
+
+```
+针对Docker客户端版本大于 1.10.0 的用户
+您可以通过修改daemon配置文件/etc/docker/daemon.json来使用加速器
+  sudo mkdir -p /etc/docker
+  sudo tee /etc/docker/daemon.json <<-'EOF'
   {
-      "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"]
+    "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"] -- 这个要先注册账号之后才会有
   }
-  # 重启
-  [root@node01 ~]# systemctl daemon-reload
-  [root@node01 ~]# systemctl restart docker
-    ```
+  EOF
+  sudo systemctl daemon-reload
+  sudo systemctl restart docker
+```
+```
+# 新建文件夹
+[root@node01 ~]# mkdir -p /etc/docker
+# 配置加速器
+[root@node01 ~]# tee /etc/docker/daemon.json <<-'EOF'
+> {
+>   "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"]
+> }
+> EOF
+{
+    "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"]
+}
+# 重启
+[root@node01 ~]# systemctl daemon-reload
+[root@node01 ~]# systemctl restart docker
+```
+
 ### 启动
 
 启动docker
