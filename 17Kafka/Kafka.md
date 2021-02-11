@@ -18,30 +18,48 @@
 
 ## 组件
 
-**Producer** ：消息生产者，就是向 kafka broker 发消息的客户端；
+**Producer** 
 
-**Consumer** ：消息消费者，向 kafka broker 取消息的客户端；
+生产者即数据的发布者，该角色将消息发布到Kafka的topic中。broker接收到生产者发送的消息后，broker将该消息追加到当前用于追加数据的segment文件中。生产者发送的消息，存储到一个partition中，生产者也可以指定数据存储的partition。
 
-**Topic** ：可以理解为一个队列；
+**Consumer** 
 
-**Consumer Group （CG）**：这是kafka用来实现一个topic消息的广播（发给所有的consumer）
-和单播（发给任意一个 consumer）的手段。一个 topic 可以有多个 CG。topic 的消息会复制
-（不是真的复制，是概念上的）到所有的 CG，但每个 partion 只会把消息发给该 CG 中的一
-个 consumer。如果需要实现广播，只要每个 consumer 有一个独立的 CG 就可以了。要实现
-单播只要所有的 consumer 在同一个 CG。用 CG 还可以将 consumer 进行自由的分组而不需
-要多次发送消息到不同的 topic；
+消息消费者，向 kafka broker 取消息的客户端，消费者可以消费多个topic中的数据
 
-**Broker** ：一台 kafka 服务器就是一个 broker。一个集群由多个 broker 组成。一个 broker
-可以容纳多个 topic；
+**Topic** 
 
-**Partition**：为了实现扩展性，一个非常大的 topic 可以分布到多个 broker（即服务器）上，
+每条发布到Kafka集群的消息都有一个类别，这个类别被称为Topic；
+
+**Consumer Group **
+
+消费者组，由多个 consumer 组成。消费者组内每个消费者负责消费不同分区的数据，一个分区只能由一个组内消费者消费；消费者组之间互不影响。所有的消费者都属于某个消费者组，即消费者组是逻辑上的一个订阅者
+
+**Broker** 
+
+一台 kafka 服务器就是一个 broker。一个集群由多个 broker 组成。一个 broker可以容纳多个 topic；
+
+**Partition**
+
+为了实现扩展性，一个非常大的 topic 可以分布到多个 broker（即服务器）上，
 一个 topic 可以分为多个 partition，每个 partition 是一个有序的队列。partition 中的每条消息
 都会被分配一个有序的 id（offset）。kafka 只保证按一个 partition 中的顺序将消息发给
 consumer，不保证一个 topic 的整体（多个 partition 间）的顺序；
 
-**Offset**：kafka 的存储文件都是按照 offset.kafka 来命名，用 offset 做名字的好处是方便查
-找。例如你想找位于 2049 的位置，只要找到 2048.kafka 的文件即可。当然 the first offset 就
-是 00000000000.kafka。
+**Replica**
+
+副本，为保证集群中的某个节点发送故障时，该节点上的partition数据不丢失，且kafka仍然能够正常工作。一个topic的每个分区都有若干个副本，一个leader和若干个follower
+
+**Offset**
+
+kafka 的存储文件都是按照 offset.kafka 来命名，用 offset 做名字的好处是方便查找。例如你想找位于 2049 的位置，只要找到 2048.kafka 的文件即可。当然 the first offset 就是 00000000000.kafka。
+
+**Leader**
+
+每个partition有多个副本，其中有且仅有一个作为Leader，Leader是当前负责数据的读写的partition
+
+**Follower**
+
+Follower跟随Leader，所有写请求都通过Leader路由，数据变更会广播给所有Follower，Follower与Leader保持数据同步。如果Leader失效，则从Follower中选举出一个新的Leader。当Follower与Leader挂掉、卡住或者同步太慢，leader会把这个follower从“in sync replicas”（ISR）列表中删除，重新创建一个Follower
 
 ## 节点规划
 
