@@ -1,5 +1,9 @@
 # docker
 
+## 定义
+
+Docker是一种新兴的虚拟化技术，能够一定程度上的代替传统虚拟机。
+
 ## 设置docker 开机启动
 ~~~
 [root@changgou ~]# systemctl enable docker
@@ -23,8 +27,9 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service 
 	- yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 + 安装最新版本的Docker Engine-Community和containerd
-	- yum install docker-ce docker-ce-cli containerd.io
-
+	
+- yum install docker-ce docker-ce-cli containerd.io
+	
 + 配置docker阿里云加速器
 	- https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 	```
@@ -55,11 +60,12 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/docker.service 
     [root@changgou docker]# ps -ef | grep docker
 	root       5484      1  0 16:11 ?        00:00:00 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
 	root       5638   3564  0 16:15 pts/0    00:00:00 grep --color=auto docker
-	```
+	  ```
 
 + 启动Docker
-	- sudo systemctl start docker
-
+	
+- sudo systemctl start docker
+	
 + 通过运行hello-world 映像来验证是否正确安装了Docker Engine-Community
 	- docker run hello-world
 	```
