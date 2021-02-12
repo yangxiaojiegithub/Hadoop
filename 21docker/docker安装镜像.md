@@ -1,4 +1,4 @@
-# 在dcoker上安装mysql
+# 安装mysql
 ```
 [root@changgou ~]# docker pull mysql
 [root@changgou ~]# docker images
@@ -18,7 +18,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 	Query OK, 0 rows affected (0.00 sec)
   ~~~
 
-# 在 docker 上安装 fastdfs
+# 安装 fastdfs
 ~~~
 [root@changgou ~]# docker pull morunchang/fastdfs
 [root@changgou ~]# docker run -d --name tracker --net=host morunchang/fastdfs sh tracker.sh
@@ -29,7 +29,7 @@ a8a3493ad2b1e43c4ec0b722bce69482bd069372a78c00080939f7c0bdd828e4
 在我的环境上防火墙已经关了，所以不用配置开放端口什么的。
 morunchang/fastdfs 已经配置好了nginx和nginx的相关插件，不需要再重新配置。
 
-# docker 安装redis
+# 安装redis
 ```
 [root@changgou ~]# docker pull redis
 [root@changgou ~]# docker images
@@ -40,7 +40,7 @@ morunchang/fastdfs   latest              a729ac95698a        3 years ago        
 [root@changgou ~]# docker run -itd --name changgou_redis -p 6379:6379 redis
 ```
 
-# docker 安装 Elasticsearch
+# 安装 Elasticsearch
 
 ```shell
 下载
