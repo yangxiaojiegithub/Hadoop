@@ -85,9 +85,13 @@ Table跟关系型的表定义一样，但数据和表的映射是交给Connector
 
 ## 安装
 
-服务端下载地址 https://repo1.maven.org/maven2/com/facebook/presto/presto-server
+服务端下载地址 
 
-客户端下载地址 https://repo1.maven.org/maven2/com/facebook/presto/presto-cli
+https://repo1.maven.org/maven2/com/facebook/presto/presto-server
+
+客户端下载地址 
+
+https://repo1.maven.org/maven2/com/facebook/presto/presto-cli
 
 图形界面客户端下载地址
 
