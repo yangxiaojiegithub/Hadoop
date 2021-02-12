@@ -41,7 +41,9 @@ ifconfig is hashed (/usr/sbin/ifconfig)
 
 打印进程信息
 
-### df 查看磁盘空间
+### df 
+
+查看磁盘空间
 
 ```shell
 [root@gmall opt]# df -h
@@ -54,13 +56,18 @@ tmpfs                    489M     0  489M   0% /sys/fs/cgroup
 /dev/sda1                197M  103M   95M  53% /boot
 tmpfs                     98M     0   98M   0% /run/user/0
 ```
-### du:查看当前目录下所有文件所占用的磁盘空间大小
+### du
+
+查看当前目录下所有文件所占用的磁盘空间大小
+
 ```shell
 [root@gmall opt]# du -sh ./*
 31M	./dubbo-admin-2.6.0.war
 153M	./jdk-8u65-linux-x64.rpm
 ```
-### stat 查看文件元数据信息
+### stat
+
+ 查看文件元数据信息
 
 ```shell
 [root@gmall opt]# stat dubbo-admin-2.6.0.war 
@@ -73,6 +80,30 @@ Modify: 2018-03-27 17:54:06.000000000 +0800
 Change: 2020-01-31 13:02:16.479957803 +0800
  Birth: -
 ```
+### fc -l 
+
+查看历史执行命令
+
+```shell
+[root@node02 ~]# fc -l
+999	 cd conf/
+1000	 ll
+1001	 vi zoo.cfg 
+1002	 cd ../
+1003	 ll
+1004	 cd
+1005	 zkServer.sh status
+1006	 zkServer.sh start
+1007	 zkServer.sh status
+1008	 ./beeline.sh 
+1009	 apphome
+1010	 cd /opt/stanlong/presto/presto-server-0.196/
+1011	 ll
+1012	 bin/launcher run
+1013	 cd
+1014	 fl -l
+```
+
 ### man
 
 - 1：用命令(/bin, /usr/bin, /usr/local/bin)
