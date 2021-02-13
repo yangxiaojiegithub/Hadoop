@@ -267,6 +267,8 @@ Splits: 18 total, 18 done (100.00%)
 
 ## 网页客户端
 
+yanagishima-18.0.zip
+
 待续...
 
 
