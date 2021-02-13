@@ -93,10 +93,6 @@ https://repo1.maven.org/maven2/com/facebook/presto/presto-server
 
 https://repo1.maven.org/maven2/com/facebook/presto/presto-cli
 
-图形界面客户端下载地址
-
-https://github.com/yanagishima/yanagishima
-
 ```shell
 [root@node01 ~]# tar -zxf presto-server-0.196.tar.gz -C /opt/stanlong/presto/
 ```
@@ -111,7 +107,7 @@ https://github.com/yanagishima/yanagishima
 [root@node01 presto-server-0.196]# cd etc/
 ```
 
-### JVM配置
+### jvm.config
 
 ```shell
 [root@node01 etc]# vi jvm.config
@@ -125,7 +121,7 @@ https://github.com/yanagishima/yanagishima
 -XX:+ExitOnOutOfMemoryError
 ```
 
-### 节点属性配置
+### node.properties
 
 ```shell
 [root@node01 etc]# vi node.properties
@@ -138,13 +134,13 @@ node.id：每个Presto节点的唯一标示。每个节点的node.id都必须是
 node.data-dir： 数据存储目录的位置（操作系统上的路径）。Presto将会把日期和数据存储在这个目录下
 ```
 
-### 角色配置
+### config.properties
 
 ```shell
 配置 coordinator
 [root@node01 etc]# vi config.properties
 coordinator=true
-node-scheduler.include-coordinator=false
+node-scheduler.include-coordinator=true
 http-server.http.port=8881
 query.max-memory=50GB
 query.max-memory-per-node=1GB
@@ -154,14 +150,14 @@ discovery.uri=http://node01:8881
 分发到node02，node03之后再配置worker
 --------------------------------------------------------------------------------------
 coordinator：指定当前Presto实例作为一个coordinator
-node-scheduler.include-coordinator：是否允许在coordinator服务中进行调度工作。
+node-scheduler.include-coordinator：是否允许在coordinator服务中进行调度工作。如果值为false 会报错 No worker nodes available
 http-server.http.port：指定HTTP server的端口。
 task.max-memory=1GB：一个单独的任务使用的最大内存 。
 discovery-server.enabled：Presto 通过Discovery 服务来找到集群中所有的节点。
 discovery.uri：Discovery server的URI。
 ```
 
-### catalog 配置
+### hive.properties
 
 Presto通过connectors访问数据。这些connectors挂载在catalogs上， 本实例中只配置了hive的数据源
 
@@ -169,28 +165,14 @@ Presto通过connectors访问数据。这些connectors挂载在catalogs上， 本
 [root@node01 etc]# mkdir catalog
 [root@node01 etc]# cd catalog/
 [root@node01 catalog]# vi hive.properties
-connector.name=hive-node01
+
+connector.name=hive-hadoop2 
 hive.metastore.uri=thrift://node01:9083
+hive.config.resources=/opt/stanlong/hadoop-ha/hadoop-2.9.2/etc/hadoop/core-site.xml,/opt/stanlong/hadoop-ha/hadoop-2.9.2/etc/hadoop/hdfs-site.xml
+--------------------------------------------------------------------------
+connector.name ： # 如果数据源是hive则 connector.name必须是hive-hadoop2 。见插件目录 /opt/stanlong/presto/presto-server-0.196/plugin
+hive.config.resources：#配置指向HDFS配置文件， 不然查询时会报错 java.net.UnknownHostException: hacluster
 ```
-
-### 配置Presto连接Hive
-
-```xml
-<property>
-<name>hive.server2.thrift.port</name>
-<value>10000</value>
-</property>
-<property>
-<name>hive.server2.thrift.bind.host</name>
-<value>node01</value>
-</property>
-<property>
-<name>hive.metastore.uris</name>
-<value>thrift://node01:9083</value>
-</property>
-```
-
-
 
 ## 分发
 
@@ -244,7 +226,48 @@ discovery.uri=http://example.net:8881
 [root@node01 presto-server-0.196]# mv presto-cli-0.196-executable.jar presto-cli
 [root@node01 presto-server-0.196]# chmod +x presto-cli 
 [root@node01 presto-server-0.196]# ./presto-cli --server node01:8881 --catalog hive --schema default
+
+presto:default> show schemas;
+       Schema       
+--------------------
+ default            
+ homework           
+ information_schema 
+(3 rows)
+
+Query 20210213_153601_00003_8zj8p, FINISHED, 2 nodes
+Splits: 18 total, 18 done (100.00%)
+0:05 [3 rows, 48B] [0 rows/s, 10B/s]
+
+presto:default> use homework;
+USE
+presto:homework> show tables;
+      Table      
+-----------------
+ plant_carbon    
+ user_low_carbon 
+ uv              
+ visit           
+(4 rows)
+
+Query 20210213_153615_00007_8zj8p, FINISHED, 2 nodes
+Splits: 18 total, 18 done (100.00%)
+0:04 [4 rows, 106B] [0 rows/s, 26B/s]
+
+presto:homework> select count(1) as c1 from uv;
+ c1 
+----
+  8 
+(1 row)
+
+Query 20210213_153633_00008_8zj8p, FINISHED, 2 nodes
+Splits: 18 total, 18 done (100.00%)
+0:10 [8 rows, 128B] [0 rows/s, 12B/s]
 ```
+
+## 网页客户端
+
+待续...
 
 
 
