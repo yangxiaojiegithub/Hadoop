@@ -78,10 +78,20 @@ Table跟关系型的表定义一样，但数据和表的映射是交给Connector
 
 ## 节点规划
 
-|             | node01      | node02 | node03 |
-| ----------- | ----------- | ------ | ------ |
-| Coordinator | Coordinator |        |        |
-| Worker      |             | Worker | Worker |
+**版本**
+
+presto-server-0.196.tar.gz
+
+presto-cli-0.196-executable.jar
+
+yanagishima-18.0.zip
+
+|              | node01       | node02 | node03 |
+| ------------ | ------------ | ------ | ------ |
+| Coordinator  | Coordinator  |        |        |
+| Worker       |              | Worker | Worker |
+| 命令行客户端 | 命令行客户端 |        |        |
+| 网页客户端   | 网页客户端   |        |        |
 
 ## 安装
 
@@ -215,6 +225,8 @@ discovery.uri=http://example.net:8881
 [root@node01 presto-server-0.196]# bin/launcher start # 作为一个后台进程启动
 -----------------------------------------------------------------------------------------
 [root@node01 presto-server-0.196]# bin/launcher run   # 前台启动，控制台显示日志
+
+启动之后能看到 PrestoServer 进程，说明启动成功
 ```
 
 ## 命令行客户端
@@ -267,9 +279,76 @@ Splits: 18 total, 18 done (100.00%)
 
 ## 网页客户端
 
-yanagishima-18.0.zip
+```shell
+[root@node01 ~]# unzip -d /opt/stanlong/presto/ yanagishima-18.0.zip
+[root@node01 conf]# pwd
+/opt/stanlong/presto/yanagishima-18.0/conf
+[root@node01 conf]# vi yanagishima.properties
+```
 
-待续...
+```properties
+# yanagishima 原生配置文件
+
+# yanagishima web port
+jetty.port=7080
+# if query result exceeds this limit, to show rest of result is skipped
+select.limit=500
+# http header name for audit log
+audit.http.header.name=some.auth.header
+use.audit.http.header.name=false
+# limit to convert from tsv to values query
+to.values.query.limit=500
+# authorization feature
+check.datasource=false
+cors.enabled=false
+
+
+# 配置 查询引擎即支持 presto 又支持hive
+sql.query.engines=presto,hive
+
+
+#配置presto信息
+
+# 30 minutes. If presto query exceeds this time, yanagishima cancel the query.
+presto.query.max-run-time-seconds=1800
+# 1GB. If presto query result file size exceeds this value, yanagishima cancel the query.
+presto.max-result-file-byte-size=1073741824
+# you can specify freely. But you need to specify same name to presto.coordinator.server.[...] and presto.redirect.server.[...] and catalog.[...] and schema.[...]
+presto.datasources=prestocluster
+auth.your-presto=false
+# presto coordinator url
+presto.coordinator.server.prestocluster=http://node01:8881
+# almost same as presto coordinator url. If you use reverse proxy, specify it
+presto.redirect.server.your-presto=http://presto.coordinator:8080
+# presto catalog name
+catalog.prestocluster=hive
+# presto schema name
+schema.prestocluster=default
+resource.manager.url.prestocluster=http://localhost:8088
+
+
+#单独配置hive信息
+hive.datasources=prestocluster
+hive.jdbc.url.prestocluster=jdbc:hive2://hive-server:10000/default
+hive.jdbc.user.prestocluster=hdfs
+hive.jdbc.password.prestocluster=hdfs
+hive.query.max-run-time-seconds.prestocluster=3600
+hive.max-result-file-byte-size=1073741824
+hive.query.max-run-time-seconds=3600
+```
+
+**启动**
+
+```shell
+[root@node01 yanagishima-18.0]# pwd
+/opt/stanlong/presto/yanagishima-18.0
+[root@node01 yanagishima-18.0]# bin/yanagishima-start.sh
+2021/02/14 21:56:39.767 +0800 INFO [YanagishimaServer] [Yanagishima] Yanagishima Server running port 7080.
+```
+
+http://node01:7080/#datasource=prestocluster&engine=presto&tab=treeview
+
+![](./doc/02.png)
 
 
 
