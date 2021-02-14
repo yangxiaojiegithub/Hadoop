@@ -28,6 +28,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
   </component>
@@ -44,7 +47,7 @@
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="mavenHome" value="$PROJECT_DIR$/../../../Tools/apache-maven-3.6.1" />
+        <option name="mavenHome" value="D:\StanLong\Tools\apache-maven-3.6.1" />
         <option name="userSettingsFile" value="D:\StanLong\Tools\apache-maven-3.6.1\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
@@ -66,15 +69,13 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -94,6 +95,7 @@
       <workItem from="1613279458445" duration="1566000" />
       <workItem from="1613287658326" duration="2358000" />
       <workItem from="1613294468478" duration="1154000" />
+      <workItem from="1613311123781" duration="1988000" />
     </task>
     <servers />
   </component>
@@ -113,41 +115,52 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="499" y="143" key="#com.intellij.ide.util.MemberChooser" timestamp="1613295204559">
+    <state x="1191" y="189" key="#com.intellij.ide.util.MemberChooser" timestamp="1613312300532">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="499" y="143" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613295204559" />
+    <state x="1191" y="189" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1613312300532" />
     <state x="798" y="216" key="FileChooserDialogImpl" timestamp="1613294625574">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="798" y="216" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1613294625573" />
-    <state width="1867" height="266" key="GridCell.Tab.0.bottom" timestamp="1613295648385">
+    <state width="1867" height="266" key="GridCell.Tab.0.bottom" timestamp="1613313165387">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1867" height="266" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613295648385" />
-    <state width="1867" height="266" key="GridCell.Tab.0.center" timestamp="1613295648384">
+    <state width="1867" height="266" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1613313165387" />
+    <state width="1867" height="266" key="GridCell.Tab.0.center" timestamp="1613313165387">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1867" height="266" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613295648384" />
-    <state width="1867" height="266" key="GridCell.Tab.0.left" timestamp="1613295648384">
+    <state width="1867" height="266" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1613313165387" />
+    <state width="1867" height="266" key="GridCell.Tab.0.left" timestamp="1613313165387">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1867" height="266" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613295648384" />
-    <state width="1867" height="266" key="GridCell.Tab.0.right" timestamp="1613295648385">
+    <state width="1867" height="266" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1613313165387" />
+    <state width="1867" height="266" key="GridCell.Tab.0.right" timestamp="1613313165387">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1867" height="266" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613295648385" />
+    <state width="1867" height="266" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1613313165387" />
     <state x="155" y="108" key="Maven.ArtifactSearchDialog" timestamp="1613290121968">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="155" y="108" key="Maven.ArtifactSearchDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1613290121968" />
-    <state x="125" y="95" key="SettingsEditor" timestamp="1613294795921">
+    <state x="125" y="95" key="SettingsEditor" timestamp="1613312533258">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="125" y="95" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1613294795921" />
-    <state x="269" y="103" key="new project wizard" timestamp="1613287689838">
+    <state x="125" y="95" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1613312533258" />
+    <state x="269" y="103" key="new project wizard" timestamp="1613311402908">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="269" y="103" key="new project wizard/0.0.1920.1040@0.0.1920.1040" timestamp="1613287689838" />
+    <state x="269" y="103" key="new project wizard/0.0.1920.1040@0.0.1920.1040" timestamp="1613311402908" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/flume-interceptor/src/main/java/com/stanlong/flume/interceptor/LogETLInterceptor.java</url>
+          <line>24</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

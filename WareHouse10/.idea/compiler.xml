@@ -7,9 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="log-collector" />
+        <module name="flume-interceptor" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="flume-interceptor" target="1.8" />
       <module name="log-collector" target="1.8" />
     </bytecodeTargetLevel>
   </component>
