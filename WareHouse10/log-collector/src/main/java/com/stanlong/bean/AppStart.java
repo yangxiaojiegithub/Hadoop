@@ -2,7 +2,7 @@ package com.stanlong.bean;
 /**
  * 启动日志
  */
-public class AppStart {
+public class AppStart extends AppBase{
     private String entry;//入口： push=1，widget=2，icon=3，notification=4, lockscreen_widget =5
     private String open_ad_type;//开屏广告类型:  开屏原生广告=1, 开屏插屏广告=2
     private String action;//状态：成功=1  失败=2
