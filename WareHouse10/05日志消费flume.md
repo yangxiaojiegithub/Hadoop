@@ -10,7 +10,9 @@ flume 安装及规划见Hadoop/16Flume
 [root@node03 conf]# pwd
 /opt/stanlong/flume/apache-flume-1.9.0-bin/conf
 [root@node03 conf]# vi kafka-flume-hdfs.conf
+```
 
+```properties
 ## 组件
 a1.sources=r1 r2
 a1.channels=c1 c2
@@ -21,14 +23,14 @@ a1.sources.r1.type = org.apache.flume.source.kafka.KafkaSource
 a1.sources.r1.batchSize = 5000
 a1.sources.r1.batchDurationMillis = 2000
 a1.sources.r1.kafka.bootstrap.servers = node01:9092,node02:9092,node03:9092,node04:9092
-a1.sources.r1.kafka.topics=topic_start
+a1.sources.r1.kafka.topics=topic-start
 
 ## source2
 a1.sources.r2.type = org.apache.flume.source.kafka.KafkaSource
 a1.sources.r2.batchSize = 5000
 a1.sources.r2.batchDurationMillis = 2000
 a1.sources.r2.kafka.bootstrap.servers = node01:9092,node02:9092,node03:9092,node04:9092
-a1.sources.r2.kafka.topics=topic_event
+a1.sources.r2.kafka.topics=topic-event
 
 ## channel1
 a1.channels.c1.type = file
@@ -48,7 +50,7 @@ a1.channels.c2.keep-alive = 6
 
 ## sink1
 a1.sinks.k1.type = hdfs
-a1.sinks.k1.hdfs.path = /origin_data/gmall/log/topic_start/%Y-%m-%d
+a1.sinks.k1.hdfs.path = /origin_data/gmall/log/topic-start/%Y-%m-%d
 a1.sinks.k1.hdfs.filePrefix = logstart-
 a1.sinks.k1.hdfs.round = true
 a1.sinks.k1.hdfs.roundValue = 10
@@ -56,7 +58,7 @@ a1.sinks.k1.hdfs.roundUnit = second
 
 ##sink2
 a1.sinks.k2.type = hdfs
-a1.sinks.k2.hdfs.path = /origin_data/gmall/log/topic_event/%Y-%m-%d
+a1.sinks.k2.hdfs.path = /origin_data/gmall/log/topic-event/%Y-%m-%d
 a1.sinks.k2.hdfs.filePrefix = logevent-
 a1.sinks.k2.hdfs.round = true
 a1.sinks.k2.hdfs.roundValue = 10

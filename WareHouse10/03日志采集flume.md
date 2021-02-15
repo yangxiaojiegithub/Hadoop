@@ -10,7 +10,9 @@ flume 安装及规划见Hadoop/16Flume
 [root@node01 conf]# pwd
 /opt/stanlong/flume/apache-flume-1.9.0-bin/conf
 [root@node01 conf]# vi file-flume-kafka.conf
+```
 
+```properties
 a1.sources=r1
 a1.channels=c1 c2
 
@@ -24,24 +26,24 @@ a1.sources.r1.channels = c1 c2
 
 #interceptor
 a1.sources.r1.interceptors =  i1 i2
-a1.sources.r1.interceptors.i1.type = com.atguigu.flume.interceptor.LogETLInterceptor$Builder
-a1.sources.r1.interceptors.i2.type = com.atguigu.flume.interceptor.LogTypeInterceptor$Builder
+a1.sources.r1.interceptors.i1.type = com.stanlong.flume.interceptor.LogETLInterceptor$Builder
+a1.sources.r1.interceptors.i2.type = com.stanlong.flume.interceptor.LogTypeInterceptor$Builder
 
 a1.sources.r1.selector.type = multiplexing
 a1.sources.r1.selector.header = topic
-a1.sources.r1.selector.mapping.topic_start = c1
-a1.sources.r1.selector.mapping.topic_event = c2
+a1.sources.r1.selector.mapping.topic-start = c1
+a1.sources.r1.selector.mapping.topic-event = c2
 
 # configure channel
 a1.channels.c1.type = org.apache.flume.channel.kafka.KafkaChannel
-a1.channels.c1.kafka.bootstrap.servers = node01:9092,node02:9092
-a1.channels.c1.kafka.topic = topic_start
+a1.channels.c1.kafka.bootstrap.servers = node01:9092,node02:9092,node03:9092:node04:9092
+a1.channels.c1.kafka.topic = topic-start
 a1.channels.c1.parseAsFlumeEvent = false
 a1.channels.c1.kafka.consumer.group.id = flume-consumer
 
 a1.channels.c2.type = org.apache.flume.channel.kafka.KafkaChannel
-a1.channels.c2.kafka.bootstrap.servers = node01:9092,node02:9092
-a1.channels.c2.kafka.topic = topic_event
+a1.channels.c2.kafka.bootstrap.servers = node01:9092,node02:9092,node03:9092:node04:9092
+a1.channels.c2.kafka.topic = topic-event
 a1.channels.c2.parseAsFlumeEvent = false
 a1.channels.c2.kafka.consumer.group.id = flume-consumer
 ```
@@ -328,9 +330,9 @@ ETL拦截器主要用于，过滤时间戳不合法和Json数据不完整的日�
 把包上传到采集flume， node01， node02
 
 ```shell
-[root@node01 ~]# mv log-collector-1.0-SNAPSHOT.jar /opt/stanlong/flume/apache-flume-1.9.0-bin/lib
+[root@node01 ~]# mv flume-interceptor-1.0-SNAPSHOT.jar /opt/stanlong/flume/apache-flume-1.9.0-bin/lib
 [root@node01 ~]# cd /opt/stanlong/flume/apache-flume-1.9.0-bin/lib
-[root@node01 lib]# scp log-collector-1.0-SNAPSHOT.jar node02:`pwd`
+[root@node01 lib]# scp flume-interceptor-1.0-SNAPSHOT.jar node02:`pwd`
 ```
 
 ## 采集flume启停脚本
@@ -339,7 +341,9 @@ ETL拦截器主要用于，过滤时间戳不合法和Json数据不完整的日�
 [root@node01 appmain]# pwd
 /opt/stanlong/appmain
 [root@node01 appmain]# vi fc.sh
+```
 
+```shell
 #! /bin/bash
 
 FC_HOME="/opt/stanlong/flume/apache-flume-1.9.0-bin"
@@ -360,6 +364,9 @@ case $1 in
 
 };;
 esac
+```
+
+```shell
 [root@node01 appmain]# chmod +x fc.sh
 ```
 

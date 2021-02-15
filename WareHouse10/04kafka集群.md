@@ -1,4 +1,4 @@
-# kafka生产者
+# kafka集群
 
 kafka安装参考 Hadoop\17Kafka
 
@@ -10,8 +10,8 @@ kafka安装参考 Hadoop\17Kafka
 [root@node01 appmain]# vi fc.sh 
 
 #! /bin/bash
-
-KAFKA_HOME = "/opt/stanlong/kafka/kafka"
+# 注意等号左右不能有空格
+KAFKA_HOME="/opt/stanlong/kafka/kafka"
 case $1 in
 "start"){
         for i in node01 node02 node03 node04
@@ -44,7 +44,7 @@ esac
 **创建启动日志主题**
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --create --replication-factor 1 --partitions 1 --topic topic_start
+bin/kafka-topics.sh --zookeeper node02:2181  --create --replication-factor 1 --partitions 1 --topic topic_start
 ```
 
 **创建事件日志主题**
