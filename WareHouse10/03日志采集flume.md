@@ -2,7 +2,7 @@
 
 ![](./doc/08.png)
 
-flume 安装见Hadoop/16Flume
+flume 安装及规划见Hadoop/16Flume
 
 ## flume 的具体配置
 
@@ -47,6 +47,12 @@ a1.channels.c2.kafka.consumer.group.id = flume-consumer
 ```
 
 注意：`com.stanlong.flume.interceptor.LogETLInterceptor`和`com.stanlong.flume.interceptor.LogTypeInterceptor`是自定义的拦截器的全类名。需要根据用户自定义的拦截器做相应修改
+
+**分发配置文件**
+
+```shell
+[root@node01 conf]# scp file-flume-kafka.conf node02:`pwd`
+```
 
 ## 编写拦截器
 
@@ -320,3 +326,40 @@ ETL拦截器主要用于，过滤时间戳不合法和Json数据不完整的日�
 ## 上传
 
 把包上传到采集flume， node01， node02
+
+```shell
+[root@node01 ~]# mv log-collector-1.0-SNAPSHOT.jar /opt/stanlong/flume/apache-flume-1.9.0-bin/lib
+[root@node01 ~]# cd /opt/stanlong/flume/apache-flume-1.9.0-bin/lib
+[root@node01 lib]# scp log-collector-1.0-SNAPSHOT.jar node02:`pwd`
+```
+
+## 采集flume启停脚本
+
+```shell
+[root@node01 appmain]# pwd
+/opt/stanlong/appmain
+[root@node01 appmain]# vi fc.sh
+
+#! /bin/bash
+
+FC_HOME="/opt/stanlong/flume/apache-flume-1.9.0-bin"
+case $1 in
+"start"){
+        for i in node01 node02
+        do
+                echo " --------启动 $i 采集flume-------"
+                ssh $i "nohup $FC_HOME/bin/flume-ng agent --conf-file $FC_HOME/conf/file-flume-kafka.conf --name a1 -Dflume.root.logger=INFO,LOGFILE >/dev/null 2>&1 &"
+        done
+};;	
+"stop"){
+        for i in node01 node02
+        do
+                echo " --------停止 $i 采集flume-------"
+                ssh $i "ps -ef | grep file-flume-kafka | grep -v grep |awk '{print \$2}' | xargs kill"
+        done
+
+};;
+esac
+[root@node01 appmain]# chmod +x fc.sh
+```
+
