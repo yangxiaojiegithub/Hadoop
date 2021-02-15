@@ -302,6 +302,10 @@ Topic: first-topic	PartitionCount: 2	ReplicationFactor: 3	Configs:
 	Topic: first-topic	Partition: 1	Leader: 3	Replicas: 3,1,2	Isr: 3,1,2
 ```
 
+**ISR**
+
+Leader维护了一个动态的 in-sync replica set(ISR)，意为和leader保持同步的follower集合。当ISR中的follower完成数据同步之后，leader就会给follower发送ack。如果follower长时间未向leader同步数据，则该follower将被踢出ISR。该时间阈值有replica.lag.time.max.ms参数设定。leader发生故障之后，就会从ISR中选举出新的leader
+
 ### 删除topic
 
 ```shell
