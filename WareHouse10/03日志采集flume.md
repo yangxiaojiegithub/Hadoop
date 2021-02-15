@@ -4,7 +4,7 @@
 
 flume 安装及规划见Hadoop/16Flume
 
-## flume 的具体配置
+## flume配置
 
 ```shell
 [root@node01 conf]# pwd
@@ -48,7 +48,23 @@ a1.channels.c2.parseAsFlumeEvent = false
 a1.channels.c2.kafka.consumer.group.id = flume-consumer
 ```
 
-注意：`com.stanlong.flume.interceptor.LogETLInterceptor`和`com.stanlong.flume.interceptor.LogTypeInterceptor`是自定义的拦截器的全类名。需要根据用户自定义的拦截器做相应修改
+注意：`com.stanlong.flume.interceptor.LogETLInterceptor`和`com.stanlong.flume.interceptor.LogTypeInterceptor`是自定义的拦截器的全类名。需要根据用户自定义的拦截器做相应修改。 
+
+## 配置说明
+
+**Source**
+
+1. Taildir Source相比Exec Source、Spooling Directory Source的优势
+   *TailDir Source*：断点续传、多目录。Flume1.6以前需要自己自定义Source记录每次读取文件位置，实现断点续传。
+   
+*Exec Source* 可以实时搜集数据，但是在Flume不运行或者Shell命令出错的情况下，数据将会丢失。
+   *Spooling Directory Source* 监控目录，不支持断点续传。
+   
+2. batchSize大小如何设置？
+   答：Event 1K左右时，500-1000合适（默认为100）
+
+**Channel**
+   采用Kafka Channel，省去了Sink，提高了效率。
 
 **分发配置文件**
 

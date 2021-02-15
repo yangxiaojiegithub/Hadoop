@@ -44,25 +44,25 @@ esac
 **创建启动日志主题**
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181 --create --replication-factor 1 --partitions 1 --topic topic-start
+bin/kafka-topics.sh --zookeeper node01:2181,node02:2181,node03:2181,node04:2181 --create --replication-factor 3 --partitions 1 --topic topic-start
 ```
 
 **创建事件日志主题**
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181 --create --replication-factor 1 --partitions 1 --topic topic-event
+bin/kafka-topics.sh --zookeeper node01:2181,node02:2181,node03:2181,node04:2181 --create --replication-factor 3 --partitions 1 --topic topic-event
 ```
 
 ## 查看topic
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181 --list
+bin/kafka-topics.sh --zookeeper node01:2181,node02:2181,node03:2181,node04:2181 --list
 ```
 
 ## 查看topic详情
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --describe --topic topic-start
+bin/kafka-topics.sh --zookeeper node01:2181,node02:2181,node03:2181,node04:2181  --describe --topic topic-start
 ```
 
 ## 删除topic
@@ -70,12 +70,26 @@ bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --describe 
 删除启动日志主题
 
 ```shell
-bin/kafka-topics.sh --delete --zookeeper node02:2181,node03:2181,node04:2181 --topic topic-start
+bin/kafka-topics.sh --delete --zookeeper node01:2181,node02:2181,node03:2181,node04:2181 --topic topic-start
 ```
 
 删除事件日志主题
 
 ```shell
-bin/kafka-topics.sh --delete --zookeeper node02:2181,node03:2181,node04:2181 --topic topic-event
+bin/kafka-topics.sh --delete --zookeeper node01:2181,node02:2181,node03:2181,node04:2181 --topic topic-event
 ```
+
+## kafka生产者
+
+```shell
+bin/kafka-console-producer.sh --broker-list node01:9092,node02:9092,node03:9092,node04:9092 --topic topic-event
+```
+
+## kafka消费者
+
+```shell
+bin/kafka-console-consumer.sh --bootstrap-server node01:9092,node02:9092,node03:9092,node04:9092 --from-beginning --topic topic-event
+```
+
+
 
