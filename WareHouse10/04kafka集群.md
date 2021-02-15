@@ -18,7 +18,7 @@ case $1 in
         do
                 echo " --------启动 $i Kafka-------"
                 # 用于KafkaManager监控
-                ssh $i "export JMX_PORT=9988 && $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties "
+                ssh $i "export JMX_PORT=9988 && $KAFKA_HOME/bin/kafka-server-start.sh -daemon $KAFKA_HOME/config/server.properties"
         done
 };;
 "stop"){
@@ -44,13 +44,13 @@ esac
 **创建启动日志主题**
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181  --create --replication-factor 1 --partitions 1 --topic topic_start
+bin/kafka-topics.sh --zookeeper node02:2181 --create --replication-factor 1 --partitions 1 --topic topic-start
 ```
 
 **创建事件日志主题**
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --create --replication-factor 1 --partitions 1 --topic topic_event
+bin/kafka-topics.sh --zookeeper node02:2181 --create --replication-factor 1 --partitions 1 --topic topic-event
 ```
 
 ## 查看topic
