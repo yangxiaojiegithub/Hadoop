@@ -160,7 +160,17 @@ i 忽略大小写
 4
 ```
 
+### 日期格式化
+
+```shell
+vi /etc/profile # 编辑
+export TIME_STYLE='+%Y/%m/%d %H:%M:%S' # 日期格式
+
+source /etc/profile # 使环境变量生效
+```
+
 ### chkconfig
+
 服务管理
 
 ~~~shell
