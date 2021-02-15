@@ -62,7 +62,7 @@ bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181 --list
 ## 查看topic详情
 
 ```shell
-bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --describe --topic topic_start
+bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --describe --topic topic-start
 ```
 
 ## 删除topic
@@ -70,12 +70,12 @@ bin/kafka-topics.sh --zookeeper node02:2181,node03:2181,node04:2181  --describe 
 删除启动日志主题
 
 ```shell
-bin/kafka-topics.sh --delete --zookeeper node02:2181,node03:2181,node04:2181 --topic topic_start
+bin/kafka-topics.sh --delete --zookeeper node02:2181,node03:2181,node04:2181 --topic topic-start
 ```
 
 删除事件日志主题
 
 ```shell
-bin/kafka-topics.sh --delete --zookeeper node02:2181,node03:2181,node04:2181 --topic topic_event
+bin/kafka-topics.sh --delete --zookeeper node02:2181,node03:2181,node04:2181 --topic topic-event
 ```
 
