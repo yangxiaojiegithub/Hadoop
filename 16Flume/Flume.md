@@ -222,5 +222,38 @@ export JAVA_HOME=/usr/java/jdk1.8.0_65
   Event: { headers:{} body: 48 65 6C 6C 6F 20 46 6C 75 6D 65                Hello Flume }
   ```
 
+## flume对接kafka
+
+**Channel** 采用Kafka Channel，省去了Sink，提高了效率。
+
+```properties
+#bin/flume-ng agent -n a1 -f conf/a1.conf -c conf -Dflume.root.logger=INFO,console
+#定义agent名， source、channel、sink的名称
+a1.sources = r1 
+a1.channels = c1
+
+
+#具体定义source
+a1.sources.r1.type = TAILDIR
+a1.sources.r1.posiFile = /opt/stanlong/flume/test/log_position1.json
+a1.sources.r1.filegroups = f1
+a1.sources.r1.filegroups.f1 = /tmp/logs/abc.txt
+a1.sources.r1.interval = 1000 
+a1.sources.r1.charset = UTF-8
+
+
+
+#具体定义channel
+a1.channels.c1.type = org.apache.flume.channel.kafka.KafkaChannel
+a1.channels.c1.kafka.bootstrap.servers = node01:9092,node02:9092,node03:9092:node04:9092
+a1.channels.c1.kafka.topic=topic-event
+a1.channels.c1.parseAsFlumeEvent=false
+# a1.channels.c1.kafka.consumer.group.id = flume-consumer
+
+
+#组装source、channel
+a1.sources.r1.channels = c1
+```
+
 
 
