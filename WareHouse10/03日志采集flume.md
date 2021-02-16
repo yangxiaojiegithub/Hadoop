@@ -29,10 +29,11 @@ a1.sources.r1.interceptors =  i1 i2
 a1.sources.r1.interceptors.i1.type = com.stanlong.flume.interceptor.LogETLInterceptor$Builder
 a1.sources.r1.interceptors.i2.type = com.stanlong.flume.interceptor.LogTypeInterceptor$Builder
 
-a1.sources.r1.selector.type = multiplexing
-a1.sources.r1.selector.header = topic
-a1.sources.r1.selector.mapping.topic-start = c1
-a1.sources.r1.selector.mapping.topic-event = c2
+# 加上这段kafka消费者没有收到flume的消息
+# a1.sources.r1.selector.type = multiplexing
+# a1.sources.r1.selector.header = topic
+# a1.sources.r1.selector.mapping.topic-start = c1
+# a1.sources.r1.selector.mapping.topic-event = c2
 
 # configure channel
 a1.channels.c1.type = org.apache.flume.channel.kafka.KafkaChannel
@@ -57,9 +58,10 @@ a1.channels.c2.kafka.consumer.group.id = flume-consumer
 1. Taildir Source相比Exec Source、Spooling Directory Source的优势
    *TailDir Source*：断点续传、多目录。Flume1.6以前需要自己自定义Source记录每次读取文件位置，实现断点续传。
    
+
 *Exec Source* 可以实时搜集数据，但是在Flume不运行或者Shell命令出错的情况下，数据将会丢失。
    *Spooling Directory Source* 监控目录，不支持断点续传。
-   
+
 2. batchSize大小如何设置？
    答：Event 1K左右时，500-1000合适（默认为100）
 
