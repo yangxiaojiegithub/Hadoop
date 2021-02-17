@@ -74,11 +74,11 @@ a1.sinks.k2.hdfs.rollSize = 134217728
 a1.sinks.k2.hdfs.rollCount = 0
 
 ## 控制输出文件是原生文件。
-#a1.sinks.k1.hdfs.fileType = CompressedStream 
-#a1.sinks.k2.hdfs.fileType = CompressedStream 
+a1.sinks.k1.hdfs.fileType = CompressedStream 
+a1.sinks.k2.hdfs.fileType = CompressedStream 
 
-a1.sinks.k1.hdfs.codeC = snappy
-a1.sinks.k2.hdfs.codeC = snappy
+a1.sinks.k1.hdfs.codeC = lzop
+a1.sinks.k2.hdfs.codeC = lzop
 
 ## 拼装
 a1.sources.r1.channels = c1
