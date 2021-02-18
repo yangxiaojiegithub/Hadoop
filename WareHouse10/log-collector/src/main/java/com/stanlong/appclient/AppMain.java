@@ -35,8 +35,8 @@ public class AppMain {
         // 参数二：循环遍历次数
         int loop_len = args.length > 1 ? Integer.parseInt(args[1]) : 1000;
 
-        // 生成数据
-        generateLog(delay, loop_len);
+        // 生成数据, 受硬件限制，只生成10条数据
+        generateLog(delay, 10);
     }
 
     private static void generateLog(Long delay, int loop_len) {
