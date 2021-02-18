@@ -124,3 +124,6 @@ esac
 [root@node01 appmain]# chmod +x fd.sh
 ```
 
+flume配置文件中 `a1.sinks.k2.hdfs.path` 配置的目录会在HDFS上自动生成
+
+![](./doc/11.png)
