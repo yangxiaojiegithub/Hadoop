@@ -149,8 +149,30 @@ var
 
 ## 引用与命令替换
 
-+ 双引号引用不能阻止变量替换，变量扩展
-+ 单引号可以阻止变量的替换过程
+### 单引号
+
+单引号将其中的内容都作为了字符串来，忽略所有的命令和特殊字符,类似于一个字符串的用法
+
+```shell
+[root@node03 ~]# name='StanLong'
+[root@node03 ~]# echo '$name'
+$name
+```
+
+### 双引号
+
+双引号内则会解析特殊字符，包括`', ", $, \`,如果要忽略特殊字符，就可以利用`\`来转义，忽略特殊字符，作为普通字符输出：
+
+```shell
+[root@node03 ~]# name='StanLong'
+[root@node03 ~]# echo '$name'
+$name
+[root@node03 ~]# echo "$name"
+StanLong
+[root@node03 ~]# echo "\$name"
+$name
+```
+
 + {}扩展不能被引用
 + 命令执行前删除引用
 + 使用`（反引号）进行命令替换
