@@ -70,7 +70,7 @@ LOCATION '/warehouse/gmall/ods/ods_start_log';
 load data inpath '/origin_data/gmall/log/topic-start/2021-02-19' into table gmall.ods_start_log partition(pt_d='2021-02-19');
 ```
 
-**测试**
+**查询**
 
 ```sql
 select * from ods_start_log limit 2;
@@ -99,18 +99,52 @@ load data inpath '/origin_data/gmall/log/topic-event/2021-02-19' into table gmal
 **查询**
 
 ```sql
-0: jdbc:hive2://node01:10000> select count(1) as c1 from ods_event_log;
-+-----+--+
-| c1  |
-+-----+--+
-| 10  |
-+-----+--+
-1 row selected (157.143 seconds)
+select * from ods_event_log limit 2;
 ```
 
+### ODS层加载数据脚本
 
+```shell
+[root@node01 appmain]# pwd
+/opt/stanlong/appmain
+[root@node01 appmain]# vi ods_log.sh
+```
 
-### 
+```shell
+#!/bin/bash
+
+# 定义变量方便修改
+APP=gmall
+hive=/opt/stanlong/hive/apache-hive-1.2.2-bin/bin/hive
+
+# 如果是输入的日期按照取输入日期；如果没输入日期取当前时间的前一天
+if [ -n "$1" ] ;then
+   do_date=$1
+else 
+   do_date=`date -d "-1 day" +%F`
+fi 
+
+echo "===日志日期为 $do_date==="
+sql="
+load data inpath '/origin_data/gmall/log/topic_start/$do_date' into table "$APP".ods_start_log partition(pt_d='$do_date');
+
+load data inpath '/origin_data/gmall/log/topic_event/$do_date' into table "$APP".ods_event_log partition(pt_d='$do_date');
+"
+
+$hive -e "$sql"
+```
+
+```shell
+[root@node01 appmain]# chmod +x ods_log.sh
+```
+
+说明1：
+
+[ -n 变量值 ] 判断变量的值，是否为空
+
+-- 变量的值，非空，返回true
+
+-- 变量的值，为空，返回false
 
 
 
