@@ -126,9 +126,9 @@ fi
 
 echo "===日志日期为 $do_date==="
 sql="
-load data inpath '/origin_data/gmall/log/topic_start/$do_date' into table "$APP".ods_start_log partition(pt_d='$do_date');
+load data inpath '/origin_data/gmall/log/topic-start/$do_date' into table "$APP".ods_start_log partition(pt_d='$do_date');
 
-load data inpath '/origin_data/gmall/log/topic_event/$do_date' into table "$APP".ods_event_log partition(pt_d='$do_date');
+load data inpath '/origin_data/gmall/log/topic-event/$do_date' into table "$APP".ods_event_log partition(pt_d='$do_date');
 "
 
 $hive -e "$sql"
@@ -142,15 +142,6 @@ $hive -e "$sql"
 
 [ -n 变量值 ] 判断变量的值，是否为空
 
--- 变量的值，非空，返回true
+变量的值非空，返回true
 
--- 变量的值，为空，返回false
-
-
-
-
-
-
-
-## 搭建DWD层
-
+变量的值为空，返回false
