@@ -2,7 +2,7 @@
 
 没成功，待续....
 
-Tez是一个Hive的运行引擎，性能优于MR。为什么优于MR呢？看下图
+Tez是一个Hive的运行引擎，性能优于MR。看下图
 
 ![](./doc/08.png)
 
@@ -22,18 +22,18 @@ Tez可以将多个有依赖的作业转换为一个作业，这样只需写一�
 [root@node01 ~]# tar -zxf apache-tez-0.9.1-bin.tar.gz -C /opt/stanlong/hive/
 ```
 
-## 在Hive中配置Tez
+## 配置 hive-env.sh
 
 ```shell
 [root@node01 apache-tez-0.9.1-bin]# pwd
 /opt/stanlong/hive/apache-tez-0.9.1-bin
-```
 
-```shell
 [root@node01 conf]# pwd
 /opt/stanlong/hive/apache-hive-1.2.2-bin/conf
 [root@node01 conf]# vi hive-env.sh
+```
 
+```shell
 # Folder containing extra ibraries required for hive compilation/execution can be controlled by:
 export TEZ_HOME=/opt/stanlong/hive/apache-tez-0.9.1-bin    #tez的解压目录
 export TEZ_JARS=""
@@ -47,15 +47,22 @@ done
 export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/hadoop-lzo-0.4.21.jar$TEZ_JARS
 ```
 
+## 配置hive-site.xml
+
 ```shell
-在hive-site.xml文件中添加如下配置，更改hive计算引擎
+[root@node01 conf]# pwd
+/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
+[root@node01 conf]# vi hive-site.xml
+```
+
+```xml
 <property>
     <name>hive.execution.engine</name>
     <value>tez</value>
 </property>
 ```
 
-## 配置Tez
+## 配置tez-site.xml
 
 ```shell
 [root@node01 conf]# pwd
