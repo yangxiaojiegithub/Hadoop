@@ -412,6 +412,8 @@ No rows affected (25.401 seconds)
 
 **创建临时函数与开发好的java class关联**
 
+若hive重启，则需要重新创建函数
+
 ```sql
 create temporary function base_analizer as 'com.stanlong.udf.BaseFieldUDF';
 
