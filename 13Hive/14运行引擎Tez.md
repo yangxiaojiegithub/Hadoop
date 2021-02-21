@@ -1,7 +1,5 @@
 # Hive运行Tez引擎
 
-没成功，待续....
-
 Tez是一个Hive的运行引擎，性能优于MR。看下图
 
 ![](./doc/08.png)
@@ -157,7 +155,7 @@ Dump of the process-tree for container_1613928585113_0001_02_000001 :
 
 **解决方法**
 
-方案一：或者是关掉虚拟内存检查。我们选这个，修改yarn-site.xml
+关掉虚拟内存检查。修改yarn-site.xml
 
 ```shell
 [root@node01 hadoop]# pwd
