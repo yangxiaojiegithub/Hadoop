@@ -98,7 +98,7 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 ```shell
 [root@node01 ~]# hdfs dfs -mkdir /tez
 [root@node01 ~]# hdfs dfs -put /opt/stanlong/hive/apache-tez-0.9.1-bin/ /tez
-[root@node01 ~]# hdfs dfs -ls /tez
+[root@node02 ~]# hdfs dfs -mv /tez/apache-tez-0.9.1-bin /tez/tez-0.9.1
 ```
 
 ## 测试
@@ -119,8 +119,61 @@ create table stu_tez(
 id int,
 name string);
 
-insert into stu_tez values(1,"zhangsan");
+0: jdbc:hive2://node01:10000> insert into stu_tez values(1,"zhangsan");
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : 
+
+INFO  : Status: Running (Executing on YARN cluster with App id application_1613928585113_0002)
+
+INFO  : Map 1: -/-	
+INFO  : Map 1: 0/1	
+INFO  : Map 1: 0/1	
+INFO  : Map 1: 0/1	
+INFO  : Map 1: 0/1	
+INFO  : Map 1: 0/1	
+INFO  : Map 1: 0(+1)/1	
+INFO  : Map 1: 0(+1)/1	
+INFO  : Map 1: 1/1	
+INFO  : Loading data to table default.stu_tez from hdfs://hacluster/user/hivedb/warehouse/stu_tez/.hive-staging_hive_2021-02-22_01-50-43_055_6010164217206492839-4/-ext-10000
+INFO  : Table default.stu_tez stats: [numFiles=1, numRows=1, totalSize=11, rawDataSize=10]
+No rows affected (83.419 seconds)
 ```
 
+## 小结
 
+运行Tez时检查到用过多内存而被NodeManager杀死进程问题
+
+```shell
+0: jdbc:hive2://node01:10000> insert into stu_tez values(1,"zhangsan");
+INFO  : Session is already open
+INFO  : Tez session was closed. Reopening...
+ERROR : Failed to execute tez graph.
+org.apache.tez.dag.api.SessionNotRunning: TezSession has already shutdown. Application application_1613928585113_0001 failed 2 times due to AM Container for appattempt_1613928585113_0001_000002 exited with  exitCode: -103
+Failing this attempt.Diagnostics: [2021-02-22 01:41:14.426]Container [pid=8464,containerID=container_1613928585113_0001_02_000001] is running beyond virtual memory limits. Current usage: 81.0 MB of 1 GB physical memory used; 2.5 GB of 2.1 GB virtual memory used. Killing container.
+Dump of the process-tree for container_1613928585113_0001_02_000001 :
+```
+
+这种问题是从机上运行的Container试图使用过多的内存，而被NodeManager kill掉了
+
+**解决方法**
+
+方案一：或者是关掉虚拟内存检查。我们选这个，修改yarn-site.xml
+
+```shell
+[root@node01 hadoop]# pwd
+/opt/stanlong/hadoop-ha/hadoop-2.9.2/etc/hadoop
+[root@node01 hadoop]# vi yarn-site.xml
+```
+
+```xml
+<property>
+<name>yarn.nodemanager.vmem-check-enabled</name>
+<value>false</value>
+</property>
+```
+
+```shell
+分发到其他节点后重启yarn
+[root@node01 hadoop]# ~/myshell/rsyncd.sh yarn-site.xml
+```
 
