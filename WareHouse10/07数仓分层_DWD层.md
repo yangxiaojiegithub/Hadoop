@@ -468,41 +468,8 @@ split(base_analizer(line,'mid,uid,vc,vn,l,sr,os,ar,md,ba,sv,g,hw,t,nw,ln,la'),'\
 split(base_analizer(line,'mid,uid,vc,vn,l,sr,os,ar,md,ba,sv,g,hw,t,nw,ln,la'),'\t')[16]  as lat,
 split(base_analizer(line,'mid,uid,vc,vn,l,sr,os,ar,md,ba,sv,g,hw,t,nw,ln,la'),'\t')[17]  as ops,
 split(base_analizer(line,'mid,uid,vc,vn,l,sr,os,ar,md,ba,sv,g,hw,t,nw,ln,la'),'\t')[18]  as server_time
-from ods_event_log where pt_d='2019-02-10'  and base_analizer(line,'mid,uid,vc,vn,l,sr,os,ar,md,ba,sv,g,hw,t,nw,ln,la')<>'' 
+from ods_event_log where pt_d='2021-02-19'  and base_analizer(line,'mid,uid,vc,vn,l,sr,os,ar,md,ba,sv,g,hw,t,nw,ln,la')<>'' 
 ) sdk_log lateral view flat_analizer(ops) tmp_k as event_name, event_json;
-```
-
-```java
-INFO  : Tez session hasn't been created yet. Opening session
-ERROR : Failed to execute tez graph.
-java.lang.NullPointerException
-	at org.apache.tez.dag.api.records.DAGProtos$PlanKeyValuePair$Builder.setValue(DAGProtos.java:1587)
-	at org.apache.tez.client.TezClientUtils.createFinalConfProtoForApp(TezClientUtils.java:809)
-	at org.apache.tez.client.TezClientUtils.createApplicationSubmissionContext(TezClientUtils.java:578)
-	at org.apache.tez.client.TezClient.start(TezClient.java:428)
-	at org.apache.hadoop.hive.ql.exec.tez.TezSessionState.open(TezSessionState.java:185)
-	at org.apache.hadoop.hive.ql.exec.tez.TezTask.updateSession(TezTask.java:239)
-	at org.apache.hadoop.hive.ql.exec.tez.TezTask.execute(TezTask.java:137)
-	at org.apache.hadoop.hive.ql.exec.Task.executeTask(Task.java:160)
-	at org.apache.hadoop.hive.ql.exec.TaskRunner.runSequential(TaskRunner.java:88)
-	at org.apache.hadoop.hive.ql.Driver.launchTask(Driver.java:1676)
-	at org.apache.hadoop.hive.ql.Driver.execute(Driver.java:1435)
-	at org.apache.hadoop.hive.ql.Driver.runInternal(Driver.java:1218)
-	at org.apache.hadoop.hive.ql.Driver.run(Driver.java:1082)
-	at org.apache.hadoop.hive.ql.Driver.run(Driver.java:1077)
-	at org.apache.hive.service.cli.operation.SQLOperation.runQuery(SQLOperation.java:154)
-	at org.apache.hive.service.cli.operation.SQLOperation.access$100(SQLOperation.java:71)
-	at org.apache.hive.service.cli.operation.SQLOperation$1$1.run(SQLOperation.java:206)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at javax.security.auth.Subject.doAs(Subject.java:422)
-	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1893)
-	at org.apache.hive.service.cli.operation.SQLOperation$1.run(SQLOperation.java:218)
-	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
-	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Error: Error while processing statement: FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.tez.TezTask (state=08S01,code=1)
 ```
 
 ### 测试
