@@ -597,7 +597,7 @@ CREATE EXTERNAL TABLE dwd_display_log(
 `category` string,
 `server_time` string
 )
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_display_log/';
 ```
 
@@ -607,7 +607,7 @@ location '/warehouse/gmall/dwd/dwd_display_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_display_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -633,7 +633,7 @@ get_json_object(event_json,'$.kv.extend1') extend1,
 get_json_object(event_json,'$.kv.category') category,
 server_time
 from dwd_base_event_log 
-where dt='2019-02-10' and event_name='display';
+where pt_d='2021-02-19' and event_name='display';
 ```
 
 #### 商品详情页表
@@ -669,7 +669,7 @@ CREATE EXTERNAL TABLE dwd_newsdetail_log(
 `type1` string,
 `category` string,
 `server_time` string)
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_newsdetail_log/';
 ```
 
@@ -679,7 +679,7 @@ location '/warehouse/gmall/dwd/dwd_newsdetail_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_newsdetail_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -708,7 +708,7 @@ get_json_object(event_json,'$.kv.type1') type1,
 get_json_object(event_json,'$.kv.category') category,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='newsdetail';
+where pt_d='2021-02-19' and event_name='newsdetail';
 ```
 
 #### 商品列表页表
@@ -743,7 +743,7 @@ CREATE EXTERNAL TABLE dwd_loading_log(
 `type` string,
 `type1` string,
 `server_time` string)
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_loading_log/';
 ```
 
@@ -753,7 +753,7 @@ location '/warehouse/gmall/dwd/dwd_loading_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_loading_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -781,7 +781,7 @@ get_json_object(event_json,'$.kv.type') type,
 get_json_object(event_json,'$.kv.type1') type1,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='loading';
+where pt_d='2021-02-19' and event_name='loading';
 ```
 
 #### 广告表
@@ -817,7 +817,7 @@ CREATE EXTERNAL TABLE dwd_ad_log(
 `newstype` string,
 `show_style` string,
 `server_time` string)
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_ad_log/';
 ```
 
@@ -827,7 +827,7 @@ location '/warehouse/gmall/dwd/dwd_ad_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_ad_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -856,7 +856,7 @@ get_json_object(event_json,'$.kv.newstype') newstype,
 get_json_object(event_json,'$.kv.show_style') show_style,
 server_time
 from dwd_base_event_log 
-where dt='2019-02-10' and event_name='ad';
+where pt_d='2021-02-19' and event_name='ad';
 ```
 
 #### 消息通知表
@@ -889,7 +889,7 @@ CREATE EXTERNAL TABLE dwd_notification_log(
 `content` string,
 `server_time` string
 )
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_notification_log/';
 ```
 
@@ -899,7 +899,7 @@ location '/warehouse/gmall/dwd/dwd_notification_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_notification_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -924,7 +924,7 @@ get_json_object(event_json,'$.kv.ap_time') ap_time,
 get_json_object(event_json,'$.kv.content') content,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='notification';
+where pt_d='2021-02-19' and event_name='notification';
 ```
 
 #### 用户前台活跃表
@@ -954,7 +954,7 @@ CREATE EXTERNAL TABLE dwd_active_foreground_log(
 `push_id` string,
 `access` string,
 `server_time` string)
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_foreground_log/';
 ```
 
@@ -964,7 +964,7 @@ location '/warehouse/gmall/dwd/dwd_foreground_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_active_foreground_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -987,7 +987,7 @@ get_json_object(event_json,'$.kv.push_id') push_id,
 get_json_object(event_json,'$.kv.access') access,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='active_foreground';
+where pt_d='2021-02-19' and event_name='active_foreground';
 ```
 
 #### 用户后台活跃表
@@ -1017,7 +1017,7 @@ CREATE EXTERNAL TABLE dwd_active_background_log(
 `active_source` string,
 `server_time` string
 )
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_background_log/';
 ```
 
@@ -1027,7 +1027,7 @@ location '/warehouse/gmall/dwd/dwd_background_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_active_background_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -1049,7 +1049,7 @@ lat,
 get_json_object(event_json,'$.kv.active_source') active_source,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='active_background';
+where pt_d='2021-02-19' and event_name='active_background';
 ```
 
 #### 评论表
@@ -1086,7 +1086,7 @@ CREATE EXTERNAL TABLE dwd_comment_log(
 `reply_count` int,
 `server_time` string
 )
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_comment_log/';
 ```
 
@@ -1096,7 +1096,7 @@ location '/warehouse/gmall/dwd/dwd_comment_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_comment_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -1125,7 +1125,7 @@ get_json_object(event_json,'$.kv.praise_count') praise_count,
 get_json_object(event_json,'$.kv.reply_count') reply_count,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='comment';
+where pt_d='2021-02-19' and event_name='comment';
 ```
 
 #### 收藏表
@@ -1158,7 +1158,7 @@ CREATE EXTERNAL TABLE dwd_favorites_log(
 `add_time` string,
 `server_time` string
 )
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_favorites_log/';
 ```
 
@@ -1168,7 +1168,7 @@ location '/warehouse/gmall/dwd/dwd_favorites_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_favorites_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -1193,7 +1193,7 @@ get_json_object(event_json,'$.kv.userid') userid,
 get_json_object(event_json,'$.kv.add_time') add_time,
 server_time
 from dwd_base_event_log 
-where dt='2019-02-10' and event_name='favorites';
+where pt_d='2021-02-19' and event_name='favorites';
 ```
 
 #### 点赞表
@@ -1227,7 +1227,7 @@ CREATE EXTERNAL TABLE dwd_praise_log(
 `add_time` string,
 `server_time` string
 )
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_praise_log/';
 ```
 
@@ -1237,7 +1237,7 @@ location '/warehouse/gmall/dwd/dwd_praise_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_praise_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -1263,7 +1263,7 @@ get_json_object(event_json,'$.kv.type') type,
 get_json_object(event_json,'$.kv.add_time') add_time,
 server_time
 from dwd_base_event_log
-where dt='2019-02-10' and event_name='praise';
+where pt_d='2021-02-19' and event_name='praise';
 ```
 
 #### 错误日志表
@@ -1293,7 +1293,7 @@ CREATE EXTERNAL TABLE dwd_error_log(
 `errorBrief` string, 
 `errorDetail` string, 
 `server_time` string)
-PARTITIONED BY (dt string)
+PARTITIONED BY (pt_d string)
 location '/warehouse/gmall/dwd/dwd_error_log/';
 ```
 
@@ -1303,7 +1303,7 @@ location '/warehouse/gmall/dwd/dwd_error_log/';
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table dwd_error_log
-PARTITION (dt='2019-02-10')
+PARTITION (pt_d='2021-02-19')
 select 
 mid_id,
 user_id,
@@ -1326,17 +1326,23 @@ get_json_object(event_json,'$.kv.errorBrief') errorBrief,
 get_json_object(event_json,'$.kv.errorDetail') errorDetail,
 server_time
 from dwd_base_event_log 
-where dt='2019-02-10' and event_name='error';
+where pt_d='2021-02-19' and event_name='error';
 ```
 
 ### 事件表加载数据脚本
+
+```shell
+[root@node01 appmain]# pwd
+/opt/stanlong/appmain
+[root@node01 appmain]# vi dwd_event_log.sh
+```
 
 ```sql
 #!/bin/bash
 
 # 定义变量方便修改
 APP=gmall
-hive=/opt/module/hive/bin/hive
+hive=/opt/stanlong/hive/apache-hive-1.2.2-bin/bin/hive
 
 # 如果是输入的日期按照取输入日期；如果没输入日期取当前时间的前一天
 if [ -n "$1" ] ;then
@@ -1349,7 +1355,7 @@ sql="
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table "$APP".dwd_display_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1375,10 +1381,10 @@ select
 	get_json_object(event_json,'$.kv.category') category,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='display';
+where pt_d='$do_date' and event_name='display';
 
 insert overwrite table "$APP".dwd_newsdetail_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1407,10 +1413,10 @@ select
 	get_json_object(event_json,'$.kv.category') category,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='newsdetail';
+where pt_d='$do_date' and event_name='newsdetail';
 
 insert overwrite table "$APP".dwd_loading_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1438,10 +1444,10 @@ select
 	get_json_object(event_json,'$.kv.type1') type1,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='loading';
+where pt_d='$do_date' and event_name='loading';
 
 insert overwrite table "$APP".dwd_ad_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1470,10 +1476,10 @@ select
 	get_json_object(event_json,'$.kv.show_style') show_style,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='ad';
+where pt_d='$do_date' and event_name='ad';
 
 insert overwrite table "$APP".dwd_notification_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1498,10 +1504,10 @@ select
 	get_json_object(event_json,'$.kv.content') content,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='notification';
+where pt_d='$do_date' and event_name='notification';
 
 insert overwrite table "$APP".dwd_active_foreground_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1524,10 +1530,10 @@ get_json_object(event_json,'$.kv.push_id') push_id,
 get_json_object(event_json,'$.kv.access') access,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='active_foreground';
+where pt_d='$do_date' and event_name='active_foreground';
 
 insert overwrite table "$APP".dwd_active_background_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1549,10 +1555,10 @@ select
 	get_json_object(event_json,'$.kv.active_source') active_source,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='active_background';
+where pt_d='$do_date' and event_name='active_background';
 
 insert overwrite table "$APP".dwd_comment_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1581,10 +1587,10 @@ select
 	get_json_object(event_json,'$.kv.reply_count') reply_count,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='comment';
+where pt_d='$do_date' and event_name='comment';
 
 insert overwrite table "$APP".dwd_favorites_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1609,10 +1615,10 @@ select
 	get_json_object(event_json,'$.kv.add_time') add_time,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='favorites';
+where pt_d='$do_date' and event_name='favorites';
 
 insert overwrite table "$APP".dwd_praise_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1638,10 +1644,10 @@ select
 	get_json_object(event_json,'$.kv.add_time') add_time,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='praise';
+where pt_d='$do_date' and event_name='praise';
 
 insert overwrite table "$APP".dwd_error_log
-PARTITION (dt='$do_date')
+PARTITION (pt_d='$do_date')
 select 
 	mid_id,
 	user_id,
@@ -1664,10 +1670,40 @@ select
 	get_json_object(event_json,'$.kv.errorDetail') errorDetail,
 	server_time
 from "$APP".dwd_base_event_log 
-where dt='$do_date' and event_name='error';
+where pt_d='$do_date' and event_name='error';
 "
 
 $hive -e "$sql"
+```
+
+```shell
+[root@node01 appmain]# chmod +x dwd_event_log.sh 
+```
+
+```sql
+show partitions dwd_display_log;
+show partitions dwd_newsdetail_log;
+show partitions dwd_loading_log;
+show partitions dwd_ad_log;
+show partitions dwd_notification_log;
+show partitions dwd_active_foreground_log;
+show partitions dwd_active_background_log;
+show partitions dwd_comment_log;
+show partitions dwd_favorites_log;
+show partitions dwd_praise_log;
+show partitions dwd_error_log;
+
+select count(1) as c1 from dwd_display_log;
+select count(1) as c1 from dwd_newsdetail_log;
+select count(1) as c1 from dwd_loading_log;
+select count(1) as c1 from dwd_ad_log;
+select count(1) as c1 from dwd_notification_log;
+select count(1) as c1 from dwd_active_foreground_log;
+select count(1) as c1 from dwd_active_background_log;
+select count(1) as c1 from dwd_comment_log;
+select count(1) as c1 from dwd_favorites_log;
+select count(1) as c1 from dwd_praise_log;
+select count(1) as c1 from dwd_error_log;
 ```
 
 
