@@ -91,6 +91,17 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 </configuration>
 ```
 
+## 编辑mapred-site.xml 
+
+mapreduce.framework.name的值改成yarn-tez
+
+```xml
+<property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn-tez</value>
+</property>
+```
+
 ## 上传Tez到集群
 
 ```shell
