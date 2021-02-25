@@ -115,3 +115,17 @@ Note: Recompile with -Xlint:deprecation for details.
 
 Exception in thread "main" java.lang.RuntimeException: java.io.IOException: Previous writer likely failed to write hdfs://hacluster/tmp/hive/root/_tez_session_dir/6555be9a-18f8-43ac-a330-b6a9daa0d3ab/hadoop-lzo-0.4.21.jar. Failing because I am unlikely to write too.
 
+
+
+21/02/26 07:16:52 ERROR tool.ImportTool: Import failed: java.io.IOException: Hive exited with status 1
+	at org.apache.sqoop.hive.HiveImport.executeExternalHiveScript(HiveImport.java:384)
+	at org.apache.sqoop.hive.HiveImport.executeScript(HiveImport.java:337)
+	at org.apache.sqoop.hive.HiveImport.importTable(HiveImport.java:241)
+	at org.apache.sqoop.tool.ImportTool.importTable(ImportTool.java:537)
+	at org.apache.sqoop.tool.ImportTool.run(ImportTool.java:628)
+	at org.apache.sqoop.Sqoop.run(Sqoop.java:147)
+	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:76)
+	at org.apache.sqoop.Sqoop.runSqoop(Sqoop.java:183)
+	at org.apache.sqoop.Sqoop.runTool(Sqoop.java:234)
+	at org.apache.sqoop.Sqoop.runTool(Sqoop.java:243)
+	at org.apache.sqoop.Sqoop.main(Sqoop.java:252)
