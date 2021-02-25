@@ -6,23 +6,30 @@ Sqoop是一款开源的工具，主要用于在Hadoop(Hive)与传统的数据库
 
 ## 节点规划
 
-|        |                                     |
-| ------ | ----------------------------------- |
-| node04 | sqoop-1.4.5.bin__hadoop-0.20.tar.gz |
+| node04                               |
+| ------------------------------------ |
+| sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz |
+
+本实例中hadoop集群使用 hadoop-2.9.2的版本，所以 sqoop选用 hadoop-2.x的版本。下载地址
+
+ http://mirrors.hust.edu.cn/apache/sqoop/1.4.7/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
 
 ## 安装
 
 ```shell
+# 下载
+[root@node04 ~]# wget http://mirrors.hust.edu.cn/apache/sqoop/1.4.7/sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz
+
 # 解压
-[root@node04 ~]# tar -zxf sqoop-1.4.5.bin__hadoop-0.20.tar.gz -C /opt/stanlong/sqoop
+[root@node04 ~]# tar -zxf sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz -C /opt/stanlong/sqoop/
 
 # 重命名
 [root@node04 sqoop]# pwd
 /opt/stanlong/sqoop
 [root@node04 sqoop]# ll
 total 0
-drwxr-xr-x 9 root root 329 Aug  2  2014 sqoop-1.4.5.bin__hadoop-0.20
-[root@node04 sqoop]# mv sqoop-1.4.5.bin__hadoop-0.20/ sqoop
+drwxr-xr-x 9 root root 329 Aug  2  2014 sqoop-1.4.7.bin__hadoop-2.6.0
+[root@node04 sqoop]# mv sqoop-1.4.7.bin__hadoop-2.6.0/ sqoop
 [root@node04 sqoop]# ll
 total 0
 drwxr-xr-x 9 root root 329 Aug  2  2014 sqoop
@@ -100,10 +107,20 @@ sqoop-codegen            sqoop-export             sqoop-import-all-tables  sqoop
 [root@node04 ~]# mv mysql-connector-java-5.1.37.jar /opt/stanlong/sqoop/sqoop/lib/
 ```
 
+## 拷贝jar包
+
+```shell
+[root@node04 lib]# pwd
+/opt/stanlong/hive/apache-hive-1.2.2-bin/lib
+
+[root@node04 lib]# cp hive-common-1.2.2.jar /opt/stanlong/sqoop/sqoop/lib/
+[root@node04 lib]# cp hive-shims* /opt/stanlong/sqoop/sqoop/lib/
+```
+
 ## 测试数据库连接
 
 ```shell
-[root@node04 ~]# sqoop list-databases --connect jdbc:mysql://node01:3306/ --username root --password root
+[root@node04 lib]# sqoop list-databases --connect jdbc:mysql://node01:3306/ --username root --password root
 Warning: /opt/stanlong/sqoop/sqoop/../hcatalog does not exist! HCatalog jobs will fail.
 Please set $HCAT_HOME to the root of your HCatalog installation.
 Warning: /opt/stanlong/sqoop/sqoop/../accumulo does not exist! Accumulo imports will fail.
@@ -113,9 +130,9 @@ SLF4J: Found binding in [jar:file:/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/had
 SLF4J: Found binding in [jar:file:/opt/stanlong/hbase/hbase-1.3.6/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
 SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
 SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
-21/02/09 06:06:13 INFO sqoop.Sqoop: Running Sqoop version: 1.4.5
-21/02/09 06:06:13 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
-21/02/09 06:06:14 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+21/02/26 06:28:39 INFO sqoop.Sqoop: Running Sqoop version: 1.4.7
+21/02/26 06:28:39 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+21/02/26 06:28:40 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
 information_schema
 hivedb
 mysql
@@ -127,29 +144,41 @@ sys
 
 在Sqoop中，“导入”概念指：从非大数据集群（RDBMS）向大数据集群（HDFS，HIVE，HBASE）中传输数据，叫做：导入，即使用import关键字
 
+如：
+
+```shell
+sqoop import --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --hive-import --input-fields-terminated-by "\t" --hive-overwrite --hive-table ads_uv_count
+```
+
 ## 导出数据
 
 在Sqoop中，“导出”概念指：从大数据集群（HDFS，HIVE，HBASE）向非大数据集群（RDBMS）中传输数据，叫做：导出，即使用export关键字
+
+如：
+
+```shell
+sqoop export --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --export-dir /warehouse/gmall/ads/ads_uv_count --input-fields-terminated-by "\t"
+```
 
 ## 常用命令和参数
 
 ### 常用命令
 
-| **命令**          | **说明**                                                     |
-| ----------------- | ------------------------------------------------------------ |
-| import            | 将数据导入到集群                                             |
-| export            | 将集群数据导出                                               |
-| codegen           | 获取数据库中某张表数据生成Java并打包Jar                      |
-| create-hive-table | 创建Hive表                                                   |
-| eval              | 查看SQL执行结果                                              |
-| import-all-tables | 导入某个数据库下所有表到HDFS中                               |
-| job               | 用来生成一个sqoop的任务，生成后，该任务并不执行，除非使用命令执行该任务。 |
-| list-databases    | 列出所有数据库名                                             |
-| list-tables       | 列出某个数据库下所有表                                       |
-| merge             | 将HDFS中不同目录下面的数据合在一起，并存放在指定的目录中     |
-| metastore         | 记录sqoop job的元数据信息，如果不启动metastore实例，则默认的元数据存储目录为：~/.sqoop，如果要更改存储目录，可以在配置文件sqoop-site.xml中进行更改。 |
-| help              | 打印sqoop帮助信息                                            |
-| version           | 打印sqoop版本信息                                            |
+| 序号 | **命令**          | **说明**                                                     |
+| ---- | ----------------- | ------------------------------------------------------------ |
+| 1    | import            | 将数据导入到集群                                             |
+| 2    | export            | 将集群数据导出                                               |
+| 3    | codegen           | 获取数据库中某张表数据生成Java并打包Jar                      |
+| 4    | create-hive-table | 创建Hive表                                                   |
+| 5    | eval              | 查看SQL执行结果                                              |
+| 6    | import-all-tables | 导入某个数据库下所有表到HDFS中                               |
+| 7    | job               | 用来生成一个sqoop的任务，生成后，该任务并不执行，除非使用命令执行该任务。 |
+| 8    | list-databases    | 列出所有数据库名                                             |
+| 9    | list-tables       | 列出某个数据库下所有表                                       |
+| 10   | merge             | 将HDFS中不同目录下面的数据合在一起，并存放在指定的目录中     |
+| 11   | metastore         | 记录sqoop job的元数据信息，如果不启动metastore实例，则默认的元数据存储目录为：~/.sqoop，如果要更改存储目录，可以在配置文件sqoop-site.xml中进行更改。 |
+| 12   | help              | 打印sqoop帮助信息                                            |
+| 13   | version           | 打印sqoop版本信息                                            |
 
 ### 公用参数
 

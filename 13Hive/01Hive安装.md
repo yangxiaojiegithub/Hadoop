@@ -16,11 +16,9 @@ Hive中搭建分为三种方式 `内嵌Derby方式` 、`Local方式`、 `Remote�
 
 ## 节点规划
 
-|                    |                              |
-| ------------------ | ---------------------------- |
-| node01（服务器端） | apache-hive-1.2.2-bin.tar.gz |
-| node02 （客户端）  | apache-hive-1.2.2-bin.tar.gz |
-| node03 （客户端）  | apache-hive-1.2.2-bin.tar.gz |
+| 服务器端(apache-hive-1.2.2-bin.tar.gz) | 客户端(apache-hive-1.2.2-bin.tar.gz) |
+| -------------------------------------- | ------------------------------------ |
+| node01                                 | node02, node03, node04               |
 
 ## Hive安装部署
 
@@ -272,9 +270,9 @@ hive>
 
 ## Remote方式安装
 
-采取服务端和客户端分离的方式安装，按节点规划，服务端在node01，客户端在node02，node03上. 客户端与服务端之间通过 thrift 协议通信，端口号9083
+采取服务端和客户端分离的方式安装，按节点规划，服务端在node01，客户端在node02，node03, node04上. 客户端与服务端之间通过 thrift 协议通信，端口号9083
 
-1. 分发node01上的hive目录到node02，node03
+1. 分发node01上的hive目录到客户端节点
 
    ```shell
    [root@node01 stanlong]# pwd
@@ -283,7 +281,7 @@ hive>
    [root@node01 stanlong]# scp -r hive/ node03:`pwd`
    ```
 
-2. 分发 node01 上的 /etc/profile 文件到 node02，node03. 并使文件生效
+2. 分发 node01 上的 /etc/profile 文件到客户端节点. 并使文件生效
 
    ```shell
    [root@node01 ~]# scp /etc/profile node02:/etc/profile
@@ -312,7 +310,7 @@ hive>
    ctrl+c 退出后台任务
    ```
 
-4. 编辑node02，node03的 hive-site.xml 文件
+4. 编辑客户端节点的 hive-site.xml 文件
 
    ```xml
    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
