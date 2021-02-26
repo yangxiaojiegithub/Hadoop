@@ -108,24 +108,113 @@ Note: Recompile with -Xlint:deprecation for details.
 从关系型数据库导入集群
 
 ```shell
-[root@node04 ~]# sqoop import --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --hive-import --input-fields-terminated-by "\t" --hive-overwrite --hive-table ads_uv_count
+[root@node04 ~]# sqoop import --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --hive-import --input-fields-terminated-by "\t" --delete-target-dir --hive-overwrite --hive-table ads_uv_count
 ```
 
-导入报错
+```shell
+Warning: /opt/stanlong/sqoop/sqoop/../hcatalog does not exist! HCatalog jobs will fail.
+Please set $HCAT_HOME to the root of your HCatalog installation.
+Warning: /opt/stanlong/sqoop/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/stanlong/hbase/hbase-1.3.6/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+21/02/27 05:41:51 INFO sqoop.Sqoop: Running Sqoop version: 1.4.7
+21/02/27 05:41:51 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+21/02/27 05:41:51 INFO tool.BaseSqoopTool: Using Hive-specific delimiters for output. You can override
+21/02/27 05:41:51 INFO tool.BaseSqoopTool: delimiters with --fields-terminated-by, etc.
+21/02/27 05:41:52 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+21/02/27 05:41:52 INFO tool.CodeGenTool: Beginning code generation
+21/02/27 05:41:53 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `ads_uv_count` AS t LIMIT 1
+21/02/27 05:41:55 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `ads_uv_count` AS t LIMIT 1
+21/02/27 05:41:55 INFO orm.CompilationManager: HADOOP_MAPRED_HOME is /opt/stanlong/hadoop-ha/hadoop-2.9.2
+Note: /tmp/sqoop-root/compile/e17619bdef041c5f580f508b9965937e/ads_uv_count.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+21/02/27 05:42:02 INFO orm.CompilationManager: Writing jar file: /tmp/sqoop-root/compile/e17619bdef041c5f580f508b9965937e/ads_uv_count.jar
+21/02/27 05:42:04 INFO tool.ImportTool: Destination directory ads_uv_count deleted.
+21/02/27 05:42:04 WARN manager.MySQLManager: It looks like you are importing from mysql.
+21/02/27 05:42:04 WARN manager.MySQLManager: This transfer can be faster! Use the --direct
+21/02/27 05:42:04 WARN manager.MySQLManager: option to exercise a MySQL-specific fast path.
+21/02/27 05:42:04 INFO manager.MySQLManager: Setting zero DATETIME behavior to convertToNull (mysql)
+21/02/27 05:42:04 INFO mapreduce.ImportJobBase: Beginning import of ads_uv_count
+21/02/27 05:42:04 INFO Configuration.deprecation: mapred.jar is deprecated. Instead, use mapreduce.job.jar
+21/02/27 05:42:04 INFO Configuration.deprecation: mapred.map.tasks is deprecated. Instead, use mapreduce.job.maps
+21/02/27 05:42:05 INFO client.ConfiguredRMFailoverProxyProvider: Failing over to rm2
+21/02/27 05:42:21 INFO db.DBInputFormat: Using read commited transaction isolation
+21/02/27 05:42:21 INFO mapreduce.JobSubmitter: number of splits:1
+21/02/27 05:42:21 INFO Configuration.deprecation: yarn.resourcemanager.system-metrics-publisher.enabled is deprecated. Instead, use yarn.system-metrics-publisher.enabled
+21/02/27 05:42:22 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1614375591821_0001
+21/02/27 05:42:23 INFO impl.YarnClientImpl: Submitted application application_1614375591821_0001
+21/02/27 05:42:23 INFO mapreduce.Job: The url to track the job: http://node03:8088/proxy/application_1614375591821_0001/
+21/02/27 05:42:23 INFO mapreduce.Job: Running job: job_1614375591821_0001
+21/02/27 05:43:01 INFO mapreduce.Job: Job job_1614375591821_0001 running in uber mode : false
+21/02/27 05:43:01 INFO mapreduce.Job:  map 0% reduce 0%
+21/02/27 05:43:22 INFO mapreduce.Job:  map 100% reduce 0%
+21/02/27 05:43:23 INFO mapreduce.Job: Job job_1614375591821_0001 completed successfully
+21/02/27 05:43:24 INFO mapreduce.Job: Counters: 30
+	File System Counters
+		FILE: Number of bytes read=0
+		FILE: Number of bytes written=213240
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=87
+		HDFS: Number of bytes written=66
+		HDFS: Number of read operations=4
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters 
+		Launched map tasks=1
+		Other local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=16066
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=16066
+		Total vcore-milliseconds taken by all map tasks=16066
+		Total megabyte-milliseconds taken by all map tasks=16451584
+	Map-Reduce Framework
+		Map input records=3
+		Map output records=3
+		Input split bytes=87
+		Spilled Records=0
+		Failed Shuffles=0
+		Merged Map outputs=0
+		GC time elapsed (ms)=499
+		CPU time spent (ms)=1460
+		Physical memory (bytes) snapshot=135950336
+		Virtual memory (bytes) snapshot=2086359040
+		Total committed heap usage (bytes)=30474240
+	File Input Format Counters 
+		Bytes Read=0
+	File Output Format Counters 
+		Bytes Written=66
+21/02/27 05:43:24 INFO mapreduce.ImportJobBase: Transferred 66 bytes in 79.4487 seconds (0.8307 bytes/sec)
+21/02/27 05:43:24 INFO mapreduce.ImportJobBase: Retrieved 3 records.
+21/02/27 05:43:24 INFO mapreduce.ImportJobBase: Publishing Hive/Hcat import job data to Listeners for table ads_uv_count
+21/02/27 05:43:24 INFO manager.SqlManager: Executing SQL statement: SELECT t.* FROM `ads_uv_count` AS t LIMIT 1
+21/02/27 05:43:24 INFO hive.HiveImport: Loading uploaded data into Hive
+21/02/27 05:43:31 INFO hive.HiveImport: SLF4J: Class path contains multiple SLF4J bindings.
+21/02/27 05:43:31 INFO hive.HiveImport: SLF4J: Found binding in [jar:file:/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+21/02/27 05:43:31 INFO hive.HiveImport: SLF4J: Found binding in [jar:file:/opt/stanlong/hbase/hbase-1.3.6/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+21/02/27 05:43:31 INFO hive.HiveImport: SLF4J: Found binding in [jar:file:/opt/stanlong/hive/apache-tez-0.9.1-bin/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+21/02/27 05:43:31 INFO hive.HiveImport: SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+21/02/27 05:43:32 INFO hive.HiveImport: SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+21/02/27 05:43:38 INFO hive.HiveImport: SLF4J: Class path contains multiple SLF4J bindings.
+21/02/27 05:43:38 INFO hive.HiveImport: SLF4J: Found binding in [jar:file:/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+21/02/27 05:43:38 INFO hive.HiveImport: SLF4J: Found binding in [jar:file:/opt/stanlong/hbase/hbase-1.3.6/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+21/02/27 05:43:38 INFO hive.HiveImport: SLF4J: Found binding in [jar:file:/opt/stanlong/hive/apache-tez-0.9.1-bin/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+21/02/27 05:43:38 INFO hive.HiveImport: SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+21/02/27 05:43:38 INFO hive.HiveImport: SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+21/02/27 05:43:41 INFO hive.HiveImport: 
+21/02/27 05:43:41 INFO hive.HiveImport: Logging initialized using configuration in jar:file:/opt/stanlong/sqoop/sqoop/lib/hive-common-1.2.2.jar!/hive-log4j.properties
+21/02/27 05:44:55 INFO hive.HiveImport: OK
+21/02/27 05:44:55 INFO hive.HiveImport: Time taken: 7.425 seconds
+21/02/27 05:44:55 INFO hive.HiveImport: Loading data to table default.ads_uv_count
+21/02/27 05:44:57 INFO hive.HiveImport: Table default.ads_uv_count stats: [numFiles=1, numRows=0, totalSize=66, rawDataSize=0]
+21/02/27 05:44:57 INFO hive.HiveImport: OK
+21/02/27 05:44:57 INFO hive.HiveImport: Time taken: 2.007 seconds
+21/02/27 05:44:57 INFO hive.HiveImport: Hive import complete.
+21/02/27 05:44:57 INFO hive.HiveImport: Export directory is contains the _SUCCESS file only, removing the directory.
+```
 
-Exception in thread "main" java.lang.RuntimeException: java.io.IOException: Previous writer likely failed to write hdfs://hacluster/tmp/hive/root/_tez_session_dir/6555be9a-18f8-43ac-a330-b6a9daa0d3ab/hadoop-lzo-0.4.21.jar. Failing because I am unlikely to write too.
-
-
-
-21/02/26 07:16:52 ERROR tool.ImportTool: Import failed: java.io.IOException: Hive exited with status 1
-	at org.apache.sqoop.hive.HiveImport.executeExternalHiveScript(HiveImport.java:384)
-	at org.apache.sqoop.hive.HiveImport.executeScript(HiveImport.java:337)
-	at org.apache.sqoop.hive.HiveImport.importTable(HiveImport.java:241)
-	at org.apache.sqoop.tool.ImportTool.importTable(ImportTool.java:537)
-	at org.apache.sqoop.tool.ImportTool.run(ImportTool.java:628)
-	at org.apache.sqoop.Sqoop.run(Sqoop.java:147)
-	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:76)
-	at org.apache.sqoop.Sqoop.runSqoop(Sqoop.java:183)
-	at org.apache.sqoop.Sqoop.runTool(Sqoop.java:234)
-	at org.apache.sqoop.Sqoop.runTool(Sqoop.java:243)
-	at org.apache.sqoop.Sqoop.main(Sqoop.java:252)

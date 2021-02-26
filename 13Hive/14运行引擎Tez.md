@@ -10,9 +10,9 @@ Tez可以将多个有依赖的作业转换为一个作业，这样只需写一�
 
 ## 节点规划
 
-| node01           |
-| ---------------- |
-| apache-tez-0.9.1 |
+| node01, node02, node03, node04 |
+| ------------------------------ |
+| apache-tez-0.9.1               |
 
 ## 安装
 
@@ -95,6 +95,11 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 
 mapreduce.framework.name的值改成yarn-tez
 
+```shell
+[root@node01 ~]# cd /opt/stanlong/hadoop-ha/hadoop-2.9.2/etc/hadoop/
+[root@node01 hadoop]# vi mapred-site.xml
+```
+
 ```xml
 <property>
     <name>mapreduce.framework.name</name>
@@ -107,7 +112,7 @@ mapreduce.framework.name的值改成yarn-tez
 ```shell
 [root@node01 ~]# hdfs dfs -mkdir /tez
 [root@node01 ~]# hdfs dfs -put /opt/stanlong/hive/apache-tez-0.9.1-bin/ /tez
-[root@node02 ~]# hdfs dfs -mv /tez/apache-tez-0.9.1-bin /tez/tez-0.9.1
+[root@node01 ~]# hdfs dfs -mv /tez/apache-tez-0.9.1-bin /tez/tez-0.9.1
 ```
 
 ## 测试
@@ -147,6 +152,10 @@ INFO  : Loading data to table default.stu_tez from hdfs://hacluster/user/hivedb/
 INFO  : Table default.stu_tez stats: [numFiles=1, numRows=1, totalSize=11, rawDataSize=10]
 No rows affected (83.419 seconds)
 ```
+
+## 分发
+
+将 apache-hive-1.2.2-bin 分发到node02，node03， node04 上去
 
 ## 小结
 

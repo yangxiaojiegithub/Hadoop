@@ -147,7 +147,7 @@ sys
 如：
 
 ```shell
-sqoop import --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --hive-import --input-fields-terminated-by "\t" --hive-overwrite --hive-table ads_uv_count
+sqoop import --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --hive-import --input-fields-terminated-by "\t" --delete-target-dir --hive-overwrite --hive-table ads_uv_count
 ```
 
 ## 导出数据
@@ -204,6 +204,7 @@ sqoop export --connect jdbc:mysql://node01:3306/gmall --username root --password
 | 4        | --lines-terminated-by    | 设定每行记录之间的分隔符，默认是\n                           |
 | 5        | --mysql-delimiters       | Mysql默认的分隔符设置，字段之间以逗号分隔，行之间以\n分隔，默认转义符是\，字段值以单引号包裹。 |
 | 6        | --optionally-enclosed-by | 给带有双引号或单引号的字段值前后加上指定字符。               |
+| 7        | --delete-target-dir      | 如果指定目录存在，则先删除掉                                 |
 
 #### export
 
