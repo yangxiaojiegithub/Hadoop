@@ -48,6 +48,8 @@ azkaban-web-server-2.5.0.tar.gz
 | ------- |
 | azkaban |
 
+集群版不做学习重点，以后有机会再补充
+
 ## 安装
 
 ```shell
@@ -308,3 +310,109 @@ executor.flow.threads=30
 https://node01:8443/
 
 ![](./doc/03.png)
+
+## 基础使用
+
+Azkaba内置的任务类型支持command、java。
+
+目前，Azkaban上传的工作流文件只支持xxx.zip文件。zip应包含xxx.job运行作业所需的文件和任何文件（文件名后缀必须以.job结尾，否则无法识别）。作业名称在项目中必须是唯一的
+
+### 单一job案例
+
+- 在windows本地编写job描述文件
+
+  ```shell
+  type=command
+  command=echo "Hello Azkaban"
+  ```
+
+- 将job描述文件打包成zip包
+
+- 在网页上新建工程
+
+  ![](./doc/04.png)
+
+![](./doc/05.png)
+
+-  上传zip文件
+
+  ![](./doc/06.png)![](./doc/07.png)
+
+- 执行工作流程  ![](./doc/08.png)
+
+- **立即执行**  ![](./doc/09.png)
+
+![](./doc/10.png)
+
+- 查看日志
+
+  ![](./doc/11.png)  ![](./doc/12.png)  ![](./doc/13.png)
+
+- 配置定时器执行
+
+  ![](./doc/14.png)
+
+![](./doc/15.png)
+
+![](./doc/16.png)
+
+### 多job工作流案例
+
+创建有依赖关系的多个job描述
+
+first.job
+
+```shell
+type=command
+command=echo "first"
+```
+
+second.job
+
+```shell
+type=command
+command=echo "second"
+dependencies=first
+```
+
+third.job
+
+```shell
+type=command
+command=echo "third"
+dependencies=first
+```
+
+four.job
+
+```shell
+type=command
+command=echo "four"
+dependencies=second,third
+```
+
+新建工程
+
+打包上传
+
+![](./doc/17.png)
+
+![](./doc/18.png)
+
+### 传参
+
+![](./doc/08.png)
+
+![](./doc/19.png)
+
+![](./doc/20.png)
+
+![](./doc/21.png)
+
+![](./doc/22.png)
+
+![](./doc/23.png)
+
+![](./doc/24.png)
+
+![](./doc/25.png)
