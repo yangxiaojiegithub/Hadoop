@@ -343,7 +343,7 @@ hive>
 
    参考 derby 方式简单测试
 
-## JDBC访问hive
+## beeline访问hive
 
 在服务端后台启动一个hiveserver进程
 
@@ -364,6 +364,13 @@ Driver: Hive JDBC (version 1.2.2)
 Transaction isolation: TRANSACTION_REPEATABLE_READ
 Beeline version 1.2.2 by Apache Hive
 0: jdbc:hive2://node01:10000> 
+```
+
+配置beeline别名, 配置好之后，分发到node03，node04上去
+
+```shell
+[root@node02 etc]# vi /etc/bashrc
+alias beeline="beeline -u jdbc:hive2://node01:10000  -n root -p root"
 ```
 
 启动脚本参考 23自定义集群脚本/Hive启停脚本.md
