@@ -1,6 +1,9 @@
 # IDEA快捷键
 
-| 快捷键     | 说明   |
-| ---------- | ------ |
-| ctrl+alt+l | 格式化 |
+| 快捷键     | 说明                                          |
+| ---------- | --------------------------------------------- |
+| ctrl+alt+l | 格式化                                        |
+| Alt+Insert | 生成类的相关方法，如getter/setter，构造方法等 |
+| psvm       | public static void main                       |
+| sout       | System.out.println                            |
 
