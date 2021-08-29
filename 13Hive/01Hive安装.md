@@ -20,6 +20,12 @@ Hive中搭建分为三种方式 `内嵌Derby方式` 、`Local方式`、 `Remote�
 | -------------------------------------- | ------------------------------------ |
 | node01                                 | node02, node03, node04               |
 
+**版本升级**
+
+| 服务器端(apache-hive-2.3.9-bin.tar.gz) | 客户端(apache-hive-2.3.0-bin.tar.gz) |
+| -------------------------------------- | ------------------------------------ |
+| node01                                 | node02, node03, node04               |
+
 ## Hive安装部署
 
 ### 启动hadoop集群
@@ -211,13 +217,52 @@ hive>
    		<name>hive.cli.print.current.db</name>
    		<value>true</value>
    	</property>
+       
+       <!-- 关闭metastore版本验证 -->
+       <property>
+               <name>hive.metastore.schema.verification</name>
+               <value>false</value>
+       </property>
+       <!-- 允许自己建表建视图 -->
+       <property>
+               <name>datanucleus.schema.autoCreateTables</name>
+               <value>true</value>
+       </property>
+       
+       <!-- 指定存储元数据要连接的地址 -->
+       <property>    
+           <name>hive.metastore.uris</name>
+           <value>thrift://node01:9083</value>
+       </property>
+   
+       <!-- 指定hiveserver2连接的host -->
+       <property>    
+           <name>hive.server2.thrift.bind.host</name>
+           <value>node01</value>
+       </property>
+       <!-- 指定hiveserver2连接的端口号 -->
+       <property>    
+           <name>hive.server2.thrift.host</name>
+           <value>10000</value>
+       </property>
    
    </configuration>
    ```
 
 3. 启动hive
 
+   启动之前先执行初始化命令
+
    ```shell
+   [root@node01 bin]# pwd
+   /opt/stanlong/hive/apache-hive-1.2.2-bin/bin
+   [root@node01 bin]# schematool -dbType mysql -initSchema
+   
+   # 初始化完成之后会在hive数据库里看到 hivedb 这个库
+   ```
+
+   ```shell
+   
    [root@node01 ~]# hive
    21/01/23 18:36:46 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
    
@@ -279,6 +324,7 @@ hive>
    /opt/stanlong
    [root@node01 stanlong]# scp -r hive/ node02:`pwd`
    [root@node01 stanlong]# scp -r hive/ node03:`pwd`
+   [root@node01 stanlong]# scp -r hive/ node04:`pwd`
    ```
 
 2. 分发 node01 上的 /etc/profile 文件到客户端节点. 并使文件生效
@@ -286,11 +332,14 @@ hive>
    ```shell
    [root@node01 ~]# scp /etc/profile node02:/etc/profile
    [root@node01 ~]# scp /etc/profile node03:/etc/profile
+   [root@node01 ~]# scp /etc/profile node04:/etc/profile
    [root@node02 stanlong]# source /etc/profile
    [root@node02 stanlong]# hi
    history         hive/           hive-config.sh  hiveserver2 
    [root@node03 stanlong]# source /etc/profile
    [root@node03 stanlong]# hi
+   history         hive/           hive-config.sh  hiveserver2 
+   [root@node04 stanlong]# hi
    history         hive/           hive-config.sh  hiveserver2 
    ```
 
