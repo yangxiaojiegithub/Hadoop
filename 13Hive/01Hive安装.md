@@ -22,7 +22,7 @@ Hive中搭建分为三种方式 `内嵌Derby方式` 、`Local方式`、 `Remote�
 
 **版本升级**
 
-| 服务器端(apache-hive-2.3.9-bin.tar.gz) | 客户端(apache-hive-2.3.0-bin.tar.gz) |
+| 服务器端(apache-hive-2.3.9-bin.tar.gz) | 客户端(apache-hive-2.3.9-bin.tar.gz) |
 | -------------------------------------- | ------------------------------------ |
 | node01                                 | node02, node03, node04               |
 
@@ -151,19 +151,17 @@ hive>
 
 参考 DBA/mysql/01mysql安装.md
 
-### Hive元数据配置到mysql
+### 上传mysql驱动jar包
 
-1. 上传mysql驱动jar包
+```shell
+[root@node01 lib]# pwd
+/opt/stanlong/hive/apache-hive-1.2.2-bin/lib
+[root@node01 lib]# mv ~/mysql-connector-java-5.1.37.jar .
+```
 
-   ```shell
-   [root@node01 lib]# pwd
-   /opt/stanlong/hive/apache-hive-1.2.2-bin/lib
-   [root@node01 lib]# mv ~/mysql-connector-java-5.1.37.jar .
-   ```
+### 配置 hive-site.xml
 
-2. 配置 hive-site.xml文件
-
-   官方文档路径 https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin
+官方文档路径 https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin
 
    ```shell
    [root@node01 conf]# pwd
@@ -218,6 +216,8 @@ hive>
    		<value>true</value>
    	</property>
        
+       
+       <!-- hive升级到2.3.9版本后需要新增如下配置 -->
        <!-- 关闭metastore版本验证 -->
        <property>
                <name>hive.metastore.schema.verification</name>
@@ -228,12 +228,6 @@ hive>
                <name>datanucleus.schema.autoCreateTables</name>
                <value>true</value>
        </property>
-       
-       <!-- 指定存储元数据要连接的地址 -->
-       <property>    
-           <name>hive.metastore.uris</name>
-           <value>thrift://node01:9083</value>
-       </property>
    
        <!-- 指定hiveserver2连接的host -->
        <property>    
@@ -242,76 +236,72 @@ hive>
        </property>
        <!-- 指定hiveserver2连接的端口号 -->
        <property>    
-           <name>hive.server2.thrift.host</name>
+           <name>hive.server2.thrift.port</name>
            <value>10000</value>
        </property>
    
    </configuration>
    ```
 
-3. 启动hive
+### 启动hive
 
-   启动之前先执行初始化命令
+启动之前先执行初始化命令
 
-   ```shell
-   [root@node01 bin]# pwd
-   /opt/stanlong/hive/apache-hive-1.2.2-bin/bin
-   [root@node01 bin]# schematool -dbType mysql -initSchema
-   
-   # 初始化完成之后会在hive数据库里看到 hivedb 这个库
-   ```
+```shell
+[root@node01 bin]# pwd
+/opt/stanlong/hive/apache-hive-1.2.2-bin/bin
+[root@node01 bin]# schematool -dbType mysql -initSchema
 
-   ```shell
-   
-   [root@node01 ~]# hive
-   21/01/23 18:36:46 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
-   
-   Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
-   hive (default)> 
-   ```
+# 初始化完成之后会在hive数据库里看到 hivedb 这个库
+```
 
-4. 查看MySQL数据库
+```shell
 
-   hivedb库已成功创建， 表TBLS和DBS保存了hive表和相关的数据库信息
+[root@node01 ~]# hive
+21/01/23 18:36:46 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
 
-   ```sql
-   mysql> show databases;
-   +--------------------+
-   | Database           |
-   +--------------------+
-   | information_schema |
-   | hivedb             |
-   | mysql              |
-   | performance_schema |
-   | sys                |
-   +--------------------+
-   5 rows in set (0.00 sec)
-   ```
+Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
+hive (default)> 
+```
 
-   ```sql
-   mysql> use hivedb;
-   mysql> select * from TBLS;
-   +--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
-   | TBL_ID | CREATE_TIME | DB_ID | LAST_ACCESS_TIME | OWNER | RETENTION | SD_ID | TBL_NAME | TBL_TYPE      | VIEW_EXPANDED_TEXT | VIEW_ORIGINAL_TEXT |
-   +--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
-   |      1 |  1611398538 |     1 |                0 | root  |         0 |     1 | hehe     | MANAGED_TABLE | NULL               | NULL               |
-   +--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
-   1 row in set (0.00 sec)
-   
-   mysql> select * from DBS;
-   +-------+-----------------------+----------------------------------------+---------+------------+------------+
-   | DB_ID | DESC                  | DB_LOCATION_URI                        | NAME    | OWNER_NAME | OWNER_TYPE |
-   +-------+-----------------------+----------------------------------------+---------+------------+------------+
-   |     1 | Default Hive database | hdfs://hacluster/user/hivedb/warehouse | default | public     | ROLE       |
-   +-------+-----------------------+----------------------------------------+---------+------------+------------+
-   1 row in set (0.00 sec)
-   ```
+### 查看MySQL数据库
 
-5. 基本测试及hive多窗口登录
+hivedb库已成功创建， 表TBLS和DBS保存了hive表和相关的数据库信息
 
-   参考 derby 方式简单测试
+```sql
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| hivedb             |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+```
 
-6. 删除derby方式安装生成的 derby.log 和 metastore_db
+```sql
+mysql> use hivedb;
+mysql> select * from TBLS;
++--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
+| TBL_ID | CREATE_TIME | DB_ID | LAST_ACCESS_TIME | OWNER | RETENTION | SD_ID | TBL_NAME | TBL_TYPE      | VIEW_EXPANDED_TEXT | VIEW_ORIGINAL_TEXT |
++--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
+|      1 |  1611398538 |     1 |                0 | root  |         0 |     1 | hehe     | MANAGED_TABLE | NULL               | NULL               |
++--------+-------------+-------+------------------+-------+-----------+-------+----------+---------------+--------------------+--------------------+
+1 row in set (0.00 sec)
+
+mysql> select * from DBS;
++-------+-----------------------+----------------------------------------+---------+------------+------------+
+| DB_ID | DESC                  | DB_LOCATION_URI                        | NAME    | OWNER_NAME | OWNER_TYPE |
++-------+-----------------------+----------------------------------------+---------+------------+------------+
+|     1 | Default Hive database | hdfs://hacluster/user/hivedb/warehouse | default | public     | ROLE       |
++-------+-----------------------+----------------------------------------+---------+------------+------------+
+1 row in set (0.00 sec)
+```
+
+**删除derby方式安装生成的 derby.log 和 metastore_db**
 
 ## Remote方式安装
 
