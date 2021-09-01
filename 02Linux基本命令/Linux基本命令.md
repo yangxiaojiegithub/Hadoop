@@ -141,6 +141,10 @@ zip -q -r html.zip /home/html
 
 将后台任何在前台展示，按Ctrl+C退出后台任务
 
+### env
+
+查看环境变量
+
 ### vi最小化命令
 按下！最小化vi并回到外部bash执行 ls -l /opt/ 命令，按enter再回到vi
 
