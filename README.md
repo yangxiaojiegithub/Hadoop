@@ -260,7 +260,7 @@ https://zaixianwangyebianji.bmcx.com/
 		</tr>
 		<tr>
 			<td>
-				<span style="background-color:#FFFFFF;">nc</span><span></span>
+				<span style="background-color:#FFFFFF;">netcat</span><span></span>
 			</td>
 			<td>
 				<span><span><span><span>nc</span></span></span></span>
