@@ -58,8 +58,8 @@ a1.channels.c2.kafka.consumer.group.id = flume-consumer
 1. Taildir Source相比Exec Source、Spooling Directory Source的优势
    *TailDir Source*：断点续传、多目录。Flume1.6以前需要自己自定义Source记录每次读取文件位置，实现断点续传。
    
-
-*Exec Source* 可以实时搜集数据，但是在Flume不运行或者Shell命令出错的情况下，数据将会丢失。
+   *Exec Source* 可以实时搜集数据，但是在Flume不运行或者Shell命令出错的情况下，数据将会丢失。
+   
    *Spooling Directory Source* 监控目录，不支持断点续传。
 
 2. batchSize大小如何设置？
@@ -377,7 +377,7 @@ case $1 in
         for i in node01 node02
         do
                 echo " --------停止 $i 采集flume-------"
-                ssh $i "ps -ef | grep file-flume-kafka | grep -v grep |awk '{print \$2}' | xargs kill"
+                ssh $i "ps -ef | grep file-flume-kafka | grep -v grep |awk '{print \$2}' | xargs -n1 kill -9"
         done
 
 };;
