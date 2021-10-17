@@ -147,7 +147,31 @@ sys
 如：
 
 ```shell
-sqoop import --connect jdbc:mysql://node01:3306/gmall --username root --password root --table ads_uv_count --num-mappers 1 --hive-import --input-fields-terminated-by "\t" --delete-target-dir --hive-overwrite --hive-table ads_uv_count
+sqoop import \ 
+--connect jdbc:mysql://node01:3306/gmall \
+--username root \
+--password root \
+--table ads_uv_count \
+[--columns 列名, 不指定列名表示同步表里的全部数据]
+[--where 'id>=1 and id<=20']
+[--target-dir 如果没有指定hive表名，则需要指定hdfs路径]
+--delete-target-dir \ 
+--input-fields-terminated-by "\t" \
+--num-mappers 1 \ 
+--split-by id \
+--hive-import   --hive-overwrite --hive-table ads_uv_count
+
+-- sql语句的写法
+sqoop import \ 
+--connect jdbc:mysql://node01:3306/gmall \
+--username root \
+--password root \
+--query 'select id login_name from ads_uv_count where id>=1 and id<=20 and $CONDITIONS' \
+--delete-target-dir \ 
+--input-fields-terminated-by "\t" \
+--num-mappers 1 \ 
+--split-by id \
+--hive-import   --hive-overwrite --hive-table ads_uv_count
 ```
 
 ## 导出数据
