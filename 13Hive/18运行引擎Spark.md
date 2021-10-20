@@ -35,6 +35,7 @@ http://spark.apache.org/downloads.html
 
 [root@node01 ~]# vi .bashrc 
 export SPARK_HOME=/opt/stanlong/spark # Spark环境变量
+export PATH=$PATH:$SPARK_HOME/bin
 
 [root@node01 ~]# source .bashrc  # 使环境变量生效
 ```
@@ -88,7 +89,7 @@ spark.driver.memory                    1g
 <!--Spark依赖位置（注意：端口号8020必须和namenode的端口号一致）-->
 <property>
     <name>spark.yarn.jars</name>
-    <value>hdfs://node01:8020/spark-jars/*</value>
+    <value>${fs.defaultFS}:8020/spark-jars/*</value>
 </property>
   
 <!--Hive执行引擎-->
@@ -117,3 +118,8 @@ Timed out waiting for client connection
 类型B
 
 java.lang.IllegalStateException(RPC channel is closed.)
+
+## 结论
+
+在node1上偶尔成功，可能是集群内存不够。但是注要安装步骤没有错
+
