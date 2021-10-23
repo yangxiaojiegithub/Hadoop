@@ -59,6 +59,13 @@ start() {
     ssh node02 yarn-daemon.sh start resourcemanager
     sleep 1s
     ssh node03 yarn-daemon.sh start resourcemanager
+    
+	echo ----------------启动历史服务器------------------
+	for i in node01 node02 node03 node04
+	do
+        ssh $i mr-jobhistory-daemon.sh start historyserver
+        sleep 1s
+	done
 
     #sleep 4s
     #echo ----------------启动服务端hive------------------
@@ -85,6 +92,12 @@ stop() {
     sleep 1s
     ssh node03 yarn-daemon.sh stop resourcemanager
 
+	echo ----------------关闭历史服务器------------------
+	for i in node01 node02 node03 node04
+	do
+        ssh $i  mr-jobhistory-daemon.sh stop historyserver
+        sleep 1s
+	done
 
     echo ----------------关闭zk集群------------------
     for i in node02 node03 node04

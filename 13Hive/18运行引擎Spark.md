@@ -122,4 +122,3 @@ java.lang.IllegalStateException(RPC channel is closed.)
 ## 结论
 
 在node1上偶尔成功，可能是集群内存不够。但是注要安装步骤没有错
-

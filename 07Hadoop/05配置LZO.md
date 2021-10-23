@@ -77,7 +77,39 @@ com.hadoop.compression.lzo.LzopCodec
 [root@node01 hadoop]# start-all.sh
 ```
 
+6. 测试
 
+```shell
+1. 在 hdfs 上创建文件存放路径
 
+[root@node01 myshell]# hdfs dfs -mkdir /input
 
+2. 准备测试文件 
+[root@node01 ~]# vi stu.txt
+任意添加几行内容
+[root@node01 ~]# hdfs dfs -put -f stu.txt /input
 
+3. 执行测试命令
+[root@node01 mapreduce]# pwd
+/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/mapreduce
+
+[root@node01 mapreduce]# hadoop jar hadoop-mapreduce-examples-2.9.2.jar wordcount -Dmapreduce.output.fileoutputformat.compress=true -Dmapreduce.output.fileoutputformat.compress.codec=com.hadoop.compression.lzo.LzopCodec /input/stu.txt /output
+```
+
+没有开启lzo压缩
+
+![](./doc/15.png)
+
+开启lzo压缩
+
+![](./doc/16.png)
+
+7. LZO创建索引
+
+   LZO压缩文件的可切片特性依赖于其索引，故我们需要手动为LZO压缩文件创建索引。若无索引，则LZO文件的切片只有一个
+
+```pwd
+[root@node01 mapreduce]# hadoop jar /opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/hadoop-lzo-0.4.21.jar com.hadoop.compression.lzo.DistributedLzoIndexer /output
+```
+
+![](./doc/17.png)
