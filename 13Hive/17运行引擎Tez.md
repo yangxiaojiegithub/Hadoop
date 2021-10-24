@@ -17,23 +17,23 @@ Tez可以将多个有依赖的作业转换为一个作业，这样只需写一�
 ## 安装
 
 ```shell
-[root@node01 ~]# tar -zxf apache-tez-0.9.1-bin.tar.gz -C /opt/stanlong/hive/
+[root@node01 ~]# tar -zxf apache-tez-0.9.2-bin.tar.gz -C /opt/stanlong/hive/
 ```
 
 ## 配置 hive-env.sh
 
 ```shell
-[root@node01 apache-tez-0.9.1-bin]# pwd
-/opt/stanlong/hive/apache-tez-0.9.1-bin
+[root@node01 apache-tez-0.9.2-bin]# pwd
+/opt/stanlong/hive/apache-tez-0.9.2-bin
 
 [root@node01 conf]# pwd
-/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
+/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
 [root@node01 conf]# vi hive-env.sh
 ```
 
 ```shell
-# Folder containing extra ibraries required for hive compilation/execution can be controlled by:
-export TEZ_HOME=/opt/stanlong/hive/apache-tez-0.9.1-bin    #tez的解压目录
+# 配置tez引擎
+export TEZ_HOME=/opt/stanlong/hive/apache-tez-0.9.2-bin    #tez的解压目录
 export TEZ_JARS=""
 for jar in `ls $TEZ_HOME |grep jar`; do
     export TEZ_JARS=$TEZ_JARS:$TEZ_HOME/$jar
@@ -49,7 +49,7 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 
 ```shell
 [root@node01 conf]# pwd
-/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
+/opt/stanlong/hive/apache-hive-2.3.-bin/conf
 [root@node01 conf]# vi hive-site.xml
 ```
 
@@ -64,7 +64,7 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 
 ```shell
 [root@node01 conf]# pwd
-/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
+/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
 [root@node01 conf]# vi tez-site.xml
 ```
 
@@ -74,11 +74,11 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 <configuration>
     <property>
         <name>tez.lib.uris</name>    
-        <value>${fs.defaultFS}/tez/tez-0.9.1,${fs.defaultFS}/tez/tez-0.9.1/lib</value>
+        <value>${fs.defaultFS}/tez/tez-0.9.2,${fs.defaultFS}/tez/tez-0.9.2/lib</value>
     </property>
     <property>
         <name>tez.lib.uris.classpath</name>    	
-        <value>${fs.defaultFS}/tez/tez-0.9.1,${fs.defaultFS}/tez/tez-0.9.1/lib</value>
+        <value>${fs.defaultFS}/tez/tez-0.9.2,${fs.defaultFS}/tez/tez-0.9.2/lib</value>
     </property>
     <property>
          <name>tez.use.cluster.hadoop-libs</name>
@@ -91,28 +91,12 @@ export HIVE_AUX_JARS_PATH=/opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/comm
 </configuration>
 ```
 
-## 编辑mapred-site.xml 
-
-mapreduce.framework.name的值改成yarn-tez
-
-```shell
-[root@node01 ~]# cd /opt/stanlong/hadoop-ha/hadoop-2.9.2/etc/hadoop/
-[root@node01 hadoop]# vi mapred-site.xml
-```
-
-```xml
-<property>
-    <name>mapreduce.framework.name</name>
-    <value>yarn-tez</value>
-</property>
-```
-
 ## 上传Tez到集群
 
 ```shell
 [root@node01 ~]# hdfs dfs -mkdir /tez
-[root@node01 ~]# hdfs dfs -put /opt/stanlong/hive/apache-tez-0.9.1-bin/ /tez
-[root@node01 ~]# hdfs dfs -mv /tez/apache-tez-0.9.1-bin /tez/tez-0.9.1
+[root@node01 ~]# hdfs dfs -put /opt/stanlong/hive/apache-tez-0.9.2-bin/ /tez
+[root@node01 ~]# hdfs dfs -mv /tez/apache-tez-0.9.2-bin /tez/tez-0.9.2
 ```
 
 ## 测试
@@ -155,7 +139,7 @@ No rows affected (83.419 seconds)
 
 ## 分发
 
-将 apache-hive-1.2.2-bin 分发到node02，node03， node04 上去
+将 apache-hive-2.3.9-bin 分发到node02，node03， node04 上去
 
 ## 小结
 

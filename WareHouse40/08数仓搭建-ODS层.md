@@ -3,7 +3,8 @@
 ## 建库
 
 ```sql
-create database if not exists gmall;
+create database if not exists gmall commit '电商数仓4.0';
+use gmall;
 ```
 
 ## 用户行为数据
