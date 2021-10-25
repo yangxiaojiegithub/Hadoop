@@ -29,43 +29,45 @@ Hive中搭建分为三种方式 `内嵌Derby方式` 、`Local方式`、 `Remote�
 ### 解压
 
 ```shell
-[root@node01 ~]# tar -zxf apache-hive-2.3.9-bin.tar.gz -C /opt/stanlong/hive
+[root@node01 ~]# tar -zxf apache-hive-1.2.2-bin.tar.gz -C /opt/stanlong/hive
 ```
 
 ### 配置hive环境变量
 
 ```shell
 [root@node01 bin]# pwd
-/opt/stanlong/hive/apache-hive-2.3.9-bin
+/opt/stanlong/hive/apache-hive-1.2.2-bin
 [root@node01 bin]# vi /etc/profile # 在文件最后添加
-export HIVE_HOME=/opt/stanlong/hive/apache-hive-2.3.9-bin  # HIVE环境变量
+export HIVE_HOME=/opt/stanlong/hive/apache-hive-1.2.2-bin  # HIVE环境变量
 export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/bin
 [root@node01 bin]# source /etc/profile # 使配置文件生效
 [root@node01 bin]# hi # 命令提示
 history         hive            hive-config.sh  hiveserver2   
 ```
 
-## 内嵌Derby方式
+## 安装Hive
+
+### 内嵌Derby方式
 
 略
 
-## Local方式安装
+### Local方式
 
 这种存储方式需要在本地运行一个mysql服务器，元数据存储在mysql里。安装mysql 参考 DBA/mysql/01mysql安装.md
 
-### 上传mysql驱动jar包
+1. 上传mysql驱动jar包
 
 ```shell
 [root@node01 lib]# pwd
-/opt/stanlong/hive/apache-hive-2.3.9-bin/lib
+/opt/stanlong/hive/apache-hive-1.2.2-bin/lib
 [root@node01 lib]# mv ~/mysql-connector-java-5.1.37.jar .
 ```
 
-### 配置hive-env.sh
+2. 配置hive-env.sh
 
 ```shell
 [root@node01 conf]# pwd
-/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
+/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
 [root@node01 conf]# cp hive-env.sh.template hive-env.sh
 [root@node01 conf]# vi hive-env.sh
 ```
@@ -79,10 +81,10 @@ history         hive            hive-config.sh  hiveserver2
 
 # Hive Configuration Directory can be controlled by:
 # 配置Hive配置文件的路径
-export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
+export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
 ```
 
-### 更改hive 默认配置
+3. 更改hive 默认配置
 
 默认情况：Hive内部表都属于缺省库default，在HDFS的目录为/user/hive/warehouse/
 
@@ -95,13 +97,13 @@ export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
 [root@node01 hive]# hdfs dfs -chmod g+w /user/hive/warehouse
 ```
 
-### 配置 hive-site.xml
+4. 配置 hive-site.xml
 
 官方文档路径 https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin
 
    ```shell
 [root@node01 conf]# pwd
-/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
+/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
 [root@node01 conf]# vi hive-site.xml
    ```
 
@@ -109,86 +111,74 @@ export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
-
     <!-- 配置hive文件在hdfs上的保存路径 -->
     <property>
-        <name>hive.metastore.warehouse.dir</name>  
+        <name>hive.metastore.warehouse.dir</name>
         <value>/user/hivedb/warehouse</value>
     </property>
-
-    
     <!-- 元数据库的链接地址 mysql -->
     <property>
-        <name>javax.jdo.option.ConnectionURL</name>  
+        <name>javax.jdo.option.ConnectionURL</name>
         <value>jdbc:mysql://192.168.235.11:3306/hivedb?createDatabaseIfNotExist=true&amp;useSSL=false</value>
     </property>
-    
     <!-- 指定mysql连接信息 -->
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>com.mysql.jdbc.Driver</value>
     </property>
-    
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
         <value>root</value>
     </property>
-    
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>root</value>
     </property>
-    
     <!-- 表头信息配置 -->
     <property>
         <name>hive.cli.print.header</name>
         <value>true</value>
     </property>
-
     <!-- 显示当前数据库 -->
     <property>
         <name>hive.cli.print.current.db</name>
         <value>true</value>
     </property>
-
-    <!-- hive 升级到 2.3.9 版本后需要增加如下配置 -->
+    <!-- hive 升级到 1.2.2 版本后需要增加如下配置 -->
     <!-- 关闭metastore版本验证 -->
     <property>
         <name>hive.metastore.schema.verification</name>
         <value>false</value>
     </property>
-    
     <!-- 允许自己建表建视图 -->
     <property>
         <name>datanucleus.schema.autoCreateTables</name>
         <value>true</value>
     </property>
-    
     <!-- 指定hiveserver2连接的host -->
-    <property>    
+    <property>
         <name>hive.server2.thrift.bind.host</name>
         <value>node01</value>
     </property>
-    
     <!-- 指定hiveserver2连接的端口号 -->
-    <property>    
+    <property>
         <name>hive.server2.thrift.port</name>
         <value>10000</value>
     </property>
 </configuration>
    ```
 
-### 启动hive
+5. 启动hive
 
-启动前执行初始化命令
+启动前执行初始化命令，如果配置了SPARK_HOME环境变量，启动后会有告警，百度处理。
 
 ```shell
 [root@node01 bin]# schematool -dbType mysql -initSchema
 Metastore connection URL:	 jdbc:mysql://192.168.235.11:3306/hivedb?createDatabaseIfNotExist=true&useSSL=false
 Metastore Connection Driver :	 com.mysql.jdbc.Driver
 Metastore connection User:	 root
-Starting metastore schema initialization to 2.3.0
-Initialization script hive-schema-2.3.0.mysql.sql
+Starting metastore schema initialization to 1.2.0
+Initialization script hive-schema-1.2.0.mysql.sql
 Initialization script completed
 schemaTool completed
 
@@ -199,11 +189,11 @@ schemaTool completed
 [root@node01 ~]# hive
 21/01/23 18:36:46 WARN conf.HiveConf: HiveConf of name hive.metastore.local does not exist
 
-Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-2.3.9-bin/lib/hive-common-2.3.9.jar!/hive-log4j.properties
+Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
 hive (default)> 
 ```
 
-### 查看MySQL数据库
+查看MySQL数据库
 
 hivedb库已成功创建， 表TBLS和DBS保存了hive表和相关的数据库信息
 
@@ -240,7 +230,7 @@ mysql> select * from DBS;
 1 row in set (0.00 sec)
 ```
 
-## Remote方式安装
+### Remote方式安装
 
 采取服务端和客户端分离的方式安装，按节点规划，服务端在node01，客户端在node02，node03, node04上. 客户端与服务端之间通过 thrift 协议通信，端口号9083
 
@@ -311,13 +301,10 @@ mysql> select * from DBS;
    ```shell
    [root@node02 ~]# hive
    
-   Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-2.3.9-bin/lib/hive-common-2.3.9.jar!/hive-log4j.properties
+   Logging initialized using configuration in jar:file:/opt/stanlong/hive/apache-hive-1.2.2-bin/lib/hive-common-1.2.2.jar!/hive-log4j.properties
    hive> 
    ```
    
-6. 基本测试
-
-   参考 derby 方式简单测试
 
 ## beeline访问hive
 
@@ -335,10 +322,10 @@ mysql> select * from DBS;
 ```shell
 [root@node02 conf]# beeline -u "jdbc:hive2://node01:10000"  -n root -p root
 Connecting to jdbc:hive2://node01:10000
-Connected to: Apache Hive (version 2.3.9)
-Driver: Hive JDBC (version 2.3.9)
+Connected to: Apache Hive (version 1.2.2)
+Driver: Hive JDBC (version 1.2.2)
 Transaction isolation: TRANSACTION_REPEATABLE_READ
-Beeline version 2.3.9 by Apache Hive
+Beeline version 1.2.2 by Apache Hive
 0: jdbc:hive2://node01:10000> 
 ```
 
@@ -357,7 +344,7 @@ alias beeline="beeline -u jdbc:hive2://node01:10000  -n root -p root"
 
 ```shell
 [root@node01 conf]# pwd
-/opt/stanlong/hive/apache-hive-2.3.9-bin/conf
+/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
 [root@node01 conf]# vi hive-log4j.properties.template 
 18 hive.log.threshold=ALL
 19 hive.root.logger=INFO,DRFA

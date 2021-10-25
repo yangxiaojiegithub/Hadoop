@@ -3,7 +3,7 @@
 ## 建库
 
 ```sql
-create database if not exists gmall commit '电商数仓4.0';
+create database if not exists gmall comment '电商数仓4.0';
 use gmall;
 ```
 
