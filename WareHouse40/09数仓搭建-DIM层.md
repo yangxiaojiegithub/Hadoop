@@ -1,7 +1,5 @@
 # 数仓搭建-DIM
 
-## 建表
-
 ### 商品维度表
 
 ```sql
@@ -53,7 +51,7 @@ sku as
         tm_id,
         create_time
     from ods_sku_info
-    where dt='2020-06-01'
+    where dt='2021-06-01'
 ),
 spu as
 (
@@ -61,7 +59,7 @@ spu as
         id,
         spu_name
     from ods_spu_info
-    where dt='2020-06-01'
+    where dt='2021-06-01'
 ),
 c3 as
 (
@@ -70,7 +68,7 @@ c3 as
         name,
         category2_id
     from ods_base_category3
-    where dt='2020-06-01'
+    where dt='2021-06-01'
 ),
 c2 as
 (
@@ -79,7 +77,7 @@ c2 as
         name,
         category1_id
     from ods_base_category2
-    where dt='2020-06-01'
+    where dt='2021-06-01'
 ),
 c1 as
 (
@@ -87,7 +85,7 @@ c1 as
         id,
         name
     from ods_base_category1
-    where dt='2020-06-01'
+    where dt='2021-06-01'
 ),
 tm as
 (
@@ -95,7 +93,7 @@ tm as
         id,
         tm_name
     from ods_base_trademark
-    where dt='2020-06-01'
+    where dt='2021-06-01'
 ),
 attr as
 (
@@ -103,7 +101,7 @@ attr as
         sku_id,
         collect_set(named_struct('attr_id',attr_id,'value_id',value_id,'attr_name',attr_name,'value_name',value_name)) attrs
     from ods_sku_attr_value
-    where dt='2020-06-01'
+    where dt='2021-06-01'
     group by sku_id
 ),
 sale_attr as
@@ -112,10 +110,10 @@ sale_attr as
         sku_id,
         collect_set(named_struct('sale_attr_id',sale_attr_id,'sale_attr_value_id',sale_attr_value_id,'sale_attr_name',sale_attr_name,'sale_attr_value_name',sale_attr_value_name)) sale_attrs
     from ods_sku_sale_attr_value
-    where dt='2020-06-01'
+    where dt='2021-06-01'
     group by sku_id
 )
-insert overwrite table dim_sku_info partition(dt='2020-06-01')
+insert overwrite table dim_sku_info partition(dt='2021-06-01')
 select
     sku.id,
     sku.price,

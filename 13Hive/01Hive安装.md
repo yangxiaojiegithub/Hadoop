@@ -120,7 +120,7 @@ export HIVE_CONF_DIR=/opt/stanlong/hive/apache-hive-1.2.2-bin/conf
     <!-- 元数据库的链接地址 mysql -->
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:mysql://192.168.235.11:3306/hivedb?createDatabaseIfNotExist=true&amp;useSSL=false</value>
+        <value>jdbc:mysql://192.168.235.11:3306/hivedb?createDatabaseIfNotExist=true&amp;useSSL=false&amp;characterEncoding=UTF-8</value>
     </property>
     <!-- 指定mysql连接信息 -->
     <property>

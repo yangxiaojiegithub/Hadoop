@@ -9,6 +9,8 @@ use gmall;
 
 ## 用户行为数据
 
+同步策略：按天分区同步
+
 ### 建表
 
 ```sql
@@ -72,11 +74,12 @@ hadoop jar /opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/hadoop-lzo-0
 
 ## 业务数据
 
-2021-06-01（首日）全部全量同步。后面按照业务分析，该增量增量，该全量全量。
+同步策略：2021-06-01（首日）全部全量同步。后面按照业务分析，该增量增量，该全量全量。
 
 ### 建表
 
 ```sql
+use gmall;
 DROP TABLE IF EXISTS ods_activity_info;
 CREATE EXTERNAL TABLE ods_activity_info(
     `id` STRING COMMENT '编号',
@@ -870,12 +873,6 @@ load data inpath '/origin_data/$APP/db/sku_attr_value/$do_date' OVERWRITE into t
 
 ods_sku_sale_attr_value="
 load data inpath '/origin_data/$APP/db/sku_sale_attr_value/$do_date' OVERWRITE into table ${APP}.ods_sku_sale_attr_value partition(dt='$do_date'); "
-
-ods_base_province=" 
-load data inpath '/origin_data/$APP/db/base_province/$do_date' OVERWRITE into table ${APP}.ods_base_province;"
-
-ods_base_region="
-load data inpath '/origin_data/$APP/db/base_region/$do_date' OVERWRITE into table ${APP}.ods_base_region;"
 
 case $1 in
     "ods_order_info"){
