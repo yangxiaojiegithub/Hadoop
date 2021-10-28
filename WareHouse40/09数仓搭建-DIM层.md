@@ -1,5 +1,7 @@
 # 数仓搭建-DIM
 
+DIM层保存维度模型的维度表
+
 ### 商品维度表
 
 ```sql
@@ -288,7 +290,7 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 #### 首日装载数据
 
 ```sql
-insert overwrite table dim_coupon_info partition(dt='2020-06-14')
+insert overwrite table dim_coupon_info partition(dt='2021-06-01')
 select
     id,
     coupon_name,
@@ -307,7 +309,7 @@ select
     operate_time,
     expire_time
 from ods_coupon_info
-where dt='2020-06-14';
+where dt='2021-06-01';
 ```
 
 #### 每日装载数据
@@ -364,7 +366,7 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 #### 首日装载脚本
 
 ```sql
-insert overwrite table dim_activity_rule_info partition(dt='2020-06-14')
+insert overwrite table dim_activity_rule_info partition(dt='2021-06-01')
 select
     ar.id,
     ar.activity_id,
@@ -390,7 +392,7 @@ from
         benefit_discount,
         benefit_level
     from ods_activity_rule
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )ar
 left join
 (
@@ -401,7 +403,7 @@ left join
         end_time,
         create_time
     from ods_activity_info
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )ai
 on ar.activity_id=ai.id;
 ```
@@ -507,7 +509,7 @@ LOCATION '/warehouse/gmall/dim/dim_date_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：通常情况下，时间维度表的数据并不是来自于业务系统，而是手动写入，并且由于时间维度表数据的可预见性，无须每日导入，一般可一次性导入一年的数据
+同步策略：通常情况下，时间维度表的数据并不是来自于业务系统，而是手动写入，并且由于时间维度表数据的可预见性，无须每日导入，一般可一次性导入一年的数据。因为涉及到数据格式转换，因此先建一张临时表
 
 1. 创建临时表
 
@@ -532,6 +534,10 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 
    数据文件在 Hadoop/WareHouse40/doc/date_info.txt
 
+   ```shell
+   [root@node01 ~]# hdfs dfs -put -f date_info.txt hdfs://hacluster/warehouse/gmall/tmp/tmp_dim_date_info/
+   ```
+
 3. 执行以下语句将其导入时间维度表
 
    ```sql
@@ -547,6 +553,8 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 ### 用户维度表（拉链表）
 
 #### 拉链表概述
+
+能更加高效的存储历史状态
 
 ![](./doc/15.png)
 
@@ -583,6 +591,8 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 
 #### 分区规划
 
+9999-99-99分区保存最新的数据， 过期数据保存到其他分区里。
+
 ![](./doc/19.png)
 
 
@@ -593,7 +603,7 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 
 **首日装载**
 
-拉链表首日装载，需要进行初始化操作，具体工作为将截止到初始化当日的全部历史用户导入一次性导入到拉链表中。目前的ods_user_info表的第一个分区，即2020-06-14分区中就是全部的历史用户，故将该分区数据进行一定处理后导入拉链表的9999-99-99分区即可。
+拉链表首日装载，需要进行初始化操作，具体工作为将截止到初始化当日的全部历史用户导入一次性导入到拉链表中。目前的ods_user_info表的第一个分区，即2021-06-01分区中就是全部的历史用户，故将该分区数据进行一定处理后导入拉链表的9999-99-99分区即可。
 
 ```sql
 insert overwrite table dim_user_info partition(dt='9999-99-99')
@@ -609,10 +619,10 @@ select
     gender,
     create_time,
     operate_time,
-    '2020-06-14',
+    '2021-06-01',
     '9999-99-99'
 from ods_user_info
-where dt='2020-06-14';
+where dt='2021-06-01';
 ```
 
 **每日装载**
@@ -732,7 +742,7 @@ where new_id is not null and old_id is not null;
 ```shell
 [atguigu@hadoop102 bin]$ vim ods_to_dim_db_init.sh
 [atguigu@hadoop102 bin]$ chmod +x ods_to_dim_db_init.sh
-[atguigu@hadoop102 bin]$ ods_to_dim_db_init.sh all 2020-06-14 # 执行
+[atguigu@hadoop102 bin]$ ods_to_dim_db_init.sh all 2021-06-01 # 执行
 ```
 
 ```shell
@@ -989,7 +999,7 @@ esac
 ```shell
 [atguigu@hadoop102 bin]$ vim ods_to_dim_db.sh
 [atguigu@hadoop102 bin]$ chmod +x ods_to_dim_db.sh
-[atguigu@hadoop102 bin]$ ods_to_dim_db.sh all 2020-06-14 # 执行
+[atguigu@hadoop102 bin]$ ods_to_dim_db.sh all 2021-06-01 # 执行
 ```
 
 ```shell
