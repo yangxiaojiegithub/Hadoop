@@ -18,7 +18,7 @@ DWD层明细数据层，保存所有的明细数据。在DWD层注要做两件�
 
 ![](./doc/27.png)
 
-**启动日志解析思路：**启动日志表中每行数据对应一个启动记录，一个启动记录应该包含日志中的公共信息和启动信息。先将所有包含start字段的日志过滤出来，然后使用get_json_object函数解析每个字段。
+**启动日志解析思路** ：启动日志表中每行数据对应一个启动记录，一个启动记录应该包含日志中的公共信息和启动信息。先将所有包含start字段的日志过滤出来，然后使用get_json_object函数解析每个字段。
 
 ```sql
 DROP TABLE IF EXISTS dwd_start_log;
@@ -46,10 +46,12 @@ TBLPROPERTIES('parquet.compression'='lzo') -- 采用LZO压缩
 ;
 ```
 
+同步策略：每天全量
+
 **装载数据**
 
 ```sql
-insert overwrite table dwd_start_log partition(dt='2020-06-14')
+insert overwrite table dwd_start_log partition(dt='2021-06-01')
 select
     get_json_object(line,'$.common.ar'),
     get_json_object(line,'$.common.ba'),
@@ -67,13 +69,13 @@ select
     get_json_object(line,'$.start.open_ad_skip_ms'),
     get_json_object(line,'$.ts')
 from ods_log
-where dt='2020-06-14'
+where dt='2021-06-01'
 and get_json_object(line,'$.start') is not null;
 ```
 
 ### 页面日志表
 
-**页面日志解析思路：**页面日志表中每行数据对应一个页面访问记录，一个页面访问记录应该包含日志中的公共信息和页面信息。先将所有包含page字段的日志过滤出来，然后使用get_json_object函数解析每个字段。
+**页面日志解析思路 **：页面日志表中每行数据对应一个页面访问记录，一个页面访问记录应该包含日志中的公共信息和页面信息。先将所有包含page字段的日志过滤出来，然后使用get_json_object函数解析每个字段。
 
 ```sql
 DROP TABLE IF EXISTS dwd_page_log;
@@ -104,7 +106,7 @@ TBLPROPERTIES('parquet.compression'='lzo');
 **装载数据**
 
 ```sql
-insert overwrite table dwd_page_log partition(dt='2020-06-14')
+insert overwrite table dwd_page_log partition(dt='2021-06-01')
 select
     get_json_object(line,'$.common.ar'),
     get_json_object(line,'$.common.ba'),
@@ -123,13 +125,15 @@ select
     get_json_object(line,'$.page.source_type'),
     get_json_object(line,'$.ts')
 from ods_log
-where dt='2020-06-14'
+where dt='2021-06-01'
 and get_json_object(line,'$.page') is not null;
 ```
 
+同步策略：每条全量
+
 ### 动作日志表
 
-**动作日志解析思路：**动作日志表中每行数据对应用户的一个动作记录，一个动作记录应当包含公共信息、页面信息以及动作信息。先将包含action字段的日志过滤出来，然后通过UDTF函数，将action数组“炸开”（类似于explode函数的效果），然后使用get_json_object函数解析每个字段。
+**动作日志解析思路：**动作日志表中每行数据对应用户的一个动作记录，一个动作记录应当包含公共信息、页面信息以及动作信息。先将包含action字段的日志过滤出来，然后通过UDTF函数，将action数组“炸开”（类似于explode函数的效果），然后使用get_json_object函数解析每个字段。同步策略：每条全量
 
 ```sql
 DROP TABLE IF EXISTS dwd_action_log;
@@ -167,8 +171,11 @@ TBLPROPERTIES('parquet.compression'='lzo');
 ![](./doc/24.png)
 
 创建UDTF函数——编写代码
+
 （1）创建一个maven工程：hivefunction
+
 （2）创建包名：com.atguigu.hive.udtf
+
 （3）引入如下依赖
 
 ```xml
@@ -263,20 +270,29 @@ public class ExplodeJSONArray extends GenericUDTF {
 （6）上传
 
 ```shell
-[atguigu@hadoop102 module]$ hadoop fs -mkdir -p /user/hive/jars
-[atguigu@hadoop102 module]$ hadoop fs -put hivefunction-1.0-SNAPSHOT.jar /user/hive/jars
+[root@node01 ~]# hadoop fs -mkdir -p /user/hive/jars
+[root@node01 ~]# hadoop fs -put hivefunction-1.0-SNAPSHOT.jar /user/hive/jars
 ```
 
 （7）函数关联
 
 ```sql
-create function explode_json_array as 'com.atguigu.hive.udtf.ExplodeJSONArray' using jar 'hdfs://hadoop102:8020/user/hive/jars/hivefunction-1.0-SNAPSHOT.jar';
+0: jdbc:hive2://node01:10000> create function explode_json_array as 'com.atguigu.hive.udtf.ExplodeJSONArray' using jar 'hdfs://hacluster:8020/user/hive/jars/hivefunction-1.0-SNAPSHOT.jar';
+
+0: jdbc:hive2://node01:10000> show functions like "*json*";
++---------------------------+
+|         tab_name          |
++---------------------------+
+| get_json_object           |
+| gmall.explode_json_array  |
+| json_tuple                |
++---------------------------+
 ```
 
 **装载数据**
 
 ```sql
-insert overwrite table dwd_action_log partition(dt='2020-06-14')
+insert overwrite table dwd_action_log partition(dt='2021-06-01')
 select
     get_json_object(line,'$.common.ar'),
     get_json_object(line,'$.common.ba'),
@@ -298,7 +314,7 @@ select
     get_json_object(action,'$.item_type'),
     get_json_object(action,'$.ts')
 from ods_log lateral view explode_json_array(get_json_object(line,'$.actions')) tmp as action
-where dt='2020-06-14'
+where dt='2021-06-01'
 and get_json_object(line,'$.actions') is not null;
 ```
 
@@ -340,7 +356,7 @@ TBLPROPERTIES('parquet.compression'='lzo');
 **装载数据**
 
 ```sql
-insert overwrite table dwd_display_log partition(dt='2020-06-14')
+insert overwrite table dwd_display_log partition(dt='2021-06-01')
 select
     get_json_object(line,'$.common.ar'),
     get_json_object(line,'$.common.ba'),
@@ -364,7 +380,7 @@ select
     get_json_object(display,'$.order'),
     get_json_object(display,'$.pos_id')
 from ods_log lateral view explode_json_array(get_json_object(line,'$.displays')) tmp as display
-where dt='2020-06-14'
+where dt='2021-06-01'
 and get_json_object(line,'$.displays') is not null;
 ```
 
@@ -411,7 +427,7 @@ TBLPROPERTIES('parquet.compression'='lzo');
 **装载数据**
 
 ```sql
-insert overwrite table dwd_error_log partition(dt='2020-06-14')
+insert overwrite table dwd_error_log partition(dt='2021-06-01')
 select
     get_json_object(line,'$.common.ar'),
     get_json_object(line,'$.common.ba'),
@@ -438,16 +454,16 @@ select
     get_json_object(line,'$.err.error_code'),
     get_json_object(line,'$.err.msg')
 from ods_log
-where dt='2020-06-14'
+where dt='2021-06-01'
 and get_json_object(line,'$.err') is not null;
 ```
 
 ### DWD层用户行为数据加载脚本
 
 ```shell
-[atguigu@hadoop102 bin]$ vim ods_to_dwd_log.sh
-[atguigu@hadoop102 bin]$ chmod 777 ods_to_dwd_log.sh
-[atguigu@hadoop102 module]$ ods_to_dwd_log.sh all 2020-06-14
+[root@node01 appmain]# vi ods_to_dwd_log.sh
+[root@node01 appmain]# chmod +x ods_to_dwd_log.sh 
+[root@node01 appmain]# ./ods_to_dwd_log.sh all 2021-06-01
 ```
 
 ```sql
@@ -646,11 +662,15 @@ LOCATION '/warehouse/gmall/dwd/dwd_comment_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：增量同步
+同步策略：增量同步， 每个分区只保存当天增量生成的记录
 
 **首日装载**
 
+首日的全量评价记录按记录生成的时间创建动态分区，增量保存到对应的分区里
+
 ```sql
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 insert overwrite table dwd_comment_info partition (dt)
 select
     id,
@@ -660,9 +680,9 @@ select
     order_id,
     appraise,
     create_time,
-    date_format(create_time,'yyyy-MM-dd')
+    date_format(create_time,'yyyy-MM-dd') as dt
 from ods_comment_info
-where dt='2020-06-14';
+where dt='2021-06-01';
 ```
 
 **每日装载**
@@ -710,11 +730,15 @@ LOCATION '/warehouse/gmall/dwd/dwd_order_detail/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：增量同步
+同步策略：增量同步， 每个分区只保存当天增量生成的记录
 
 **首日装载**
 
+首日的全量订单记录按记录生成的时间创建动态分区，增量保存到对应的分区里
+
 ```sql
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 insert overwrite table dwd_order_detail partition(dt)
 select
     od.id,
@@ -733,13 +757,13 @@ select
     od.split_activity_amount,
     od.split_coupon_amount,
     od.split_final_amount,
-    date_format(create_time,'yyyy-MM-dd')
+    date_format(create_time,'yyyy-MM-dd') as dt
 from
 (
     select
         *
     from ods_order_detail
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )od
 left join
 (
@@ -748,7 +772,7 @@ left join
         user_id,
         province_id
     from ods_order_info
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )oi
 on od.order_id=oi.id
 left join
@@ -758,7 +782,7 @@ left join
         activity_id,
         activity_rule_id
     from ods_order_detail_activity
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )oda
 on od.id=oda.order_detail_id
 left join
@@ -767,7 +791,7 @@ left join
         order_detail_id,
         coupon_id
     from ods_order_detail_coupon
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )odc
 on od.id=odc.order_detail_id;
 ```
@@ -859,7 +883,11 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 
 **首日装载**
 
+首日的全量退单记录按记录生成的时间创建动态分区，增量保存到对应的分区里
+
 ```sql
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 insert overwrite table dwd_order_refund_info partition(dt)
 select
     ri.id,
@@ -872,14 +900,14 @@ select
     ri.refund_amount,
     ri.refund_reason_type,
     ri.create_time,
-    date_format(ri.create_time,'yyyy-MM-dd')
+    date_format(ri.create_time,'yyyy-MM-dd') as dt
 from
 (
-    select * from ods_order_refund_info where dt='2020-06-14'
+    select * from ods_order_refund_info where dt='2021-06-01'
 )ri
 left join
 (
-    select id,province_id from ods_order_info where dt='2020-06-14'
+    select id,province_id from ods_order_info where dt='2021-06-01'
 )oi
 on ri.order_id=oi.id;
 ```
@@ -940,7 +968,7 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 **首日装载**
 
 ```sql
-insert overwrite table dwd_cart_info partition(dt='2020-06-14')
+insert overwrite table dwd_cart_info partition(dt='2021-06-01')
 select
     id,
     user_id,
@@ -954,7 +982,7 @@ select
     order_time,
     sku_num
 from ods_cart_info
-where dt='2020-06-14';
+where dt='2021-06-01';
 ```
 
 **每日装载**
@@ -1003,7 +1031,7 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 **首日装载**
 
 ```sql
-insert overwrite table dwd_favor_info partition(dt='2020-06-14')
+insert overwrite table dwd_favor_info partition(dt='2021-06-01')
 select
     id,
     user_id,
@@ -1013,7 +1041,7 @@ select
     create_time,
     cancel_time
 from ods_favor_info
-where dt='2020-06-14';
+where dt='2021-06-01';
 ```
 
 **每日装载**
@@ -1073,7 +1101,7 @@ select
     expire_time,
     coalesce(date_format(used_time,'yyyy-MM-dd'),date_format(expire_time,'yyyy-MM-dd'),'9999-99-99')
 from ods_coupon_use
-where dt='2020-06-14';
+where dt='2021-06-01';
 ```
 
 ![](./doc/25.png)
@@ -1174,11 +1202,11 @@ select
     nvl(date_format(pi.callback_time,'yyyy-MM-dd'),'9999-99-99')
 from
 (
-    select * from ods_payment_info where dt='2020-06-14'
+    select * from ods_payment_info where dt='2021-06-01'
 )pi
 left join
 (
-    select id,province_id from ods_order_info where dt='2020-06-14'
+    select id,province_id from ods_order_info where dt='2021-06-01'
 )oi
 on pi.order_id=oi.id;
 ```
@@ -1303,7 +1331,7 @@ from
         create_time,
         callback_time
     from ods_refund_payment
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )rp
 left join
 (
@@ -1312,7 +1340,7 @@ left join
         user_id,
         province_id
     from ods_order_info
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )oi
 on rp.order_id=oi.id;
 ```
@@ -1463,7 +1491,7 @@ select
     final_amount,
     case
         when times.ts['1003'] is not null then date_format(times.ts['1003'],'yyyy-MM-dd')
-        when times.ts['1004'] is not null and date_add(date_format(times.ts['1004'],'yyyy-MM-dd'),7)<='2020-06-14' and times.ts['1005'] is null then date_add(date_format(times.ts['1004'],'yyyy-MM-dd'),7)
+        when times.ts['1004'] is not null and date_add(date_format(times.ts['1004'],'yyyy-MM-dd'),7)<='2021-06-01' and times.ts['1005'] is null then date_add(date_format(times.ts['1004'],'yyyy-MM-dd'),7)
         when times.ts['1006'] is not null then date_format(times.ts['1006'],'yyyy-MM-dd')
         when oi.expire_time is not null then date_format(oi.expire_time,'yyyy-MM-dd')
         else '9999-99-99'
@@ -1473,7 +1501,7 @@ from
     select
         *
     from ods_order_info
-    where dt='2020-06-14'
+    where dt='2021-06-01'
 )oi
 left join
 (
@@ -1481,7 +1509,7 @@ left join
         order_id,
         str_to_map(concat_ws(',',collect_set(concat(order_status,'=',operate_time))),',','=') ts
     from ods_order_status_log
-    where dt='2020-06-14'
+    where dt='2021-06-01'
     group by order_id
 )times
 on oi.id=times.order_id;
@@ -1597,7 +1625,7 @@ on old.id=new.id;
 ```shell
 [atguigu@hadoop102 bin]$ vim ods_to_dwd_db_init.sh
 [atguigu@hadoop102 bin]$ chmod +x ods_to_dwd_db_init.sh
-[atguigu@hadoop102 bin]$ ods_to_dwd_db_init.sh all 2020-06-14
+[atguigu@hadoop102 bin]$ ods_to_dwd_db_init.sh all 2021-06-01
 ```
 
 ```shell
@@ -1925,7 +1953,7 @@ esac
 ```shell
 [atguigu@hadoop102 bin]$ vim ods_to_dwd_db.sh
 [atguigu@hadoop102 bin]$ chmod 777 ods_to_dwd_db.sh
-[atguigu@hadoop102 bin]$ ods_to_dwd_db.sh all 2020-06-14
+[atguigu@hadoop102 bin]$ ods_to_dwd_db.sh all 2021-06-01
 ```
 
 ```shell
