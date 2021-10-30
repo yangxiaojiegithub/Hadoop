@@ -963,7 +963,7 @@ LOCATION '/warehouse/gmall/dwd/dwd_cart_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：全量同步
+同步策略：当日全量购物车数据
 
 **首日装载**
 
@@ -1026,7 +1026,7 @@ LOCATION '/warehouse/gmall/dwd/dwd_favor_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：全量同步
+同步策略：当日全量收藏记录
 
 **首日装载**
 
@@ -1083,11 +1083,13 @@ LOCATION '/warehouse/gmall/dwd/dwd_coupon_use/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：首日同步，往后新增及变化同步
+同步策略：当天分区存放当日完成的优惠劵领用记录， 目前未完成的优惠劵领用记录放在9999-99-99分区中
 
 **首日加载**
 
 ```sql
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 insert overwrite table dwd_coupon_use partition(dt)
 select
     id,
@@ -1099,7 +1101,7 @@ select
     using_time,
     used_time,
     expire_time,
-    coalesce(date_format(used_time,'yyyy-MM-dd'),date_format(expire_time,'yyyy-MM-dd'),'9999-99-99')
+    coalesce(date_format(used_time,'yyyy-MM-dd'),date_format(expire_time,'yyyy-MM-dd'),'9999-99-99') as dt
 from ods_coupon_use
 where dt='2021-06-01';
 ```
@@ -1461,7 +1463,7 @@ LOCATION '/warehouse/gmall/dwd/dwd_order_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：首日同步，往后新增及变化同步
+同步策略：首日全量同步，往后新增及变化同步
 
 **首日装载**
 
@@ -1952,7 +1954,7 @@ esac
 
 ```shell
 [atguigu@hadoop102 bin]$ vim ods_to_dwd_db.sh
-[atguigu@hadoop102 bin]$ chmod 777 ods_to_dwd_db.sh
+[atguigu@hadoop102 bin]$ chmod + ods_to_dwd_db.sh
 [atguigu@hadoop102 bin]$ ods_to_dwd_db.sh all 2021-06-01
 ```
 

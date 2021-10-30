@@ -1,5 +1,7 @@
 # DWS层
 
+DWS层：将计算频率比较高的结果保存到DWS层，避免重复计算
+
 ## 访客主题
 
 ```sql
@@ -23,7 +25,7 @@ LOCATION '/warehouse/gmall/dws/dws_visitor_action_daycount'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-装载数据
+**装载数据**
 
 ```sql
 insert overwrite table dws_visitor_action_daycount partition(dt='2020-06-14')
@@ -125,6 +127,8 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 **首日装载**
 
 ```sql
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 with
 tmp_login as
 (
