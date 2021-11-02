@@ -33,9 +33,9 @@ LOCATION '/warehouse/gmall/dim/dim_sku_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略： 全量同步
+同步策略： 增量同步(当日全量同步)
 
-#### 首日装载
+首日同步和每日同步的脚本相同
 
 ```sql
 with
@@ -146,117 +146,6 @@ left join attr on sku.id=attr.sku_id
 left join sale_attr on sku.id=sale_attr.sku_id;
 ```
 
-#### 每日装载
-
-```sql
-with
-sku as
-(
-    select
-        id,
-        price,
-        sku_name,
-        sku_desc,
-        weight,
-        is_sale,
-        spu_id,
-        category3_id,
-        tm_id,
-        create_time
-    from ods_sku_info
-    where dt='2020-06-02'
-),
-spu as
-(
-    select
-        id,
-        spu_name
-    from ods_spu_info
-    where dt='2020-06-02'
-),
-c3 as
-(
-    select
-        id,
-        name,
-        category2_id
-    from ods_base_category3
-    where dt='2020-06-02'
-),
-c2 as
-(
-    select
-        id,
-        name,
-        category1_id
-    from ods_base_category2
-    where dt='2020-06-02'
-),
-c1 as
-(
-    select
-        id,
-        name
-    from ods_base_category1
-    where dt='2020-06-02'
-),
-tm as
-(
-    select
-        id,
-        tm_name
-    from ods_base_trademark
-    where dt='2020-06-02'
-),
-attr as
-(
-    select
-        sku_id,
-        collect_set(named_struct('attr_id',attr_id,'value_id',value_id,'attr_name',attr_name,'value_name',value_name)) attrs
-    from ods_sku_attr_value
-    where dt='2020-06-02'
-    group by sku_id
-),
-sale_attr as
-(
-    select
-        sku_id,
-        collect_set(named_struct('sale_attr_id',sale_attr_id,'sale_attr_value_id',sale_attr_value_id,'sale_attr_name',sale_attr_name,'sale_attr_value_name',sale_attr_value_name)) sale_attrs
-    from ods_sku_sale_attr_value
-    where dt='2020-06-02'
-    group by sku_id
-)
-insert overwrite table dim_sku_info partition(dt='2020-06-02')
-select
-    sku.id,
-    sku.price,
-    sku.sku_name,
-    sku.sku_desc,
-    sku.weight,
-    sku.is_sale,
-    sku.spu_id,
-    spu.spu_name,
-    sku.category3_id,
-    c3.name,
-    c3.category2_id,
-    c2.name,
-    c2.category1_id,
-    c1.name,
-    sku.tm_id,
-    tm.tm_name,
-    attr.attrs,
-    sale_attr.sale_attrs,
-    sku.create_time
-from sku
-left join spu on sku.spu_id=spu.id
-left join c3 on sku.category3_id=c3.id
-left join c2 on c3.category2_id=c2.id
-left join c1 on c2.category1_id=c1.id
-left join tm on sku.tm_id=tm.id
-left join attr on sku.id=attr.sku_id
-left join sale_attr on sku.id=sale_attr.sku_id;
-```
-
 ### 优惠价维度表
 
 ```sql
@@ -285,9 +174,9 @@ LOCATION '/warehouse/gmall/dim/dim_coupon_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：全量同步
+同步策略： 增量同步(当日全量同步)
 
-#### 首日装载数据
+**首日同步和每日同步的脚本相同**
 
 ```sql
 insert overwrite table dim_coupon_info partition(dt='2021-06-01')
@@ -310,31 +199,6 @@ select
     expire_time
 from ods_coupon_info
 where dt='2021-06-01';
-```
-
-#### 每日装载数据
-
-```sql
-insert overwrite table dim_coupon_info partition(dt='2020-06-15')
-select
-    id,
-    coupon_name,
-    coupon_type,
-    condition_amount,
-    condition_num,
-    activity_id,
-    benefit_amount,
-    benefit_discount,
-    create_time,
-    range_type,
-    limit_num,
-    taken_count,
-    start_time,
-    end_time,
-    operate_time,
-    expire_time
-from ods_coupon_info
-where dt='2020-06-15';
 ```
 
 ### 活动维度表
@@ -361,9 +225,9 @@ LOCATION '/warehouse/gmall/dim/dim_activity_rule_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：全量同步
+同步策略： 增量同步(当日全量同步)
 
-#### 首日装载脚本
+**首日同步和每日同步的脚本相同**
 
 ```sql
 insert overwrite table dim_activity_rule_info partition(dt='2021-06-01')
@@ -408,51 +272,6 @@ left join
 on ar.activity_id=ai.id;
 ```
 
-#### 每日装载数据
-
-```sql
-insert overwrite table dim_activity_rule_info partition(dt='2020-06-15')
-select
-    ar.id,
-    ar.activity_id,
-    ai.activity_name,
-    ar.activity_type,
-    ai.start_time,
-    ai.end_time,
-    ai.create_time,
-    ar.condition_amount,
-    ar.condition_num,
-    ar.benefit_amount,
-    ar.benefit_discount,
-    ar.benefit_level
-from
-(
-    select
-        id,
-        activity_id,
-        activity_type,
-        condition_amount,
-        condition_num,
-        benefit_amount,
-        benefit_discount,
-        benefit_level
-    from ods_activity_rule
-    where dt='2020-06-15'
-)ar
-left join
-(
-    select
-        id,
-        activity_name,
-        start_time,
-        end_time,
-        create_time
-    from ods_activity_info
-    where dt='2020-06-15'
-)ai
-on ar.activity_id=ai.id;
-```
-
 ### 地区维度表
 
 ```sql
@@ -472,8 +291,6 @@ TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
 同步策略：地区维度表数据相对稳定，变化概率较低，故无需每日装载
-
-#### 数据装载
 
 ```sql
 insert overwrite table dim_base_province

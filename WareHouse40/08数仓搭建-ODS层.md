@@ -74,7 +74,7 @@ hadoop jar /opt/stanlong/hadoop-ha/hadoop-2.9.2/share/hadoop/common/hadoop-lzo-0
 
 ## 业务数据
 
-同步策略：2021-06-01（首日）全部全量同步。后面按照业务分析，该增量增量，该全量全量。
+同步策略：每日全量同步，但是ods_base_province， ods_base_region 数据量变化不大。首日同步一次即可，往后不需要同步
 
 ### 建表
 
