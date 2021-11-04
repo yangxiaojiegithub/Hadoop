@@ -28,7 +28,7 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 | \|              | 管道, 分析前边命令的输出, 并将输出作为后边命令的输入.        |
 | >\|             | 强制重定向                                                   |
 | \|\|            | 逻辑或，前一个命令执行失败后，才继续执行下一个命令。         |
-| ()              | 指令群组 ,用括号将一串连续指令括起来,如 ``` (cd ~ ; vcgh=`pwd` ;echo $vcgh)``` |
+| ()              | 指令数组 ,用括号将一串连续指令括起来,如 ``` (cd ~ ; vcgh=`pwd` ;echo $vcgh)``` |
 | &               | 后台运行命令                                                 |
 | &&              | 逻辑与，前一个命令执行成功后，才继续执行下一个命令。         |
 | !               | 执行历史记录中的命令，"!!"执行上一条命令                     |
@@ -100,4 +100,124 @@ echo
 ```shell
 [root@node01 ~]# echo -e "\033[背景色;字体颜色 字符串 \033[属性效果"
 ```
+
+## 基本输入
+
+**read**
+
+-p 打印信息
+
+-t 限定时间
+
+-s 不显示输入的内容
+
+-n 输入字符个数
+
+```shell
+#!/bin/bash
+
+clear
+# echo -n -e "Login: "
+# read acc
+# 上面两行可简写成
+read -p "Login: " acc
+echo -n -e "Password: "
+read -s -t5 -n pw # 不显示输入的密码，5秒钟不输入密码就退出，密码长度只能有6位
+
+echo "account: $ass password: $pw"
+```
+
+```shell
+# 模拟登陆界面
+
+#!/bin/bash
+
+clear
+
+echo "Centos Linux 7 (Core)"
+echo "kernel `uname -r` an `uname -m` \n"
+echo -n -e "$HOSTNAME login: "
+read acc
+read -s -p "password: "
+read pw
+```
+
+## 变量
+
+本地变量：只有本用户可以使用，保存在家目录下的 .bash_profile、.bashrc 文件中
+
+全局变量：所有用户都可以使用，保存在 /etc/profile、/etc/bashrc文件中
+
+用户自定义变量：比如脚本中的变量
+
+**命名规则**
+
+- 只能用英文字母，数字和下划线，不能以数字开头
+- 中间不能有空格
+- 不能使用bash里的关键字
+
+## 数组
+
+**语法**
+
+```
+数组名称=(元素1, 元素2， 元素3)
+```
+
+**检索数组元素**
+
+```shell
+# 格式
+${数组名称[索引]}
+默认索引从0开始
+
+# 根据下标访问元素
+array=(1 3 4 5 6)
+echo "访问第二个元素 ${array[1]}"
+
+# 统计数组元素的个数
+echo ${#array[@]}
+echo ${#array[*]}
+
+# 访问数组中的所有元素
+echo ${array[@]}
+echo ${array[*]}
+
+# 获取数组元素的索引
+echo ${!array[@]}
+
+# 切片获取部分数组元素
+# ${array[@]:起始位置：终止位置：}或${array[*]:起始位置：终止位置}
+program=(c c++ c# java python PHP perl go .net js shell)
+echo "第三到第六的语言为：${program[*]:2:5}"
+echo "第七到第十一的语言为：${program[@]:6:10}"
+```
+
+## 关联数组
+
+可以自定义索引
+
+```
+赋值方式1
+	  先声明再初始化，例如：
+      declare -A mydict    #声明
+      mydict["name"]=guess
+      mydict["old"]=18
+      mydict["favourite"]=coconut
+
+赋值方式2：
+	以索引数组格式定义，只不过元素变成了键值对，这种方式不需要先声明，例如：
+　　mydict=(["name"]=guess ["old"]=18 ["favourite"]=coconut] ["my description"]="I am a student")
+
+    也可以声明并同时赋值： 
+　　declare -A mydict=(["name"]=guess ["old"]=18 ["favourite"]=coconut ["my description"]="I am a student")
+
+    方式2中，和索引数组定义方式一样，数组名称=(元素1 元素2 元素3)，但括号内部元素格式不同。元素格式为：["键"]=值，元素键值对之间以空格分隔。
+```
+
+## IF 判断
+
+
+
+
 
