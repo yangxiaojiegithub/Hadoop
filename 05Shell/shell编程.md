@@ -29,6 +29,8 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 | >\|             | 强制重定向                                                   |
 | \|\|            | 逻辑或，前一个命令执行失败后，才继续执行下一个命令。         |
 | ()              | 指令数组 ,用括号将一串连续指令括起来,如 ``` (cd ~ ; vcgh=`pwd` ;echo $vcgh)``` |
+| (())            | 计算数学表达式                                               |
+| [[]]            | 字符串匹配                                                   |
 | &               | 后台运行命令                                                 |
 | &&              | 逻辑与，前一个命令执行成功后，才继续执行下一个命令。         |
 | !               | 执行历史记录中的命令，"!!"执行上一条命令                     |
@@ -215,7 +217,120 @@ echo "第七到第十一的语言为：${program[@]:6:10}"
     方式2中，和索引数组定义方式一样，数组名称=(元素1 元素2 元素3)，但括号内部元素格式不同。元素格式为：["键"]=值，元素键值对之间以空格分隔。
 ```
 
-## IF 判断
+## IF判断
+
+```shell
+文件比较与检查
+
+    -d 检查file是否存在并是一个目录
+    -e 检查file是否存在
+    -f 检查file是否存在并是一个文件
+    -r 检查file是否存在并可读
+    -s 检查file是否存在并非空
+    -w 检查file是否存在并可写
+    -x 检查file是否存在并可执行
+    -O 检查file是否存在并属当前用户所有
+    -G 检查file是否存在并且默认组与当前用户相同
+    file1 -nt file2 检查file1是否比file2新
+    file1 -ot file2 检查file1是否比file2旧
+    
+字符串比较运算
+
+	== 等于
+	!= 不等于
+	-n 检查字符串长度是否大于0
+	-z 检查字符串长度是否等于0
+```
+
+```shell
+#!/bin/bash
+# 如果目录 /tmp/abc 不存在，就创建一个
+if[! -d /tmp/abc]
+	then
+		mkdir -v /tmp/abc
+		echo "create /tmp/abc ok"
+fi
+```
+
+```shell
+#!/bin/bash
+# 登陆人员身份认证
+
+if[$USER == 'root']
+	then
+		echo "管理员， 你好"
+else
+	echo "guest, 你好"
+fi
+```
+
+```shell
+#!/bin/bash
+# 判断两个整数的关系
+if [$1 -gt $2]
+	then
+		echo "$1>$2"
+elif [$1 -eq $2]
+	then
+		echo "$1=$2"
+else
+	echo "$1<$2"
+fi
+# 或者
+if [$1 -eq $2]
+	then
+		echo "$1>$2"
+else
+	if[$1 -gt $2]
+		then
+			echo "$1>$2"
+	else
+		echo echo "$1<$2"
+	fi
+fi
+```
+
+## FOR循环
+
+```shell
+# 语法1
+for var in value1 value2 ...
+	do
+		commands
+done
+
+# C格式语法
+for ((变量; 条件; 自增减运算))
+	do
+		代码块
+done
+```
+
+```shell
+#!/bin/bash
+# 直接赋值
+for var in 1 2 3 4 5
+	do
+		echo $var
+		sleep 1
+done
+
+# 使用命令赋值
+for var in `var 1 9`
+	do echo $var
+	sleep 1
+done
+
+# C格式语法
+for ((i=1; i<10; i++))
+	do echo $i
+done
+
+for ((n=10, m=0; n>0, m<10; n--, m++))
+	do
+		echo -e "$n\t$m"
+done
+```
 
 
 
