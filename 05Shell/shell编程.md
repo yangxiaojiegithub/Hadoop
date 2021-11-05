@@ -29,7 +29,10 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 | >\|             | 强制重定向                                                   |
 | \|\|            | 逻辑或，前一个命令执行失败后，才继续执行下一个命令。         |
 | ()              | 指令数组 ,用括号将一串连续指令括起来,如 ``` (cd ~ ; vcgh=`pwd` ;echo $vcgh)``` |
-| (())            | 计算数学表达式                                               |
+| $()             | ``` 与 `` 一样，命令替换```                                  |
+| (())            | for循环中C语言格式语法                                       |
+| $(())           | 计算数学表达式                                               |
+| []              | 计算逻辑表达式，与 test 一样, 如 ` test -d /root/` 等同于 ` [-d /root/]` |
 | [[]]            | 字符串匹配                                                   |
 | &               | 后台运行命令                                                 |
 | &&              | 逻辑与，前一个命令执行成功后，才继续执行下一个命令。         |
@@ -329,6 +332,66 @@ done
 for ((n=10, m=0; n>0, m<10; n--, m++))
 	do
 		echo -e "$n\t$m"
+done
+```
+
+```shell
+#!/bin/bash
+# 监控主机存活的脚本
+for((;;))
+do
+	ping -c1 $1 &> /dev/null
+	if[$? -eq 0]
+		then
+			echo "`date +"%F %H:%M:%S"`:$1 is up"
+	else
+		echo "`date +"%F %H:%M:%S"`:$1 is down"
+	fi
+	
+	# 脚本节奏控制
+	sleep 5
+done
+```
+
+```shell
+#!/bin/bash
+# 跳出5，打印 1，2，3，4，6，7，8
+for((i=0;i<=8;i++))
+do
+	if[$i -eq 5];then
+		continue
+	fi
+	echo $i
+done
+```
+
+```shell
+#!/bin/bash
+# 要求用户输入一个字母，当输入到Q的时候退出
+for((;;))
+do
+	read -p "char: " ch
+	if [$ch -eq "Q"]
+		then
+			break
+	else
+		echo "你输入的是: $ch"
+	fi
+done
+```
+
+```shell
+#!/bin/bash
+# 跳出外循环
+for((i=1;i<100;i++))
+do
+	echo "#loop $i"
+	for((;;))
+	do
+		echo "haha"
+		break 2 # 内循环为1， 外循环为2，依次往外数
+	done
+	sleep 3
 done
 ```
 
