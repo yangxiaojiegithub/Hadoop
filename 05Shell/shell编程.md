@@ -27,7 +27,7 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 | ''              | 单引号，硬转义，内容原样输出，不解释变量                     |
 | \|              | 管道, 分析前边命令的输出, 并将输出作为后边命令的输入.        |
 | >\|             | 强制重定向                                                   |
-| \|\|            | 逻辑或，前一个命令执行失败后，才继续执行下一个命令。         |
+| \|\|            | 逻辑或                                                       |
 | ()              | 指令数组 ,用括号将一串连续指令括起来,如 ``` (cd ~ ; vcgh=`pwd` ;echo $vcgh)``` |
 | $()             | ``` 与 `` 一样，命令替换```                                  |
 | (())            | for循环中C语言格式语法                                       |
@@ -35,7 +35,7 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 | []              | 计算逻辑表达式，与 test 一样, 如 ` test -d /root/` 等同于 ` [-d /root/]` |
 | [[]]            | 字符串匹配                                                   |
 | &               | 后台运行命令                                                 |
-| &&              | 逻辑与，前一个命令执行成功后，才继续执行下一个命令。         |
+| &&              | 逻辑与                                                       |
 | !               | 执行历史记录中的命令，"!!"执行上一条命令                     |
 | >/dev/null 2>&1 | 标准输出和标准错误都重定向到了/dev/null                      |
 | 2>&1 >/dev/null | 意思是把标准错误输出重定向到标准输出后重定向到/dev/null      |
@@ -116,7 +116,7 @@ echo
 
 -s 不显示输入的内容
 
--n 输入字符个数
+-n 限制输入字符的个数
 
 ```shell
 #!/bin/bash
@@ -394,6 +394,115 @@ do
 	sleep 3
 done
 ```
+
+## while循环
+
+```shell
+#!/bin/bash
+# 五种运算类型
+# 数学比较 字符串比较 文件类型 逻辑运算 赋值运算
+read -p "NUM: " num1
+while [$num1 -gt 0]
+do
+	echo "大于"
+	sleep 3
+done
+
+---------------------------------------------------------------------------
+
+read -p "login: " account
+while [$account != 'root']
+do
+	read -p "login:" account
+done
+
+---------------------------------------------------------------------------
+
+while [! -d /tmp/stanlong]
+do
+	echo "not found /tmp/stanlong"
+	sleep 3
+done
+```
+
+## until语句
+
+```shell
+语法
+until [condition] # 条件为假 until 才会循环，条件为真，until停止循环
+do
+	commands
+done
+```
+
+```shell
+#!/bin/bash
+# 打印10到20
+init_num=10
+until [$init_num -gt 20]
+do 
+	echo $init_num
+	init_num=$((init_num + 1))
+done
+```
+
+## case语句
+
+```shell
+# 语法
+
+case 变量 in
+条件1)
+	执行代码块1
+;;
+条件2)
+	执行代码块2
+;;
+....
+esac
+
+# 每个代码块执行完毕要以;;结尾代表结束， case 结尾要以倒过来写的 esac 结束
+```
+
+```shell
+#!/bin/bash
+
+read -p "NUM:" N
+case $N in
+1)
+	echo "one"
+;;
+2)
+	echo "two"
+;;
+3)
+	echo "three"
+;;
+*)
+	echo "Exit!"
+;;
+esac
+```
+
+## 函数
+
+```shell
+#语法1
+函数名 (){
+	代码块
+	return N
+}
+
+#语法2
+function 函数名{
+	代码块
+	return N
+}
+```
+
+
+
+
 
 
 
