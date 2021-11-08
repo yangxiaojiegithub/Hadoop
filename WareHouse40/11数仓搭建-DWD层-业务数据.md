@@ -338,9 +338,9 @@ LOCATION '/warehouse/gmall/dwd/dwd_cart_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：当日全量购物车数据
+同步策略：当日全量购物车数据，首日装载和每日装载逻辑相同
 
-**首日装载**
+**装载数据**
 
 ```sql
 insert overwrite table dwd_cart_info partition(dt='2021-06-01')
@@ -358,26 +358,6 @@ select
     sku_num
 from ods_cart_info
 where dt='2021-06-01';
-```
-
-**每日装载**
-
-```sql
-insert overwrite table dwd_cart_info partition(dt='2020-06-15')
-select
-    id,
-    user_id,
-    sku_id,
-    source_type,
-    source_id,
-    cart_price,
-    is_ordered,
-    create_time,
-    operate_time,
-    order_time,
-    sku_num
-from ods_cart_info
-where dt='2020-06-15';
 ```
 
 ### 收藏事实表
@@ -401,9 +381,9 @@ LOCATION '/warehouse/gmall/dwd/dwd_favor_info/'
 TBLPROPERTIES ("parquet.compression"="lzo");
 ```
 
-同步策略：当日全量收藏记录
+同步策略：当日全量收藏记录， 首日装载和每日装载逻辑相同
 
-**首日装载**
+**装载数据**
 
 ```sql
 insert overwrite table dwd_favor_info partition(dt='2021-06-01')
@@ -417,22 +397,6 @@ select
     cancel_time
 from ods_favor_info
 where dt='2021-06-01';
-```
-
-**每日装载**
-
-```sql
-insert overwrite table dwd_favor_info partition(dt='2020-06-15')
-select
-    id,
-    user_id,
-    sku_id,
-    spu_id,
-    is_cancel,
-    create_time,
-    cancel_time
-from ods_favor_info
-where dt='2020-06-15';
 ```
 
 ### 优惠券领用事实表
