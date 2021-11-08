@@ -500,7 +500,78 @@ function 函数名{
 }
 ```
 
+## 文件操作
 
+**sed命令**
+
+```shell
+语法: sed [options] '{command}[flags]' [filename]
+
+[options]：
+-n ：使用安静(silent)模式。加上 -n 参数后，则只有经过sed 特殊处理的那一行(或者动作)才会被列出来。
+-e ：直接在命令列模式上进行 sed 的动作编辑,可同时执行多个命令，用;分隔
+-f ：直接将 sed 的动作写在一个文件内， -f filename 则可以运行 filename 内的 sed 动作；
+-r ：sed 的动作支持的是延伸型正规表示法的语法。(默认是基础正规表示法语法)
+-i ：直接修改读取的文件内容，而不是输出到终端。
+-i.xx : 先备份文件在操作
+
+
+{command}：
+a ：新增， a 的后面可以接字串，而这些字串会在新的一行出现(目前的下一行)～
+c ：取代， c 的后面可以接字串，这些字串可以取代 n1,n2 之间的行！
+d ：删除，因为是删除啊，所以 d 后面通常不接任何咚咚；
+i ：插入， i 的后面可以接字串，而这些字串会在新的一行出现(目前的上一行)；
+p ：列印，亦即将某个选择的数据印出。通常 p 会与参数 sed -n 一起运行～
+s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可以搭配正规表示法！例如 1,20s/old/new/g 就是啦！
+y ：转换 N D P （大小写转换）
+
+flags
+数字                 表示新文本替换的内容
+g:                  表示用新文本替换现有文本的全部实例
+p:                  表示打印原始的内容
+w filename:         将替换的结果写入文件
+```
+
+```shell
+# 准备数据文件 test.txt
+1 the quick brown fox jumps over the lazy dog.
+2 the quick brown fox jumps over the lazy dog.
+3 the quick brown fox jumps over the lazy dog.
+4 the quick brown fox jumps over the lazy dog.
+5 the quick brown fox jumps over the lazy dog.
+
+# 新增
+sed '\ahello world' test.txt # 在每行末尾追加 hello world
+sed '\3ahello world' test.txt # 在第三末尾追加 hello world
+sed '\2,4ahello world' test.txt # 在第2，3，4末尾追加 hello world
+sed '/3 the/a\hello world' test.txt # 在第三行的 the 后面追加 hello world
+
+# 插入
+sed 'i\hello world' test.txt # 在每行前面追加 hello world
+sed '3i\hello world' test.txt # 在第三行前面追加 hello world
+
+# 删除
+sed 'd' test.txt # 删除所有
+sed '3d' test.txt # 删除第三行
+
+# 查找替换
+sed 's/dog/cat/' test.txt # 把 dog 换成 cat
+
+# 更改
+sed 'c\hello world' test.txt # 把每行的内容都改成 hello world
+sed '3c\hello world' test.txt # 把第三行的内容改成 hello world
+sed '2,4c\hello world' test.txt # 把第2,3,4行的内容先删除，替换成 hello world
+
+# 新增数据行
+5 the quick brown fox jumps over the lazy dog.dog.dog
+
+# 标志位
+sed 's/dog/cat/2' test.txt # 把第二处的 dog 替换成dog
+sed 's/dog/cat/new_file.txt' test.txt # 把替换后的文件保存到 new_file.txt
+
+# 小技巧
+sed -n '$=' test.txt # 统计文件行号
+```
 
 
 
