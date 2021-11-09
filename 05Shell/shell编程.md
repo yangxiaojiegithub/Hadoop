@@ -502,7 +502,7 @@ function 函数名{
 
 ## 文件操作
 
-**sed命令**
+### sed命令
 
 ```shell
 语法: sed [options] '{command}[flags]' [filename]
@@ -573,7 +573,44 @@ sed 's/dog/cat/new_file.txt' test.txt # 把替换后的文件保存到 new_file.
 sed -n '$=' test.txt # 统计文件行号
 ```
 
+### awk命令
 
+awk是一种可以处理数据、产生格式化报表的语言，它将每一行数据视为一条记录，每条记录以字段分隔符分隔，然后输出各个字段的值。
+
+```shell
+语法:
+awk [options][BEGIN]{program}[END][file]
+
+options
+-F	指定分隔符
+-f	调用脚本
+-v	定义变量 var=value
+
+[BEGIN]{program}[END]
+awk程序运行优先级是:
+	1) BEGIN : 		在开始执行数据流之前执行，可选项
+	2) program : 	数据流处理逻辑，必选项
+	3) END : 		处理完数据流后执行，可选项
+-------------------------------------------------------------------------------	
+awk 对字段(列)的提取
+$0 表示整行文本
+$1 文本的第一个字段
+$2 文本的第二个字段
+$N 文本的第N个字段
+$NF 文本的最后一个字段
+
+awk '{print $0}' test.txt # 打印整个文本
+awk '{print $1}' test.txt # 打印文本第一列
+awk '{print $NF}' test.txt # 打印文本最后一列
+
+-------------------------------------------------------------------------------
+awk 对行的提取
+NR：指定行号
+awk 'NR==3{print $0}' test.txt # 打印第三行的全部列
+
+awk -F ":" 'NR==1{print $1,$3,$5}' passwd # 按:分隔，打印 passwd第一行，第一三五列
+
+```
 
 
 
