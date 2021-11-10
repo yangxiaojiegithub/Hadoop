@@ -604,11 +604,42 @@ awk '{print $1}' test.txt # 打印文本第一列
 awk '{print $NF}' test.txt # 打印文本最后一列
 
 -------------------------------------------------------------------------------
-awk 对行的提取
-NR：指定行号
-awk 'NR==3{print $0}' test.txt # 打印第三行的全部列
+- 支持内置变量
+  - ARGC 命令行参数个数
+  - ARGV 命令行参数排列
+  - ENVIRON 支持系统环境变量的使用
+  - FILENAME awk 浏览的文件名
+  - FNR 浏览文件的记录数
+  - FS 设置输入域分隔符，等价于命令行-F选项
+  - NF 浏览记录的域的个数
+  - NR 行号
+  - FS 输入字段分隔符
+  - OFS 输出字段分隔符
+  - RS 输入记录分隔符
+  - ORS 输出记录分隔符
+  - FIELDWIDTHS 以空格分隔的数字列表，用空格定义每个数据字段的精确宽度
 
+  
+awk 对行的提取
+awk 'NR==3{print $0}' test.txt # 打印第三行的全部列
 awk -F ":" 'NR==1{print $1,$3,$5}' passwd # 按:分隔，打印 passwd第一行，第一三五列
+
+
+-------------------------------------------------------------------------------
+awk 定义变量
+awk 'BEGIN{name="stanlong";print name}'
+awk -v 'count=0' 'BEGIN{count++; print count}'
+
+awk 定义数组
+awk 'BEGIN{array[1]="stanlong";array[2]=18;print array[1],array[2]}'
+
+awk 匹配
+awk -F: '$1=="root"{print $0}' passwd # 精确匹配
+awk -F: '$1 ~ "ro"{print $0}' passwd # 模糊匹配
+awk -F: '$1 ！= "root"{print $0}' passwd # 精确不匹配
+
+
+
 
 ```
 
