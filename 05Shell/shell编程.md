@@ -611,7 +611,7 @@ awk '{print $NF}' test.txt # 打印文本最后一列
   - FILENAME awk 浏览的文件名
   - FNR 浏览文件的记录数
   - FS 设置输入域分隔符，等价于命令行-F选项
-  - NF 浏览记录的域的个数
+  - NF 按分隔符分隔的字段数
   - NR 行号
   - FS 输入字段分隔符
   - OFS 输出字段分隔符
@@ -621,6 +621,7 @@ awk '{print $NF}' test.txt # 打印文本最后一列
 
   
 awk 对行的提取
+awk 'print{$NR $0}' # 打印行号
 awk 'NR==3{print $0}' test.txt # 打印第三行的全部列
 awk -F ":" 'NR==1{print $1,$3,$5}' passwd # 按:分隔，打印 passwd第一行，第一三五列
 
@@ -638,9 +639,74 @@ awk -F: '$1=="root"{print $0}' passwd # 精确匹配
 awk -F: '$1 ~ "ro"{print $0}' passwd # 模糊匹配
 awk -F: '$1 ！= "root"{print $0}' passwd # 精确不匹配
 
+-------------------------------------------------------------------------------
+awk 流程控制
+# 数据准备
+cat data
+65	50	100
+150	30	10
+151	100	40
+
+# if
+awk '{
+if($1<5)
+	print $1*2
+else
+	print $1/2
+}' data
 
 
+# for
+awk -v 'sum=0' '{
+for(i=1;i<4;i++)
+	sum+=$i
+print sum
+}' data
 
+# while
+awk '{
+sum=0
+i=1
+while(i<4){
+	sum+=$i
+	i++
+}
+print snum
+}' data
+
+# do while
+awk '{
+sum=0
+i=1
+do{
+sum+=$i
+i++
+}while(sum<150)
+print sum
+}' data
+
+# break
+awk '{
+sum=0
+i=1
+while(i<4){
+	sum+=$i
+	if(sum>150)
+		break
+	i++
+}
+print sum
+}' data
+
+
+-------------------------------------------------------------------------------
+awk 小技巧
+# 打印文本共有多少行
+awk 'END{print NR}' data
+# 打印文本最后一行
+awk 'END{print $0}' data
+# 打印文本共有多少列
+awk 'END{print NF}' data
 ```
 
 
