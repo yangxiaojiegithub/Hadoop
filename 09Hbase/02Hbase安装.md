@@ -72,7 +72,7 @@ total 44
 ```shell
 # The java implementation to use.  Java 1.7+ required.
 # 配置Java环境变量
-export JAVA_HOME=/usr/java/jdk1.8.0_65
+export JAVA_HOME=/usr/java/jdk1.8.0_221-amd64
 
 # Extra Java runtime options.
 # Below are what we set by default.  May only work with SUN JVM.
@@ -80,6 +80,7 @@ export JAVA_HOME=/usr/java/jdk1.8.0_65
 # see http://wiki.apache.org/hadoop/PerformanceTuning
 export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
 
+# 删除 Configure PermSize 下面的两行，这两行在jdk1.7的版本才需要配置
 
 # Where log files are stored.  $HBASE_HOME/logs by default.
 # 配置Hbase日志路径
@@ -207,7 +208,7 @@ hbase             hbase-cleanup.sh  hbase-common.sh   hbase-config.sh   hbase-da
 
 ## 启动Hbase集群
 
-1. 先启动Hadoop-ha，启动脚本见 Hadoop\23自定义集群脚本
+1. 先启动Hadoop-ha，启动脚本见 Hadoop/18自定义集群脚本
 
 ```shell
 [root@node01 myshell]# ./hadoop-ha-start.sh

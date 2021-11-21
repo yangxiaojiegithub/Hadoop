@@ -29,6 +29,88 @@ Hbase 是一种分布式、可扩展、支持海量数据存贮的NoSQL数据库
 
    稀疏主要是针对Hbase列的灵活性，在列族中，你可以指定任意多的列，在列数据为空的情况下，是不会占用存储空间的。
 
+## 逻辑结构
+
+![](./doc/02.png)
+
+- row key ：行id， 图中有4个row key
+- region：行的集合， 图中有两个 region
+- 列族：列的集合， 图中有两个列族
+- store：region和列族的交集，图中有四个 stroe
+
+## 存储结构
+
+![](./doc/03.png)
+
+## 数据模型
+
+逻辑上，Hbase的数据模型同关系型数据库很类似，有行有列，数据存储在一张表中。但从Hbase的底层物理存储结构（K-V）来看，Hbase更向是一个 multi-dimensional map
+
+**1. Name Space**
+
+命名空间，类似于关系型数据库的 DataBase 概念，每个命名空间下有多个表。HBase有两个自带的命名空间，分别是"hbase"和"default"，"hbase"中存放的是HBase内置的表，"default"表是用户默认使用的命名空间。
+
+**2. Region**
+
+Region 的概念和关系型数据库的分区或分片类似。
+
+Region 是 HBase中 分布式存储 和 负载均衡 的最小单元，Region 包括完整的行，所以 Region 是以行为单位 表的一个子集。不同的 Region 可以分别在不同的 RegionServer 上。
+
+每个表一开始只有一个 Region，每个 Region 会保存一个表里 某段连续的数据，随着数据不断插 入表，Region不断增大，当增大到一个阀值的时候，Region就会二等分，生成两个新的Region；
+
+Table 中的所有行都按照 RowKsey 的字典序排列，Table 在行的方向上分割为多个 Region，基于 Rowkey 的不同范围分配到不通的 Region 中（Rowkey的范围，第一个Rowkey的起始索引 和 最后一Rowkey的结束索引为空串`" "`，每个Region是前闭后开`[起始索引, 结束索引)` ）
+
+**3. Row**
+
+HBase 表中的每行数据都由 一个 RowKey 和 一个或多个 Column（列）组成，数据是按照 RowKey 的字典顺序存储的，并且查询数据时只能根据 RowKey 进行检索，所以 RowKey 的设计十分重要。
+
+**4. Row Key**
+
+Rowkey 的概念和 mysql 中的主键类似，Hbase 使用 Rowkey 来唯一的区分某一行的数据。Hbase只支持3种查询方式： 1、基于Rowkey的单行查询，2、基于Rowkey的范围扫描 ，3、全表扫描
+
+因此，Rowkey对Hbase的性能影响非常大。设计的时候要兼顾基于Rowkey的单行查询也要键入Rowkey的范围扫描。
+
+Rowkey 行键可以是任意字符串(最大长度是64KB，实际应用中长度一般为 10-100bytes)，最好是16。在HBase 内部，Rowkey 保存为字节数组。HBase会对表中的数据按照 Rowkey 字典序排序
+
+**5. Column Family（列簇）**
+
+Hbase 通过列簇划分数据的存储，列簇下面可以包含任意多的列，实现灵活的数据存取。列簇是由一个一个的列组成（任意多），在列数据为空的情况下，不会占用存储空间。
+
+Hbase 创建表的时候必须指定列簇。就像关系型数据库创建的时候必须指定具体的列是一样的。
+
+Hbase的列簇不是越多越好，官方推荐的是列簇最好小于或者等于3。一般是1个列簇。
+
+新的列簇成员（列）可以随后动态加入，Family下面可以有多个Qualifier，所以可以简单的理解为，HBase中的列是二级列，也就是说Family是第一级列，Qualifier是第二级列。
+
+权限控制、存储以及调优都是在列簇层面进行的；
+
+HBase把同一列簇里面的数据存储在同一目录下，由几个文件保存。
+
+**6. Column**
+
+HBase中的每个列，由列簇加上列限定符组成，一般是“列簇：列标识（column family : column qualifier）”，例如 info : name，info : age。创建表的时候只需指明列簇，不用指定列标识。
+
+列限定符属于数据的一部分，每条数据的列限定符都可以不一样
+
+**7. Time Stamp（version）**
+
+用于标识数据的不同版本（version），针对每个列簇进行设置（若列簇的version=3，那它下面的所有列的version都有3个版本），若建表时没有指定version，默认值version=1
+
+在写入数据的时候，如果没有指定相应的timestamp，HBase会自动添加一个timestamp（默认与服务器时间保持一致）。timestamp也可以由客户显式赋值，如果应用程序要避免数据版本冲突，就必须自己生成具有唯一性的时间戳。
+
+每个cell中，不同版本的数据按照时间倒序排序，即最新的数据排在最前面。
+
+为了避免数据存在过多版本造成的的管理(包括存贮和索引)负担，hbase 提供了两种数据版本回收方式： 
+
+- 保存数据的最后 n 个版本 ； 
+- 保存最近一段时间内的版本（设置数据的生命周期 TTL）。
+
+**8. Cell**
+
+由{Rowkey，ColumnFamily : ColumnQualifier, TimeStamp} 确定唯一的cell。
+
+cell 中的所有字段数据 都没有数据类型，全部是字节码形式存储。被视为字节数组`byte[]`
+
 ## 架构
 
 ![](./doc/01.png)
@@ -107,79 +189,11 @@ Hbase 是一种分布式、可扩展、支持海量数据存贮的NoSQL数据库
 
 7）如果是从StoreFile里面读取的数据，不是直接返回给客户端，而是先写入BlockCache，再返回给客户端。
 
-## 数据模型
 
-逻辑上，Hbase的数据模型同关系型数据库很类似，有行有列，数据存储在一张表中。但从Hbase的底层物理存储结构（K-V）来看，Hbase更向是一个 multi-dimensional map
 
-**1）Name Space**
 
-命名空间，类似于关系型数据库的 DataBase 概念，每个命名空间下有多个表。HBase有两个自带的命名空间，分别是"hbase"和"default"，"hbase"中存放的是HBase内置的表，"default"表是用户默认使用的命名空间。
 
-**2）Region**
 
-Region 的概念和关系型数据库的分区或分片类似。
-
-Region 是 HBase中 分布式存储 和 负载均衡 的最小单元，Region 包括完整的行，所以 Region 是以行为单位 表的一个子集。不同的 Region 可以分别在不同的 RegionServer 上。
-
-每个表一开始只有一个 Region，每个 Region 会保存一个表里 某段连续的数据，随着数据不断插 入表，Region不断增大，当增大到一个阀值的时候，Region就会二等分，生成两个新的Region；
-
-Table 中的所有行都按照 RowKsey 的字典序排列，Table 在行的方向上分割为多个 Region，基于 Rowkey 的不同范围分配到不通的 Region 中（Rowkey的范围，第一个Rowkey的起始索引 和 最后一Rowkey的结束索引为空串`" "`，每个Region是前闭后开`[起始索引, 结束索引)` ）
-
-**3）Row**
-
-HBase 表中的每行数据都由 一个 RowKey 和 一个或多个 Column（列）组成，数据是按照 RowKey 的字典顺序存储的，并且查询数据时只能根据 RowKey 进行检索，所以 RowKey 的设计十分重要。
-
-**3）Row Key**
-
-Rowkey 的概念和 mysql 中的主键类似，Hbase 使用 Rowkey 来唯一的区分某一行的数据。Hbase只支持3种查询方式： 1、基于Rowkey的单行查询，2、基于Rowkey的范围扫描 ，3、全表扫描
-
-因此，Rowkey对Hbase的性能影响非常大。设计的时候要兼顾基于Rowkey的单行查询也要键入Rowkey的范围扫描。
-
-Rowkey 行键可以是任意字符串(最大长度是64KB，实际应用中长度一般为 10-100bytes)，最好是16。在HBase 内部，Rowkey 保存为字节数组。HBase会对表中的数据按照 Rowkey 字典序排序
-
-**4）Column Family（列簇）**
-
-Hbase 通过列簇划分数据的存储，列簇下面可以包含任意多的列，实现灵活的数据存取。列簇是由一个一个的列组成（任意多），在列数据为空的情况下，不会占用存储空间。
-
-Hbase 创建表的时候必须指定列簇。就像关系型数据库创建的时候必须指定具体的列是一样的。
-
-Hbase的列簇不是越多越好，官方推荐的是列簇最好小于或者等于3。一般是1个列簇。
-
-新的列簇成员（列）可以随后动态加入，Family下面可以有多个Qualifier，所以可以简单的理解为，HBase中的列是二级列，也就是说Family是第一级列，Qualifier是第二级列。
-
-权限控制、存储以及调优都是在列簇层面进行的；
-
-HBase把同一列簇里面的数据存储在同一目录下，由几个文件保存。
-
-**5）Column**
-
-HBase中的每个列，由列簇加上列限定符组成，一般是“列簇：列标识（column family : column qualifier）”，例如 info : name，info : age。创建表的时候只需指明列簇，不用指定列标识。
-
-列限定符属于数据的一部分，每条数据的列限定符都可以不一样
-
-**6）Time Stamp（version）**
-
-用于标识数据的不同版本（version），针对每个列簇进行设置（若列簇的version=3，那它下面的所有列的version都有3个版本），若建表时没有指定version，默认值version=1
-
-在写入数据的时候，如果没有指定相应的timestamp，HBase会自动添加一个timestamp（默认与服务器时间保持一致）。timestamp也可以由客户显式赋值，如果应用程序要避免数据版本冲突，就必须自己生成具有唯一性的时间戳。
-
-每个cell中，不同版本的数据按照时间倒序排序，即最新的数据排在最前面。
-
-为了避免数据存在过多版本造成的的管理(包括存贮和索引)负担，hbase 提供了两种数据版本回收方式： 
-
-1、**保存数据的最后 n 个版本 ；** 
-
-2、**保存最近一段时间内的版本（设置数据的生命周期 TTL）。**
-
-**7）Cell**
-
-由{Rowkey，ColumnFamily : ColumnQualifier, TimeStamp} 确定唯一的cell。
-
-cell 中的所有字段数据 都没有数据类型，全部是字节码形式存储。被视为字节数组`byte[]`
-
-![](./doc/02.png)
-
-![](./doc/03.png)
 
 
 
