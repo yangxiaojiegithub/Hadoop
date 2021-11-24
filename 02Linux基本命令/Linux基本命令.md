@@ -10,8 +10,6 @@
 [root@node01 etc]#
 ```
 
-
-
 ### type ifconfig
 
 查看命令路径
@@ -144,6 +142,10 @@ zip -q -r html.zip /home/html
 ### env
 
 查看环境变量
+
+### grep
+
+- -i 忽略大小写
 
 ### vi最小化命令
 按下！最小化vi并回到外部bash执行 ls -l /opt/ 命令，按enter再回到vi
