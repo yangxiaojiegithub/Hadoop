@@ -32,6 +32,12 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 | $()             | ``` 与 `` 一样，命令替换```                                  |
 | (())            | for循环中C语言格式语法                                       |
 | $(())           | 计算数学表达式                                               |
+| $#              | 位置参数的个数                                               |
+| $*              | 参数列表，双引号引用为一个字符串                             |
+| $@              | 参数列表，双引号引用为单独的字符串                           |
+| $$              | 当前 shell 的 PID                                            |
+| $?              | 上一个命令的退出状态 0成功， other 失败                      |
+| $!              | Shell最后运行的后台Process的PID(后台运行的最后一个进程的进程ID号) |
 | []              | 计算逻辑表达式，与 test 一样, 如 ` test -d /root/` 等同于 ` [-d /root/]` |
 | [[]]            | 字符串匹配                                                   |
 | &               | 后台运行命令                                                 |
@@ -60,6 +66,51 @@ shell是一个程序，采用C语言编写，是用户和Linux内核沟通的桥
 10
 [root@node01 ~]# echo $((100+3)) # (()) 也可以做数学运算
 103
+
+# 浮点数比较
+[root@node01 ~]# echo "0.3 > 0.2"|bc  # 大于返回1
+1
+[root@node01 ~]# echo "0.1 > 0.2"|bc # 小于返回 0
+0
+```
+
+## 字符串操作
+
+```shell
+# 字符串准备
+[root@node01 ~]# a="hello"
+[root@node01 ~]# b="world"
+
+# 字符串拼接
+[root@node01 ~]# c=$a$b
+[root@node01 ~]# echo $c
+helloworld
+[root@node01 ~]# c=$a" "$b
+[root@node01 ~]# echo $c
+hello world
+
+# 取字符串的长度
+# echo ${#string}
+[root@node01 ~]# echo ${#a}
+5
+
+# 左边截取字符串
+# ${string: start :length}， 从0开始数
+[root@node01 ~]# echo ${a:0} # 从 0 截取到最后
+hello
+[root@node01 ~]# echo ${a:0:1} # 从0开始截取一个字符
+h
+
+# 右边截取字符串
+# ${string: 0-start :length} 从1开始数
+[root@node01 ~]# echo ${a:0-1} # 从右边截一个
+o
+[root@node01 ~]# echo ${a:0-2} # 从右边截两个
+lo
+[root@node01 ~]# echo ${a:0-2:1} # 截取的字符串保留一个
+l
+[root@node01 ~]# echo ${a:0-2:2} # 截取的字符串保留两个
+lo
 ```
 
 ## 退出脚本
